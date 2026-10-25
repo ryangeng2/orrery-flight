@@ -317,7 +317,14 @@ body{background:var(--void);color:var(--ink);font-family:var(--f-ui);overflow:hi
 .help p:last-child{margin-bottom:0}
 .help .k{font:500 10.5px var(--f-num);color:var(--ink);border:1px solid var(--edge);border-radius:3px;padding:0 4px;white-space:nowrap}
 
-.mid{margin-top:auto;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.mid{margin-top:auto;flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.top{flex:1 1 auto;min-height:0}
+.mid{position:relative}
+/* the weapons and navigation cards sit over the foot of the right column (which makes room for them) */
+.mid-r{position:absolute;right:0;bottom:calc(100% + 10px);display:flex;flex-direction:column;align-items:flex-end;gap:10px;pointer-events:none}
+.mid-r>.card{pointer-events:auto}
+.left,.right{max-height:100%;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:rgba(140,165,210,.3) transparent;overscroll-behavior:contain}
+.left>*,.right>*{flex:none}
 .banner,.toast,.order{align-self:center;padding:10px 16px;max-width:100%;text-align:center}
 .toast{pointer-events:none;font:400 12px/1.45 var(--f-num);border-color:rgba(79,210,255,.4)}
 .order{pointer-events:none;font:400 12px/1.5 var(--f-num);border-color:rgba(79,210,255,.6)}
@@ -477,6 +484,7 @@ input[type=range]{width:130px;accent-color:var(--thrust);margin:0}
   </div>
 
   <div class="mid">
+    <div class="mid-r" id="mid-r">
     <section class="card wpn" id="wpn" hidden aria-label="Weapons">
       <header><span class="brand">Manual fire</span><span class="form-sub">target: <b id="wpn-tgt">—</b></span><button class="x" id="wpn-clear" type="button" title="Clear the target">×</button></header>
       <div class="wpn-row">
@@ -499,6 +507,7 @@ input[type=range]{width:130px;accent-color:var(--thrust);margin:0}
         <button id="nav-abort" class="go" type="button">Abort</button>
       </div>
     </section>
+    </div>
     <div class="card order" id="order" hidden></div>
     <div class="card toast" id="toast" role="status" hidden></div>
     <div class="card resbar" id="resbar" aria-label="Your resources"></div>
@@ -559,18 +568,6 @@ input[type=range]{width:130px;accent-color:var(--thrust);margin:0}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <!-- co-op: Firebase Realtime Database (the config below is public by design; database.rules.json limits what can be written) -->
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script>
-window.ORRERY_FIREBASE = {
-  apiKey: "AIzaSyBTqPMteAMANJg5_MDkl35gfhmPlcm79KM",
-  authDomain: "neu-microwave-map.firebaseapp.com",
-  databaseURL: "https://neu-microwave-map-default-rtdb.firebaseio.com",
-  projectId: "neu-microwave-map",
-  storageBucket: "neu-microwave-map.firebasestorage.app",
-  messagingSenderId: "968920596202",
-  appId: "1:968920596202:web:97f1766717fda9808ee193",
-};
-</script>
 <script>
 (() => {
 'use strict';
@@ -2216,6 +2213,12 @@ function setEvasive(on, list = selectedShips()) {
   fleetDirty = true;
 }
 const WEAPON_ORDER = ['torpedo', 'railgun', 'laser'];
+// the farthest a ship can still hurt anything: its working weapons that have ammunition (0 when it has none)
+function reachOf(sh) {
+  let r = 0;
+  for (const k of ['torpedo', 'railgun', 'laser', 'pdc']) if (sh.stats.wpn[k] && (!WPN[k].ammo || sh.ammo[WPN[k].ammo] > 0)) r = Math.max(r, WPN[k].range);
+  return r;
+}
 // one frame of combat, from time t0 to t1 (ships are at their t1 positions; earlier moments are extrapolated back)
 function combatFrame(t0, t1) {
   updateJinks(t1 - t0);
@@ -2223,8 +2226,9 @@ function combatFrame(t0, t1) {
   // in reach of a fight: a pair of enemies within reach of torpedoes (and a bit), or anything in flight
   let hot = shots.length > 0;
   if (!hot) outer: for (const a of ships) {
-    if (a.side !== 'us' || !alive(a)) continue;
-    for (const b of ships) if (b.side === 'them' && alive(b) && Math.hypot(a.cp[0] - b.cp[0], a.cp[1] - b.cp[1], a.cp[2] - b.cp[2]) < 1.3 * WPN.torpedo.range) { hot = true; break outer; }
+    const R = alive(a) ? 1.3 * reachOf(a) : 0;
+    if (!R) continue;
+    for (const b of ships) if (b.side !== a.side && alive(b) && visibleTo(a.side, b) && Math.hypot(a.cp[0] - b.cp[0], a.cp[1] - b.cp[1], a.cp[2] - b.cp[2]) < R) { hot = true; break outer; }
   }
   combatHot = hot;
   for (const sh of ships) if (alive(sh)) sh.aimTgt = hot ? pickTarget(sh, t1, t1) : null;
@@ -4030,6 +4034,8 @@ function updateHUD() {
 const fmtK = n => n >= 1000 ? (n / 1000).toFixed(n % 1000 ? 1 : 0) + 'k' : String(Math.floor(n));
 function updateFleet() {
   syncFleetList();
+  // the right column ends above the weapons and navigation cards when they are up
+  { const mr = $('mid-r').offsetHeight, mh = mr ? `calc(100% - ${mr + 10}px)` : ''; const rc = document.querySelector('.right'); if (rc.style.maxHeight !== mh) rc.style.maxHeight = mh; }
   updateEconPanels(); syncHelp();
   updateCombatPanels();
   // the side panel relabels its grid when the ship it is laid out on enters or leaves orbit
