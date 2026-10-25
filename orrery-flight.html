@@ -3138,7 +3138,7 @@ function applyState(js) {
     const el = $('endgame'); el.querySelector('h2').textContent = st.over; el.querySelector('p').textContent = st.endTxt; el.hidden = false;
   }
   if (!st.over && game.over) { game.over = false; $('endgame').hidden = true; }
-  if (!NET.gotSnap) { NET.gotSnap = true; const L = ships.find(s => ownShip(s) && alive(s) && !s.station); if (L) { selectOnly([L]); setFocus(-1); } }
+  if (!NET.gotSnap) { NET.gotSnap = true; renderMP(); const L = ships.find(s => ownShip(s) && alive(s) && !s.station); if (L) { selectOnly([L]); setFocus(-1); } }
   fleetDirty = econDirty = navDirty = formDirty = needDraw = true;
 }
 
