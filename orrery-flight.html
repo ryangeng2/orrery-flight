@@ -132,6 +132,13 @@ body{background:var(--void);color:var(--ink);font-family:var(--f-ui);overflow:hi
 .contacts li .mk{--c:var(--warn)}
 .contacts li.mark{border-style:dashed;border-color:rgba(255,107,90,.6)}
 .contacts li.sel{background:rgba(255,107,90,.12);border-color:rgba(255,107,90,.45)}
+#h-name{cursor:text}
+.hud-head input.rename{font:600 12px var(--f-ui);letter-spacing:.16em;text-transform:uppercase;color:var(--thrust);background:rgba(160,185,230,.08);border:1px solid var(--edge);border-radius:4px;padding:1px 5px;width:150px}
+[data-cls=colony]{--s:14px;--shape:polygon(35% 0,65% 0,65% 35%,100% 35%,100% 65%,65% 65%,65% 100%,35% 100%,35% 65%,0 65%,0 35%,35% 35%)}
+[data-cls=stalker]{--s:12px;--shape:polygon(50% 0,78% 45%,100% 100%,50% 76%,0 100%,22% 45%)}
+[data-cls=ravager]{--s:14px;--shape:polygon(50% 0,74% 30%,100% 32%,84% 70%,100% 100%,50% 80%,0 100%,16% 70%,0 32%,26% 30%)}
+[data-cls=leviathan]{--s:17px;--shape:polygon(50% 0,70% 20%,100% 24%,86% 56%,100% 100%,60% 86%,50% 100%,40% 86%,0 100%,14% 56%,0 24%,30% 20%)}
+[data-cls=drone]{--s:8px;--shape:polygon(50% 0,100% 80%,50% 100%,0 80%)}
 [data-cls=shipyard]{--s:13px;--shape:polygon(0 0,100% 0,100% 100%,72% 100%,72% 38%,28% 38%,28% 100%,0 100%)}
 [data-cls=depot]{--s:12px;--shape:circle(50% at 50% 50%)}
 .top{position:relative}
@@ -425,7 +432,9 @@ input[type=range]{width:130px;accent-color:var(--thrust);margin:0}
       <div class="help-body">
       <details open><summary>Goal</summary><ul>
         <li>Destroy all enemy infrastructure to win; lose all of yours and you lose.</li>
-        <li>The enemy starts at Jupiter or Saturn, knows where your yard is, and expands toward you.</li></ul></details>
+        <li>The enemy starts at Jupiter or Saturn, knows where your yard is, and expands toward you.</li>
+        <li>Defend the six colonies (Mercury, Venus, the Moon, Mars, Ceres, Ganymede): they produce resources, and if all of them fall the war is lost.</li>
+        <li>Click a ship's name in the readout to change its callsign.</li></ul></details>
       <details open><summary>Select &amp; fleets</summary><ul>
         <li><b>Click</b> a ship or row · <span class="k">Shift</span>-click adds · <b>drag</b> a box · <span class="k">Ctrl</span><span class="k">A</span> all</li>
         <li><span class="k">Shift</span>+<span class="k">1</span>–<span class="k">9</span> saves a group, <span class="k">1</span>–<span class="k">9</span> recalls it</li>
@@ -442,7 +451,8 @@ input[type=range]{width:130px;accent-color:var(--thrust);margin:0}
       <details><summary>Combat</summary><ul>
         <li><b>Right-click</b> an enemy: target · <span class="k">Shift</span>: pursue · box several enemies, then right-click one: target the group</li>
         <li><span class="k">G</span> auto / manual fire (<span class="k">Z</span> <span class="k">X</span> <span class="k">C</span>) · <span class="k">E</span> evasive · <span class="k">V</span> vision rings · <span class="k">Y</span> shipyard</li>
-        <li>Armour only shields hits on its own side (nose, flanks, tail). Fields shrink your sensors</li></ul></details>
+        <li>Armour only shields hits on its own side (nose, flanks, tail). Fields shrink your sensors</li>
+        <li>The aliens' lances reach 40,000 km, past your railguns: they hold just outside railgun range. Close in, or outlast them with torpedoes</li></ul></details>
       <details><summary>Camera &amp; keys</summary><ul>
         <li>Right-drag rotate · scroll zoom · <span class="k">W</span><span class="k">A</span><span class="k">S</span><span class="k">D</span> pan · <span class="k">F</span> follow · double-click focus · <span class="k">Space</span> sensors</li>
         <li><span class="k">P</span> pause · <span class="k">,</span> <span class="k">.</span> warp · <span class="k">T</span> auto-warp · <span class="k">H</span> hide controls · <span class="k">?</span> help · <span class="k">Esc</span> cancel</li>
@@ -604,11 +614,24 @@ const BODY = [
   { name: 'Saturn',  gm: 3.7931187e7,      R: 58232,  col: '#e6d29f' },
   { name: 'Uranus',  gm: 5.793939e6,       R: 25362,  col: '#9fe0e6' },
   { name: 'Neptune', gm: 6.836529e6,       R: 24622,  col: '#7393ff' },
+  // moons (after the planets, so the planets keep their numbers)
+  { name: 'Phobos',   gm: 7.087e-4, R: 11.27,  col: '#8c7f72' },
+  { name: 'Deimos',   gm: 9.6e-5,   R: 6.2,    col: '#a89a8a' },
+  { name: 'Io',       gm: 5959.9,   R: 1821.6, col: '#e8d26a' },
+  { name: 'Europa',   gm: 3202.7,   R: 1560.8, col: '#d8cbb4' },
+  { name: 'Ganymede', gm: 9887.8,   R: 2634.1, col: '#a8a092' },
+  { name: 'Callisto', gm: 7179.3,   R: 2410.3, col: '#6e6458' },
+  { name: 'Amalthea', gm: 0.138,    R: 83.5,   col: '#b4553c' },
+  { name: 'Titan',    gm: 8978.1,   R: 2574.7, col: '#d9a54a' },
+  { name: 'Rhea',     gm: 153.94,   R: 763.8,  col: '#c8c4bc' },
+  { name: 'Iapetus',  gm: 120.5,    R: 734.5,  col: '#9a8a74' },
+  { name: 'Dione',    gm: 73.11,    R: 561.4,  col: '#d0ccc6' },
+  { name: 'Tethys',   gm: 41.21,    R: 531.1,  col: '#dcd8d2' },
 ];
 const NB = BODY.length;
 const GM = Float64Array.from(BODY, b => b.gm);
 const RAD = Float64Array.from(BODY, b => b.R);
-const PARENT = [-1, 0, 0, 0, 3, 0, 0, 0, 0, 0];
+const PARENT = [-1, 0, 0, 0, 3, 0, 0, 0, 0, 0, 5, 5, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7];
 const CHILDREN = BODY.map((_, i) => BODY.map((_, j) => j).filter(j => PARENT[j] === i));
 const ORBIT = { 1: [0.38709927, 252.25032350, 149472.67411175], 2: [0.72333566, 181.97909950, 58517.81538729], 3: [1.00000261, 100.46457166, 35999.37244981],
   5: [1.52371034, -4.55343205, 19140.30268499], 6: [5.20288700, 34.39644051, 3034.74612775], 7: [9.53667594, 49.95424423, 1222.49362201],
@@ -621,8 +644,14 @@ for (const k in ORBIT) {
   OA[i] = a * AU; ON[i] = Math.sqrt(GM[0] / OA[i] ** 3); OL[i] = (L0 + Lr * t0 / CENT) * D2R;
 }
 OA[4] = 384400; ON[4] = Math.sqrt(GM[3] / OA[4] ** 3); OL[4] = (218.316 + 13.176396 * t0 / DAY) * D2R;
+// the other moons: circles about their planets, km from the planet's centre and a fixed starting angle (so every
+// player's sky agrees)
+const MOON_ORBITS = { 10: [9376, 20], 11: [23463, 210], 12: [421700, 80], 13: [671034, 160], 14: [1070412, 300], 15: [1882709, 40], 16: [181366, 250],
+  17: [1221870, 120], 18: [527108, 330], 19: [3560820, 15], 20: [377396, 200], 21: [294619, 275] };
+for (const k in MOON_ORBITS) { const i = +k, [a, ph] = MOON_ORBITS[k]; OA[i] = a; ON[i] = Math.sqrt(GM[PARENT[i]] / a ** 3); OL[i] = ph * D2R + ON[i] * t0; }
 SOI[0] = Infinity;
-for (let i = 1; i < NB; i++) SOI[i] = OA[i] * Math.pow(GM[i] / GM[PARENT[i]], 0.4);
+// (a small moon's true sphere is inside its own surface: it gets five of its radii, so ships can orbit it)
+for (let i = 1; i < NB; i++) SOI[i] = Math.max(OA[i] * Math.pow(GM[i] / GM[PARENT[i]], 0.4), 5 * RAD[i]);
 
 function relPos(j, t, o) { const a = OL[j] + ON[j] * (t - t0); o[0] = OA[j] * Math.cos(a); o[1] = OA[j] * Math.sin(a); o[2] = 0; }
 function relVel(j, t, o) { const a = OL[j] + ON[j] * (t - t0), s = OA[j] * ON[j]; o[0] = -s * Math.sin(a); o[1] = s * Math.cos(a); o[2] = 0; }
@@ -1403,7 +1432,7 @@ function formUp(given) {
   let list = given || selectedShips(); if (list.length < 2) return;
   if (toHost({ k: 'formUp', ids: ids(list) })) return;
   if (!tugFirst(list)) { showToast('Infrastructure has no engines: select a ship to tug it'); return; }
-  list = list.filter(s => !s.station || s.leader === list[0] || dist3(posNow(s).slice(), posNow(list[0])) < TOW_REACH);
+  list = list.filter(s => !isColony(s) && (!s.station || s.leader === list[0] || dist3(posNow(s).slice(), posNow(list[0])) < TOW_REACH));
   withTows(list); if (!given) for (const s of list) s.sel = true;
   for (const sh of list) if (!sh.leader) handOver(sh, s => !list.includes(s));
   for (const sh of list) detach(sh);
@@ -1476,6 +1505,7 @@ function commandFleet(sel, kind, times, list = selectedShips(), quiet = false) {
     if (!quiet) { for (const X of list) if (X.side === 'us') towStation(X, { sel, kind }); return; }
     say('Infrastructure has no engines'); return;
   }
+  list = list.filter(s => !isColony(s));
   const farTow = list.filter(s => s.station && s.leader !== list[0] && dist3(posNow(s).slice(), posNow(list[0])) > TOW_REACH);
   if (farTow.length) list = list.filter(s => !farTow.includes(s));
   withTows(list);
@@ -1767,6 +1797,8 @@ const MOD = {
   pdcMag:   { name: 'PDC magazine', abbr: 'PM', layer: 'in', mass: 4, hp: 3, rounds: 2000, col: '#8fd18f', note: '2,000 rounds' },
   torpedo:  { name: 'Torpedo launcher', abbr: 'TT', layer: 'out', mass: 8, hp: 4, wpn: 1, col: '#ff7b6b', note: 'range 150,000 km' },
   railgun:  { name: 'Railgun', abbr: 'RG', layer: 'out', mass: 15, hp: 6, wpn: 1, col: '#b8c4d8', note: 'range 35,000 km · a shot every 45 s' },
+  lance:    { name: 'Lance', abbr: 'LN', layer: 'out', mass: 18, hp: 6, draw: 3, heat: 20, wpn: 1, col: '#ff4040', note: 'alien beam · range 40,000 km' },
+  hab:      { name: 'Habitat', abbr: 'HB', layer: 'in', mass: 400, hp: 40, hab: 1, col: '#e8d29a', note: 'where the colonists live' },
   laser:    { name: 'Laser', abbr: 'LZ', layer: 'out', mass: 10, hp: 5, draw: 2, heat: 20, wpn: 1, col: '#ff5fd2', note: 'range 20,000 km · heats · also shoots torpedoes' },
   pdc:      { name: 'PDC', abbr: 'PD', layer: 'out', mass: 4, hp: 3, wpn: 1, col: '#8fd18f', note: 'range 15,000 km · surer up close' },
   radiator: { name: 'Radiator', abbr: 'RD', layer: 'out', mass: 4, hp: 3, cool: 3, col: '#7fe3d6', note: 'sheds 3 heat/s' },
@@ -1783,6 +1815,8 @@ const WPN = {
   torpedo: { range: 150000, reload: 60, ammo: 'torps', label: 'Torpedoes' },
   railgun: { range: 35000, reload: 15, charge: 30, speed: 150, dmg: 8, hitR: 25, ammo: 'slugs', label: 'Railguns' },
   laser:   { range: 20000, reload: 8, dmg: 10, acc: 0.9, lastDitch: 5000, label: 'Lasers' },
+  // the aliens' beam: it outranges a railgun, and they hold just outside a railgun's reach to use it
+  lance:   { range: 40000, reload: 12, dmg: 10, acc: 0.85, label: 'Lances' },     // at 37,000 km a hit does about 5
   pdc:     { range: 15000, reload: 0.5, dmg: 0.6, accTorp: 0.003, accShip: 0.3, ammo: 'rounds', label: 'PDCs' },
 };
 // a laser turned on a torpedo: inside a PDC's reach, a third of a PDC's kill rate (one shot to a PDC's sixteen)
@@ -1800,8 +1834,14 @@ const HULLS = {
   // infrastructure: no engines (it is towed), fixed designs
   shipyard:  { name: 'Shipyard', eng: 0, reac: 2, rad: 4, tank: 2, util: 6, hard: 4, armor: 8, mass: 600, len: 28, beam: 9, drive: 0, station: true },
   depot:     { name: 'Supply depot', eng: 0, reac: 1, rad: 2, tank: 2, util: 6, hard: 4, armor: 6, mass: 300, len: 20, beam: 7, drive: 0, station: true },
+  colony:    { name: 'Colony', eng: 0, reac: 3, rad: 4, tank: 2, util: 8, hard: 6, armor: 10, mass: 3000, len: 34, beam: 16, drive: 0, station: true },
+  // the enemy's: grown, heavy, a little slower than yours (only they build these)
+  stalker:   { name: 'Stalker',   eng: 8,  reac: 4, rad: 8,  tank: 12, util: 8,  hard: 8,  armor: 12, mass: 450,  len: 30, beam: 11, drive: 1.35, alien: true },
+  ravager:   { name: 'Ravager',   eng: 12, reac: 6, rad: 12, tank: 16, util: 10, hard: 12, armor: 16, mass: 800,  len: 40, beam: 16, drive: 1.3,  alien: true },
+  leviathan: { name: 'Leviathan', eng: 16, reac: 8, rad: 16, tank: 22, util: 12, hard: 18, armor: 22, mass: 1500, len: 56, beam: 25, drive: 1.2,  alien: true },
+  drone:     { name: 'Drone',     eng: 3,  reac: 1, rad: 0,  tank: 4,  util: 4,  hard: 2,  armor: 4,  mass: 60,   len: 12, beam: 5.5, drive: 1.2, alien: true },
 };
-const HULL_KEYS = Object.keys(HULLS).filter(k => !HULLS[k].station);
+const HULL_KEYS = Object.keys(HULLS).filter(k => !HULLS[k].station && !HULLS[k].alien);
 const slotsUsed = d => d.util.reduce((n, t) => n + (MOD[t].slots || 1), 0);
 // the modules a design puts aboard, in a fixed order (the model finds each one by its place in this list)
 function modsOf(d) {
@@ -1836,7 +1876,7 @@ const defaultDesigns = () => [
 // a design's numbers (or a ship's, counting only the modules still working)
 function statsOf(mods, working = () => true, hullMass = 30, drive = 1) {
   const s = { mass: hullMass, thrust: 0, power: 0, engDraw: 0, laserDraw: 0, cool: 0, fuel: 0, vision: 0, torps: 0, slugs: 0, rounds: 0, hp: 0, laserHeat: 0, harvest: 0, cargo: 0, dock: 0, store: 0,
-    wpn: { torpedo: 0, railgun: 0, laser: 0, pdc: 0 } };
+    wpn: { torpedo: 0, railgun: 0, laser: 0, pdc: 0, lance: 0 }, hab: 0 };
   let best = 0, nSens = 0;
   for (const m of mods) {
     const M = MOD[m.t];
@@ -1845,7 +1885,8 @@ function statsOf(mods, working = () => true, hullMass = 30, drive = 1) {
     s.hp += M.hp;
     if (M.power) s.power += M.power;
     if (M.thrust) { s.thrust += M.thrust * drive; s.engDraw += M.draw; }
-    if (m.t === 'laser') { s.laserDraw += M.draw; s.laserHeat += M.heat / WPN.laser.reload; }
+    if (m.t === 'laser' || m.t === 'lance') { s.laserDraw += M.draw; s.laserHeat += M.heat / WPN[m.t].reload; }
+    if (M.hab) s.hab++;
     if (M.cool) s.cool += M.cool;
     if (M.fuel) s.fuel += M.fuel;
     if (M.vision) { nSens++; best = Math.max(best, M.vision); }
@@ -2009,9 +2050,9 @@ function fireWeapon(sh, m, tgt, tau, t1) {
     aimRail(sh, tgt, W.speed, FD);
     shots.push({ kind: 'slug', born: tau, side: sh.side, p: FW1.slice(), v: [sh.cv[0] + FD[0] * W.speed, sh.cv[1] + FD[1] * W.speed, sh.cv[2] + FD[2] * W.speed], tgt, end: tau + 1.5 * W.range / W.speed });
     addFx({ sh, mi: sh.mods.indexOf(m), col: 0xe8f0ff, px: 24, dur: 170 });
-  } else if (m.t === 'laser') {
-    if (sh.stats.power <= 0 || sh.heat + MOD.laser.heat > HEAT_CAP) return false;
-    sh.heat += MOD.laser.heat;
+  } else if (m.t === 'laser' || m.t === 'lance') {
+    if (sh.stats.power <= 0 || sh.heat + MOD[m.t].heat > HEAT_CAP) return false;
+    sh.heat += MOD[m.t].heat;
     const hit = Math.random() < W.acc, off = beamFx(sh, m, tgt, null, 'laser', hit);
     addFx({ sh, mi: sh.mods.indexOf(m), col: sh.side === 'us' ? 0xffc070 : 0xff6a50, px: 12, dur: 220 });
     if (hit) { addFx({ sh: tgt, off, col: 0xffc27a, px: 18, dur: 280 }); damage(tgt, W.dmg * (1 - 0.5 * d / W.range), [FW1[0] - FW2[0], FW1[1] - FW2[1], FW1[2] - FW2[2]]); }
@@ -2224,11 +2265,12 @@ function setEvasive(on, list = selectedShips()) {
   showToast(on ? `Evasive: ${list.length === 1 ? list[0].name : list.length + ' ships'} jink in a fight to slip railgun slugs (costs propellant, shows the flank)` : `${list.length === 1 ? list[0].name : list.length + ' ships'} hold steady, nose to the target`);
   fleetDirty = true;
 }
-const WEAPON_ORDER = ['torpedo', 'railgun', 'laser'];
+const WEAPON_ORDER = ['torpedo', 'railgun', 'laser', 'lance'];
+const ALIEN_HOLD = 37000;          // km: where alien warships stand off, out of a railgun's reach and inside their lances'
 // the farthest a ship can still hurt anything: its working weapons that have ammunition (0 when it has none)
 function reachOf(sh) {
   let r = 0;
-  for (const k of ['torpedo', 'railgun', 'laser', 'pdc']) if (sh.stats.wpn[k] && (!WPN[k].ammo || sh.ammo[WPN[k].ammo] > 0)) r = Math.max(r, WPN[k].range);
+  for (const k of ['torpedo', 'railgun', 'laser', 'pdc', 'lance']) if (sh.stats.wpn[k] && (!WPN[k].ammo || sh.ammo[WPN[k].ammo] > 0)) r = Math.max(r, WPN[k].range);
   return r;
 }
 // one frame of combat, from time t0 to t1 (ships are at their t1 positions; earlier moments are extrapolated back)
@@ -2300,6 +2342,7 @@ function fireNow(kind, given) {
 }
 // the closest reach of the weapons these ships can still fire, PDCs aside (for standing off a target)
 function standoff(list) {
+  if (list.length && list.every(s => s.stats.wpn.lance > 0)) return 1.2 * ALIEN_HOLD;
   let r = Infinity;
   for (const s of list) for (const k of WEAPON_ORDER) if (s.stats.wpn[k] && (!WPN[k].ammo || s.ammo[WPN[k].ammo] > 0)) r = Math.min(r, WPN[k].range);
   return isFinite(r) ? 0.8 * r : 0.8 * WPN.pdc.range;
@@ -2363,8 +2406,10 @@ const STORE_BASE = 2000, STORE_BAY = 8000;   // t of each resource: any station,
 const BUILD_RATE = 6 / 3600, INFRA_SPEED = 4;   // t of hull per second per slipway; infrastructure goes up 4× faster
 const TOW_REACH = 3000, TOW_GAP = 150;           // km: how close a tug must be to take a station in tow; the tow line
 // what each body offers, and why (asteroid fields, debris and gas clouds offer theirs by kind)
-const BODY_RES = { 1: ['noble'], 2: ['noble'], 3: ['noble', 'fuel'], 4: ['noble', 'fuel'], 5: ['noble'], 6: ['fuel'], 7: ['fuel'], 8: ['fuel'], 9: ['fuel'] };
-const BODY_WHY = { 3: 'deuterium from the oceans', 4: 'helium-3 in the regolith', 6: 'hydrogen, deuterium, helium-3', 7: 'hydrogen, deuterium, helium-3', 8: 'deuterium, helium-3', 9: 'deuterium, helium-3' };
+const BODY_RES = { 1: ['noble'], 2: ['noble'], 3: ['noble', 'fuel'], 4: ['noble', 'fuel'], 5: ['noble'], 6: ['fuel'], 7: ['fuel'], 8: ['fuel'], 9: ['fuel'],
+  10: ['base', 'noble'], 11: ['base', 'noble'], 12: ['noble'], 13: ['fuel'], 14: ['fuel', 'noble'], 15: ['fuel', 'noble'], 16: ['base', 'noble'],
+  17: ['fuel'], 18: ['fuel'], 19: ['fuel', 'noble'], 20: ['fuel'], 21: ['fuel'] };
+const BODY_WHY = { 13: 'deuterium from its ice', 14: 'deuterium from its ice', 15: 'deuterium from its ice', 17: 'methane and deuterium', 18: 'deuterium from its ice', 19: 'deuterium from its ice', 20: 'deuterium from its ice', 21: 'deuterium from its ice', 3: 'deuterium from the oceans', 4: 'helium-3 in the regolith', 6: 'hydrogen, deuterium, helium-3', 7: 'hydrogen, deuterium, helium-3', 8: 'deuterium, helium-3', 9: 'deuterium, helium-3' };
 const FIELD_RES = { gas: ['fuel'], rock: ['base', 'noble'], debris: ['base'] };
 // the gravity well: lifting out of a deeper one brings up less at a time (escape velocity, against the Moon's)
 const VESC = Float64Array.from(BODY, b => Math.sqrt(2 * b.gm / b.R));
@@ -2374,12 +2419,30 @@ const noStock = () => ({ fuel: 0, base: 0, noble: 0 });
 
 // ---- infrastructure: two kinds, each a fixed design on a station hull (no engines)
 const STATION_DESIGNS = {
+  colony: { name: 'Colony', hull: 'colony', eng: 0, reac: 3, rad: 2, tank: 2, armor: [6, 6, 6], util: ['sensorL', 'pdcMag', 'pdcMag', 'store', 'store', 'hab', 'hab'], hard: ['pdc', 'pdc', 'pdc', 'pdc', 'laser', 'laser'] },
   shipyard: { name: 'Shipyard', hull: 'shipyard', eng: 0, reac: 2, rad: 2, tank: 1, armor: [4, 4, 4], util: ['sensorS', 'pdcMag', 'dock', 'dock'], hard: ['pdc', 'pdc', 'pdc'] },
   depot: { name: 'Supply depot', hull: 'depot', eng: 0, reac: 1, rad: 1, tank: 1, armor: [3, 3, 3], util: ['sensorS', 'pdcMag', 'store', 'store', 'store'], hard: ['pdc', 'pdc'] },
 };
 const storeCap = sh => STORE_BASE + STORE_BAY * sh.stats.store;
 const cargoLoad = sh => sh.cargo ? sh.cargo.fuel + sh.cargo.base + sh.cargo.noble : 0;
 const isYard = sh => sh.station && sh.stats.dock > 0;
+const isColony = sh => !!sh.station && sh.stats.hab > 0 || (sh.designObj && sh.designObj.hull === 'colony');
+// the colonies: where they are (body and orbit, or round the Sun), what each produces a day (t), and in co-op whose
+const COLONIES = [
+  { n: 'Hermes Station', j: 1, r: 9000, a: 0.4, y: { noble: 60 }, o: 'p1' },
+  { n: 'Ishtar Station', j: 2, r: 22000, a: 1.2, y: { fuel: 40, noble: 30 }, o: 'p1' },
+  { n: 'Tycho Station', j: 4, r: 5200, a: 2.0, y: { fuel: 40, noble: 40 }, o: 'p1' },
+  { n: 'Ares Station', j: 5, r: 14000, a: 3.0, y: { noble: 60, base: 20 }, o: 'p2' },
+  { n: 'Ceres Station', j: 0, r: 2.77 * AU, a: 1.0, y: { base: 80, noble: 30 }, o: 'p2' },
+  { n: 'Ganymede Station', j: 14, r: 9000, a: 0.7, y: { fuel: 80 }, o: 'p2' },
+];
+function colonyFrame(dt) {
+  for (const c of ships) {
+    if (!c.yield || !alive(c) || !c.station) continue;
+    const f = c.stats.hab / 2, cap = storeCap(c);           // the more of its habitats are standing, the more it makes
+    for (const k in c.yield) c.stock[k] = Math.min(cap, c.stock[k] + c.yield[k] * f * dt / DAY);
+  }
+}
 const stationsOf = side => ships.filter(s => s.side === side && s.station && alive(s));
 function sideStock(side) { const t = noStock(); for (const s of stationsOf(side)) for (const k of RES) t[k] += s.stock[k]; return t; }
 const dist3 = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
@@ -2387,7 +2450,7 @@ const EP = [0, 0, 0];
 function posNow(sh) { if (sh.cp) return sh.cp; shipAbs(sh, EP); return EP; }
 // what a design costs: base metals for structure, noble metals for weapons, sensors and reactors (ammunition and
 // propellant are drawn from the depot when the ship fits out); and its build time at one slipway
-const NOBLE_SHARE = { torpedo: 0.8, railgun: 0.7, laser: 0.9, pdc: 0.6, sensorS: 0.8, sensorL: 0.8, reactor: 0.5, harvester: 0.3, dock: 0.2, torpMag: 0.2, railMag: 0.2, pdcMag: 0.2 };
+const NOBLE_SHARE = { lance: 0.9, hab: 0.3, torpedo: 0.8, railgun: 0.7, laser: 0.9, pdc: 0.6, sensorS: 0.8, sensorL: 0.8, reactor: 0.5, harvester: 0.3, dock: 0.2, torpMag: 0.2, railMag: 0.2, pdcMag: 0.2 };
 function designCost(d) {
   const c = { base: HULLS[d.hull].mass, noble: 0, mass: HULLS[d.hull].mass };
   for (const m of modsOf(d)) { const M = MOD[m.t], f = NOBLE_SHARE[m.t] || 0; c.base += M.mass * (1 - f); c.noble += M.mass * f; c.mass += M.mass; }
@@ -2642,6 +2705,7 @@ function fieldUnder(cx, cy) {
 const towQ = [];
 function towOrder(X, list = selectedShips().filter(s => !s.station), then = null) {
   if (!list.length) { showToast('Select a ship to tug it with'); return; }
+  if (isColony(X)) { showToast(`${X.name} is a colony: it cannot be moved`); return; }
   if (toHost({ k: 'towWith', x: X.id, ids: ids(list) })) return;
   if (X.leader) { showToast(`${X.name} is already in tow behind ${X.leader.name}`); return; }
   const L = list[0];
@@ -2662,6 +2726,7 @@ function freeTugs(X, exclude = []) {
 const towerOf = X => X.leader ? fleetLeader(X) : ships.find(s => alive(s) && s.track && s.track.tow && s.track.tgt === X) || null;
 // send a station somewhere: its tug takes it; with no tug yet, the nearest free ship comes for it first
 function towStation(X, then) {
+  if (isColony(X)) { showToast(`${X.name} is a colony: it cannot be moved`); return; }
   if (toHost({ k: 'tow', x: X.id, then })) { showToast(`Sending the nearest free ship to tow ${X.name}`); return; }
   if (X.leader) { const L = fleetLeader(X); if (then) commandFleet(then.sel, then.kind, null, [L, ...followersOf(L)], false); return; }
   const T = towerOf(X);
@@ -2673,6 +2738,7 @@ function towStation(X, then) {
 }
 // another ship joins the tow, adding its thrust (it flies to its place in the tug's formation)
 function addTug(X) {
+  if (isColony(X)) { showToast(`${X.name} is a colony: it cannot be moved`); return; }
   if (toHost({ k: 'addTug', x: X.id })) return;
   const L = towerOf(X);
   if (!L) { towStation(X, null); return; }
@@ -2715,13 +2781,17 @@ const tugFirst = list => { const i = list.findIndex(s => !s.station); if (i > 0)
 // site nearer you; it sends its warships against your infrastructure in waves, the first knowing where your
 // starting yard and depot are, the rest whatever its sensors have seen since; it defends its own.
 const AI = { home: 6, known: new Map(), wave: 0, strike: null, t: -Infinity };
-const AI_COLLECTOR = { name: 'Skimmer', hull: 'frigate', eng: 3, reac: 1, rad: 0, tank: 4, armor: [1, 1, 0], util: ['harvester', 'cargo', 'cargo'], hard: [] };
+const AI_COLLECTOR = { name: 'Drone', hull: 'drone', eng: 3, reac: 1, rad: 0, tank: 4, armor: [1, 1, 0], util: ['harvester', 'cargo', 'cargo'], hard: [] };
+// the aliens' warships: lances first, a torpedo or two, PDC spines; three times a frigate's tonnage and more
+const ALIEN_DESIGNS = {
+  stalker:   { name: 'Stalker',   hull: 'stalker',   eng: 6,  reac: 3, rad: 5,  tank: 10, armor: [5, 4, 3],  util: ['sensorS', 'torpMag', 'pdcMag'], hard: ['lance', 'lance', 'lance', 'lance', 'torpedo', 'pdc', 'pdc'] },
+  ravager:   { name: 'Ravager',   hull: 'ravager',   eng: 9,  reac: 5, rad: 8,  tank: 14, armor: [8, 6, 4],  util: ['sensorS', 'sensorS', 'torpMag', 'pdcMag', 'pdcMag'], hard: ['lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'torpedo', 'pdc', 'pdc', 'pdc'] },
+  leviathan: { name: 'Leviathan', hull: 'leviathan', eng: 14, reac: 8, rad: 12, tank: 20, armor: [12, 9, 6], util: ['sensorL', 'torpMag', 'torpMag', 'pdcMag', 'pdcMag'], hard: ['lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'torpedo', 'torpedo', 'pdc', 'pdc', 'pdc', 'pdc'] },
+};
 function aiWarship() {
   const days = (worldT - game.t0) / DAY, R = Math.random();
-  const hull = days > 50 && R < 0.25 ? 'cruiser' : days > 20 && R < 0.5 ? 'destroyer' : R < 0.3 ? 'corvette' : R < 0.75 ? 'frigate' : 'destroyer';
-  const d = autoDesign(HULLS[hull].name, hull);
-  d.tank = HULLS[hull].tank;                      // the long haul from the outer system wants full tanks
-  return d;
+  const hull = days > 40 && R < 0.3 ? 'leviathan' : days > 12 && R < 0.55 ? 'ravager' : 'stalker';
+  return JSON.parse(JSON.stringify(ALIEN_DESIGNS[hull]));
 }
 function aiSite() {
   // sites for new infrastructure, nearer you as it spreads: rock fields of the belts and Trojans, Mars, the Moon
@@ -2792,7 +2862,7 @@ function aiThink() {
   }
   for (const s of war) if (s.mission === 'defend' && !s.track && !s.leader) s.mission = null;
   // the attack: once enough warships are free, a wave goes for your nearest known infrastructure (or Earth)
-  const waveN = AI.coop ? Math.min(12, 6 + AI.wave) : Math.min(8, 4 + AI.wave), fueled = s => s.fuel > 0.85 * s.stats.fuel && s.ammo.slugs >= 0.8 * s.stats.slugs && s.ammo.torps >= 0.8 * s.stats.torps;
+  const waveN = AI.coop ? Math.min(9, 4 + AI.wave) : Math.min(6, 3 + AI.wave), fueled = s => s.fuel > 0.85 * s.stats.fuel && s.ammo.slugs >= 0.8 * s.stats.slugs && s.ammo.torps >= 0.8 * s.stats.torps;
   const ready = war.filter(s => aiFree(s) && fueled(s));
   if (AI.strike && AI.strike.aim && AI.strike.aim !== 'home' && ready.length >= waveN + 2 && AI.strike.list.filter(alive).length < 2 * waveN) {
     // more than enough at home: they go to reinforce the wave under way
@@ -2861,18 +2931,18 @@ function loopsBack(L, T) { for (let s = fleetLeader(T), k = 0; s.track && k < 12
 const game = { t0: 0, over: false };
 function checkGameEnd() {
   if (game.over) return;
-  const us = stationsOf('us').length, them = stationsOf('them').length;
-  if (us && them) return;
+  const mine = stationsOf('us'), base = mine.filter(s => !isColony(s)).length, cols = mine.filter(isColony).length, them = stationsOf('them').length;
+  if (base && cols && them) return;
   game.over = true; setPaused(true);
   const el = $('endgame');
   el.querySelector('h2').textContent = them ? 'Defeat' : 'Victory';
-  el.querySelector('p').textContent = them ? 'Your last shipyard and depot are gone: the enemy holds the system.' : `All enemy infrastructure destroyed in ${fmtDur(worldT - game.t0)}.`;
+  el.querySelector('p').textContent = !them ? `All enemy infrastructure destroyed in ${fmtDur(worldT - game.t0)}.` : !cols ? 'The last of the colonies has fallen.' : 'Your last shipyard and depot are gone: the enemy holds the system.';
   el.hidden = false;
 }
 let hvTick = -Infinity, aiTick = -Infinity;
 function economyFrame(dt) {
   towFrame();
-  if (dt > 0) { mineFrame(dt); buildFrame(dt); resupply(dt); }
+  if (dt > 0) { mineFrame(dt); buildFrame(dt); resupply(dt); colonyFrame(dt); }
   if (worldT - hvTick > 900) { hvTick = worldT; for (const s of ships) if (s.hv) harvestThink(s); }
   for (const [fleet, next] of retrack.splice(0)) { const list = fleet.filter(alive); if (list.length && alive(next)) orderTrack(next, list, { range: standoff(list) / 1.2, preset: 'envelop', quiet: true, pursuit: true }); }
   if (worldT - aiTick > 1800) { aiTick = worldT; aiThink(); }
@@ -2913,8 +2983,16 @@ function newGame(coop = false) {
     for (let i = 0; i < 2; i++) { const s2 = makeShip(ENEMY_NAMES[enemySeq++ % ENEMY_NAMES.length], 30000, 0, 0, aiWarship(), 'them'); placeInOrbit(s2, H, r * (1.2 + 0.04 * i), a0 + 0.9 + 0.2 * i); s2.evasive = s2.stats.accel >= 3; s2.vis = false; }
     const c3 = makeShip(ENEMY_NAMES[enemySeq++ % ENEMY_NAMES.length], 30000, 0, 0, AI_COLLECTOR, 'them'); placeInOrbit(c3, H, r * 0.9, a0 - 0.9); c3.vis = false;
   }
+  // the six colonies: everyone knows where they are
+  const cols = COLONIES.map(C => {
+    const c = makeStation('us', 'colony', C.n);
+    c.owner = coop ? C.o : 'p1'; c.yield = C.y; c.deployed = true;
+    c.stock = { fuel: 800, base: 800, noble: 400 };
+    placeInOrbit(c, C.j, C.r, C.a);
+    return c;
+  });
   // it knows where your starting yards and depots are
-  for (const s of [Y, D, ...p2st]) { shipAbs(s, W1); AI.known.set(s, { p: W1.slice(), j: s.prim, r: Math.hypot(s.S[0], s.S[1], s.S[2]), t: worldT }); }
+  for (const s of [Y, D, ...p2st, ...cols]) { shipAbs(s, W1); AI.known.set(s, { p: W1.slice(), j: s.prim, r: Math.hypot(s.S[0], s.S[1], s.S[2]), t: worldT }); }
   econDirty = fleetDirty = true;
 }
 const PROSPECTOR = { name: 'Prospector', hull: 'frigate', eng: 3, reac: 1, rad: 0, tank: 4, armor: [1, 2, 0], util: ['harvester', 'cargo', 'cargo'], hard: [] };
@@ -2939,6 +3017,10 @@ function renderStation(Y) {
       const c = designCost(d), bad = !HULLS[d.hull].station && designBad(designStats(d));
       return `<button type="button" data-build="${key}"${bad ? ' disabled title="Invalid design"' : ''}><span class="ic" data-cls="${d.hull}"></span><span class="bn">${d.name.replace(/[<&]/g, '')}</span><small>${fmtT(c.base)} B · ${fmtT(c.noble)} N · ${fmtDur(buildSecs(c, Y.stats.dock))}</small></button>`;
     }).join('') + '</div>';
+  }
+  if (isColony(Y)) {
+    h += `<h4>Colony</h4><p class="stn-net">${Y.yield ? 'Produces ' + Object.entries(Y.yield).map(([k, v]) => `${v} t ${RES_NAME[k].toLowerCase()}`).join(', ') + ' a day (less as its habitats are hit). ' : ''}Fixed in place: defend it. If every colony falls, the war is lost.</p>`;
+    return h;
   }
   const T = Y.side === 'us' ? towerOf(Y) : null, helpers = T ? followersOf(T).filter(x => !x.station).length : 0;
   h += `<h4>Towing</h4><p class="stn-net">${Y.leader ? `In tow behind <b>${T.name}</b>${helpers ? ` and ${helpers} more` : ''} · ${fleetAccel(T).toFixed(2)} m/s²` : T ? `<b>${T.name}</b> is closing in to take it in tow` : 'Not in tow (no engines of its own)'}</p>
@@ -3072,6 +3154,7 @@ function encShip(sh) {
   if (sh.stock) e.sk = sh.stock;
   if (sh.queue) e.q = sh.queue.map(j => ({ n: j.d.name, h: j.d.hull, l: j.left, c: j.cost, w: j.wait, pd: j.paid ? 1 : 0 }));
   if (sh.station) e.dep = sh.deployed ? 1 : 0;
+  if (sh.yield) e.yl = sh.yield;
   if (sh.seenP) e.sp = sh.seenP;
   return e;
 }
@@ -3111,7 +3194,7 @@ function applyState(js) {
     seen.add(sh);
     const d = NET.designs.get(e.i);
     if (d && JSON.stringify(sh.designObj) !== JSON.stringify(d)) fitShip(sh, d);
-    sh.owner = e.o; sh.name = e.n;
+    sh.owner = e.o; if (sh.name !== e.n) setShipName(sh, e.n);
     sh.prim = e.p; sh.t = e.t; sh.S.set(e.S); sh.dv = e.dv; sh.fuel = e.f; sh.heat = e.ht;
     sh.ammo.torps = e.am[0]; sh.ammo.slugs = e.am[1]; sh.ammo.rounds = e.am[2];
     if (e.hp.length === sh.mods.length) { e.hp.forEach((h, k) => { sh.mods[k].hp = h; }); sh.stats = statsOf(sh.mods, m => m.hp > 0, sh.hullMass, sh.drive); }
@@ -3126,6 +3209,7 @@ function applyState(js) {
     if (e.sk) sh.stock = e.sk;
     if (e.q) sh.queue = e.q.map(q => ({ d: { name: q.n, hull: q.h }, left: q.l, cost: q.c, wait: q.w, paid: !!q.pd }));
     if (e.dep !== undefined) sh.deployed = !!e.dep;
+    if (e.yl) sh.yield = e.yl;
     if (e.cr >= 0 && sh.crashed < 0) { sh.crashed = e.cr; sh.row.remove(); }
     if (e.x && !sh.destroyed) { NET.applying = true; destroyShip(sh); NET.applying = false; }
     sh._e = e;
@@ -3193,6 +3277,7 @@ function applyCmd(c) {
       case 'join': { const T = shipsOf([c.l], 'p2')[0]; if (T && L.length) joinFormation(L, T); break; }
       case 'leave': for (const s of L) { if (s.leader) detach(s); else handOver(s, o => !L.includes(o)); } break;
       case 'pause': setPaused(!!c.v); break;
+      case 'rename': { const X = shipsOf([c.id], 'p2')[0]; if (X) setShipName(X, cleanName(c.name) || X.name); break; }
     }
   } catch (err) { console.warn('co-op order failed', c, err); }
   NET.me = me; NET.applying = false;
@@ -3410,7 +3495,7 @@ const pointLabel = makeLabel('Target', '', 'ghost point');
 const arriveLabel = makeLabel('', '', 'ghost arrive');
 const impLabel = makeLabel('Impact', '', 'ghost impact');
 const encLabels = [0, 1, 2].map(() => makeLabel('', '', 'ghost'));
-const LABEL_ORDER = [0, 6, 7, 3, 5, 2, 1, 8, 9, 4];
+const LABEL_ORDER = [0, 6, 7, 3, 5, 2, 1, 8, 9, 4, 14, 17, 15, 12, 13, 19, 18, 20, 21, 10, 11, 16];
 
 // ---- ships
 const fleetList = document.getElementById('fleet-list');
@@ -3751,7 +3836,7 @@ function moveTarget(o) { absPos(move.F, simT, o); o[0] += move.rel[0]; o[1] += m
 // orbit through that spot, instead of hovering in place against gravity.
 const PARK_RADII = 25;
 function parkingFor(X) {
-  for (const j of [4, 1, 2, 3, 5, 6, 7, 8, 9]) {
+  for (const j of [10, 11, 16, 12, 13, 14, 15, 17, 18, 19, 20, 21, 4, 1, 2, 3, 5, 6, 7, 8, 9]) {
     absPos(j, simT, W2);
     const r = Math.hypot(X[0] - W2[0], X[1] - W2[1], X[2] - W2[2]);
     if (r < PARK_RADII * RAD[j]) return { j, r: Math.max(r, wellFloor(j)), th: Math.atan2(X[1] - W2[1], X[0] - W2[0]) };
@@ -4014,6 +4099,28 @@ const fmtDv = kms => kms < 1 ? (kms * 1000).toFixed(0) + ' m/s' : kms < 100 ? km
 const fmtDate = t => new Date(J2000_MS + t * 1000).toISOString().slice(0, 10);
 const H = {}; for (const k of ['name', 'cls', 'date', 'ap-s', 'pos', 'hull', 'drive', 'wpn', 'enc']) H[k] = $('h-' + k);
 H.rate = $('o-rate');
+// callsigns: click the name in the readout to rename your ship (Enter keeps it, Esc cancels)
+const cleanName = raw => String(raw || '').replace(/[<>&"]/g, '').trim().slice(0, 20);
+function setShipName(sh, name) {
+  sh.name = name; sh.label.lastChild.textContent = name;
+  const nm = sh.row.children[1]; if (nm && nm.firstChild && nm.firstChild.nodeType === 3) nm.firstChild.nodeValue = name;
+  fleetDirty = navDirty = formDirty = true;
+}
+function renameShip(sh, raw) {
+  const name = cleanName(raw);
+  if (!name || name === sh.name) return;
+  toHost({ k: 'rename', id: sh.id, name });
+  setShipName(sh, name); showToast(`Callsign: ${name}`);
+}
+H.name.title = 'Click to rename this ship';
+H.name.addEventListener('click', () => {
+  const sh = lead; if (!sh || !alive(sh) || !ownShip(sh)) return;
+  const inp = document.createElement('input'); inp.className = 'rename'; inp.value = sh.name; inp.maxLength = 20; inp.spellcheck = false; inp.setAttribute('aria-label', 'Callsign');
+  H.name.hidden = true; H.name.after(inp); inp.focus(); inp.select();
+  const done = ok => { if (!inp.isConnected) return; if (ok) renameShip(sh, inp.value); inp.remove(); H.name.hidden = false; };
+  inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') done(true); else if (e.key === 'Escape') done(false); });
+  inp.addEventListener('blur', () => done(true));
+});
 function updateHUD() {
   H.date.textContent = new Date(J2000_MS + worldT * 1000).toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
   const nSel = selectedShips().length;
@@ -4693,6 +4800,7 @@ const NOZZLES = { 1: [[0, 0]], 2: [[-0.5, 0], [0.5, 0]], 3: [[-0.55, -0.32], [0.
 // ---- infrastructure models: a shipyard is an open truss with a hull taking shape on its slip and a habitat
 // block at the bow; a supply depot is a spine ringed with spherical tanks, a docking collar and radiator fins
 const G_TORUS = new THREE.TorusGeometry(1, 0.06, 6, 28).rotateY(Math.PI / 2);      // a ring round the x axis
+const G_WHEEL = new THREE.TorusGeometry(1, 0.13, 10, 56).rotateY(Math.PI / 2);
 function buildStationModel(spec, into = scene) {
   const { d, mods, side } = spec, H = HULLS[d.hull], us = side === 'us', L = H.len, B = H.beam;
   const root = new THREE.Group(), md = { root, built: mods, parts: [], tur: new Map(), plumes: [], lights: [], set: false, len: H.len };
@@ -4732,6 +4840,19 @@ function buildStationModel(spec, into = scene) {
     md.lights.push(put(G_BALL, glowMat('nav' + 0x3bff7a, 0x3bff7a), L / 2, -w - 0.2, 0, 0.18, 0.18, 0.18));
     md.lights.push(put(G_BALL, glowMat('navw', 0xffffff), L / 2 + B * 0.36, 0, B * 0.75, 0.2, 0.2, 0.2));
     void dish;
+  } else if (d.hull === 'colony') {
+    // a wheel: a habitat ring on spokes round a hub, a long docking spindle, and solar wings
+    const rr = B * 0.48;
+    rodX(metal, 0, 0, 0, L * 0.92, B * 0.06);
+    rodX(md.hullMat, 0, 0, 0, L * 0.2, B * 0.15);
+    put(G_WHEEL, md.hullMat, 0, 0, 0, rr, rr, rr);
+    for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3, sp = put(G_BOX, metal, 0, Math.cos(a) * rr / 2, Math.sin(a) * rr / 2, 0.35, rr, 0.35); sp.rotation.x = a; }
+    for (let k = 0; k < 28; k++) { const a = k / 28 * TAU, w = put(G_BOX, lit, 0, Math.cos(a) * rr * 1.13, Math.sin(a) * rr * 1.13, rr * 0.1, 0.3, 0.06); w.rotation.x = a; }
+    for (const x of [-L * 0.36, L * 0.36]) { put(G_BOX, md.rad, x, 0, 0, L * 0.14, B * 1.25, 0.05); put(G_BOX, metal, x, 0, 0, L * 0.15, 0.3, 0.3); }
+    put(G_TORUS, trim, L * 0.46, 0, 0, B * 0.12, B * 0.12, B * 0.12);
+    md.lights.push(put(G_BALL, glowMat('nav' + 0xff3b30, 0xff3b30), L * 0.46, B * 0.15, 0, 0.25, 0.25, 0.25));
+    md.lights.push(put(G_BALL, glowMat('nav' + 0x3bff7a, 0x3bff7a), L * 0.46, -B * 0.15, 0, 0.25, 0.25, 0.25));
+    md.lights.push(put(G_BALL, glowMat('navw', 0xffffff), 0, 0, rr * 1.2, 0.3, 0.3, 0.3));
   } else {
     const rr = B * 0.42;
     // the spine and its end caps
@@ -4757,7 +4878,120 @@ function buildStationModel(spec, into = scene) {
   into.add(root);
   return md;
 }
+// ---- the enemy's ships are grown, not built: a long ridged body tapering to a tail spine, a blunt jawed head,
+// spines along the back, tendrils hanging aft, glowing sacs and red veins under a dark hide. Their stations are
+// hives: a swollen mass bristling with spines.
+const alienTexCache = new Map();
+function alienTextures(seed) {
+  if (alienTexCache.has(seed)) return alienTexCache.get(seed);
+  const W = 512, Hh = 256, R = rng(seed), mk = () => { const c = document.createElement('canvas'); c.width = W; c.height = Hh; return c; };
+  const cv = mk(), g = cv.getContext('2d');
+  g.fillStyle = '#3b1611'; g.fillRect(0, 0, W, Hh);
+  // a mottled hide: blotches, then ridges running nose to tail
+  for (let i = 0; i < 260; i++) {
+    const x = R() * W, y = R() * Hh, r = 6 + R() * 34, gr = g.createRadialGradient(x, y, 0, x, y, r);
+    const c = R() < 0.5 ? '90,30,22' : R() < 0.5 ? '28,10,8' : '120,48,30';
+    gr.addColorStop(0, `rgba(${c},${0.25 + 0.3 * R()})`); gr.addColorStop(1, `rgba(${c},0)`);
+    g.fillStyle = gr; g.fillRect(x - r, y - r, 2 * r, 2 * r);
+  }
+  g.strokeStyle = 'rgba(14,5,4,.55)';
+  for (let y = 4; y < Hh; y += 7 + R() * 9) { g.lineWidth = 1 + R() * 2; g.beginPath(); g.moveTo(0, y); for (let x = 0; x <= W; x += 32) g.lineTo(x, y + Math.sin(x * 0.03 + y) * 3); g.stroke(); }
+  const em = mk(), e = em.getContext('2d');
+  e.fillStyle = '#000'; e.fillRect(0, 0, W, Hh);
+  // veins: branching glowing lines, and a few hot spots
+  const vein = (x, y, a, len, w, depth) => {
+    e.strokeStyle = `rgba(255,${40 + 50 * R()},20,${0.5 + 0.4 * R()})`; e.lineWidth = w;
+    e.beginPath(); e.moveTo(x, y);
+    for (let k = 0; k < len; k++) { a += (R() - 0.5) * 0.6; x += Math.cos(a) * 6; y += Math.sin(a) * 6; e.lineTo(x, y); if (depth < 3 && R() < 0.06) vein(x, y, a + (R() - 0.5) * 2, len * 0.5, w * 0.7, depth + 1); }
+    e.stroke();
+  };
+  for (let i = 0; i < 22; i++) vein(R() * W, R() * Hh, R() * TAU, 18 + R() * 30, 1.2 + R() * 1.6, 0);
+  for (let i = 0; i < 40; i++) { const x = R() * W, y = R() * Hh, r = 2 + R() * 5, gr = e.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, 'rgba(255,120,60,.9)'); gr.addColorStop(1, 'rgba(255,40,20,0)'); e.fillStyle = gr; e.fillRect(x - r, y - r, 2 * r, 2 * r); }
+  const t = [new THREE.CanvasTexture(cv), new THREE.CanvasTexture(em)];
+  for (const x of t) { x.anisotropy = 4; x.wrapS = x.wrapT = THREE.RepeatWrapping; }
+  alienTexCache.set(seed, t);
+  return t;
+}
+const G_SPIKE = new THREE.ConeGeometry(1, 1, 6).translate(0, 0.5, 0);      // base at 0, tip up (y)
+const YAX = new THREE.Vector3(0, 1, 0), AV = new THREE.Vector3();
+function buildAlienModel(spec, into = scene) {
+  const { d, mods } = spec, H = HULLS[d.hull], R = rng(spec.seed), hive = !!H.station;
+  // each class its own build: how tall, how many rows of spines, pairs of mandibles, tendrils, a crown on the head
+  const K = { stalker: { hh: 0.62, rows: 1, mand: 1, tend: 6, crown: 0, tail: 1 }, ravager: { hh: 0.58, rows: 2, mand: 2, tend: 8, crown: 0, tail: 2 },
+    leviathan: { hh: 0.6, rows: 3, mand: 2, tend: 12, crown: 5, tail: 4 }, drone: { hh: 0.5, rows: 1, mand: 1, tend: 2, crown: 0, tail: 1 } }[d.hull] || { hh: 0.6, rows: 1, mand: 1, tend: 6, crown: 0, tail: 1 };
+  const L = H.len, b = H.beam / 2, hh = b * (hive ? 0.9 : K.hh);
+  const root = new THREE.Group(), md = { root, built: mods, parts: [], tur: new Map(), plumes: [], lights: [], set: false, len: L };
+  const [map, emap] = alienTextures(spec.seed % 7);
+  md.hullMat = new THREE.MeshStandardMaterial({ map, emissiveMap: emap, emissive: 0xff3a22, emissiveIntensity: 1.1, roughness: 0.72, metalness: 0.18, flatShading: false });
+  md.rad = new THREE.MeshStandardMaterial({ color: 0x5a1c14, roughness: 0.6, metalness: 0.1, emissive: 0x000000, side: THREE.DoubleSide });
+  const hide = matFor('alien-hide', '#2a0f0b', 0.05), bone = matFor('alien-bone', '#6b3a26', 0.1), sac = glowMat('alien-sac', 0xff3a1e, 0.85), ember = glowMat('alien-ember', 0xffa050, 0.9);
+  const put = (geo, mat, x, y, z, sx = 1, sy = 1, sz = 1) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.scale.set(sx, sy, sz); root.add(m); return m; };
+  const j = (v, k = 0.12) => v * (1 + (R() - 0.5) * k);
+  // a spike from (x, y, z), length len and girth w, pointing along (dx, dy, dz) in the model's frame (x ahead, z up)
+  const spike = (mat, x, y, z, w, len, dx, dy, dz) => { const m = put(G_SPIKE, mat, x, y, z, w, len, w); AV.set(dx, dy, dz).normalize(); m.quaternion.setFromUnitVectors(YAX, AV); return m; };
+  // the body: sections from the tail spine to the head, a little uneven
+  const S = hive
+    ? [[-L / 2, b * 0.2, hh * 0.2], [-0.35 * L, j(b * 0.8), j(hh * 0.8)], [-0.1 * L, j(b), j(hh)], [0.15 * L, j(b * 0.95), j(hh * 0.95)], [0.35 * L, j(b * 0.7), j(hh * 0.7)], [L / 2, b * 0.2, hh * 0.25]]
+    : [[-L / 2, b * 0.04, hh * 0.05], [-0.4 * L, j(b * 0.2), j(hh * 0.18)], [-0.26 * L, j(b * 0.55), j(hh * 0.45)], [-0.08 * L, j(b * 0.92), j(hh * 0.85)], [0.1 * L, j(b), j(hh)], [0.27 * L, j(b * 0.86), j(hh * 0.8), -0.04 * hh], [0.4 * L, j(b * 0.6), j(hh * 0.55), -0.1 * hh], [0.5 * L, b * 0.22, hh * 0.22, -0.2 * hh]];
+  root.add(new THREE.Mesh(loft(S, 0.55), md.hullMat));
+  const prof = x => { let i = 0; while (i < S.length - 2 && x > S[i + 1][0]) i++; const a = S[i], c = S[i + 1], f = Math.max(0, Math.min(1, (x - a[0]) / (c[0] - a[0]))); return { w: a[1] + (c[1] - a[1]) * f, h: a[2] + (c[2] - a[2]) * f, z: (a[3] || 0) + ((c[3] || 0) - (a[3] || 0)) * f }; };
+  // plates of the hide over the back, overlapping like scales
+  for (let i = 0; i < (hive ? 10 : 7); i++) {
+    const x = -0.3 * L + i * (hive ? 0.07 : 0.1) * L, p = prof(x);
+    root.add(new THREE.Mesh(loft([[x - 0.05 * L, p.w * 0.7, p.h * 0.25, p.z + p.h * 0.85], [x + 0.03 * L, p.w * 0.85, p.h * 0.3, p.z + p.h * 0.95], [x + 0.08 * L, p.w * 0.4, p.h * 0.12, p.z + p.h * 0.8]], 0.6), hide));
+  }
+  // spines along the back, leaning aft
+  const nSp = hive ? 26 : 9 + Math.floor(R() * 5), rowY = [[0], [-0.32, 0.32], [-0.42, 0, 0.42]][K.rows - 1];
+  for (const ry of hive ? [0] : rowY) for (let i = 0; i < nSp; i++) {
+    const x = hive ? -0.4 * L + R() * 0.8 * L : -0.32 * L + (i / nSp) * 0.62 * L, p = prof(x), a = hive ? R() * TAU : 0;
+    const len = (hive ? 0.25 + 0.5 * R() : (0.35 + 0.45 * R()) * (ry ? 0.6 : 1)) * hh * 2.2;
+    if (hive) spike(bone, x, Math.cos(a) * p.w * 0.85, p.z + Math.sin(a) * p.h * 0.85, 0.12 * len, len, (R() - 0.5) * 0.6, Math.cos(a), Math.sin(a));
+    else spike(bone, x, ry * p.w + (R() - 0.5) * p.w * 0.1, p.z + p.h * (0.88 - Math.abs(ry) * 0.3), 0.12 * len, len, -0.55 - 0.35 * R(), ry * 0.8, 1);
+  }
+  if (!hive) {
+    // the head: a blunt jaw with mandibles reaching ahead and down
+    for (let k = 0; k < K.mand; k++) for (const s of [1, -1]) spike(bone, (0.4 - 0.06 * k) * L, s * b * (0.3 + 0.12 * k), -hh * (0.3 + 0.25 * k), b * (0.1 - 0.02 * k), (0.24 - 0.07 * k) * L, 1, s * (0.12 + 0.15 * k), -0.28 - 0.2 * k);
+    // a crown of horns on the head, and spines off the tail
+    for (let k = 0; k < K.crown; k++) { const a = (k / (K.crown - 1) - 0.5) * 2.2; spike(bone, 0.33 * L, Math.sin(a) * b * 0.5, hh * 0.55 + Math.cos(a) * hh * 0.2, b * 0.09, 0.14 * L * (1 - 0.3 * Math.abs(a)), 0.5, Math.sin(a) * 0.8, 0.9); }
+    for (let k = 0; k < K.tail; k++) { const a = k / Math.max(1, K.tail) * TAU; spike(bone, -0.46 * L, Math.cos(a) * b * 0.06, Math.sin(a) * hh * 0.06, b * 0.05, 0.18 * L, -1, K.tail > 1 ? Math.cos(a) * 0.35 : 0, K.tail > 1 ? Math.sin(a) * 0.35 : 0.1); }
+    put(G_BALL, sac, 0.47 * L, 0, -hh * 0.05, b * 0.08, b * 0.22, hh * 0.1);
+    // tendrils hanging aft from the belly, and swept fins on the flanks (radiators: they glow with heat)
+    for (let i = 0; i < K.tend; i++) {
+      const x = -0.18 * L + i * (0.44 / K.tend) * L, p = prof(x), s = i % 2 ? 1 : -1;
+      spike(hide, x, s * p.w * 0.45, p.z - p.h * 0.8, b * 0.07, (0.5 + 0.5 * R()) * hh * 2.4, -0.6 - 0.3 * R(), s * 0.25, -1);
+    }
+    for (const s of [1, -1]) {
+      // a swept fin (it sheds heat, and glows with it): a flattened blade off each flank
+      const f = spike(md.rad, -0.08 * L, s * b * 0.8, -hh * 0.05, b * 0.45, 0.38 * L, -0.8, s * 0.85, -0.2); f.scale.z *= 0.12;
+      for (let k = 0; k < 4; k++) put(G_BALL, sac, (-0.2 + 0.1 * k) * L, s * prof((-0.2 + 0.1 * k) * L).w * 0.98, -hh * 0.2, b * 0.09, b * 0.06, hh * 0.12);
+    }
+    // engines: glowing orifices on the swollen rump, under the tail
+    const eng = mods.map((m, i) => [m, i]).filter(([m]) => m.t === 'engine').slice(0, 6);
+    eng.forEach(([m, i], k) => {
+      const a = (k / Math.max(1, eng.length)) * TAU, rn = b * 0.16, x = -0.27 * L, y = Math.cos(a) * b * 0.36, z = Math.sin(a) * hh * 0.32 - hh * 0.1;
+      const disc = put(G_DISC, glowMat('alien-throat', 0xff4a1e), x, y, z, rn, rn, rn);
+      const fl = put(G_FLAME, glowMat('alien-flame', 0xff3a10, 0.32), x, y, z, 5 * rn, rn * 1.5, rn * 1.5);
+      const core = put(G_FLAME, glowMat('alien-core', 0xffc080, 0.75), x, y, z, 2.2 * rn, rn * 0.6, rn * 0.6);
+      const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: fxTex, color: 0xff5a28, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, opacity: 0.85 }));
+      spr.position.set(x - rn, y, z); spr.scale.setScalar(rn * 3.2); root.add(spr);
+      fl.visible = core.visible = spr.visible = false;
+      md.plumes.push({ mesh: fl, core, spr, disc, mi: i, rn, hot: disc.material, cold: glowMat('alien-throat0', 0x3a120a) });
+    });
+  } else {
+    // a hive: glowing birthing sacs round its waist, and a ring of tendrils
+    for (let k = 0; k < 10; k++) { const a = k / 10 * TAU, x = (R() - 0.5) * 0.4 * L, p = prof(x); put(G_BALL, sac, x, Math.cos(a) * p.w * 0.98, Math.sin(a) * p.h * 0.98, b * 0.12, b * 0.12, b * 0.12); }
+    for (let k = 0; k < 12; k++) { const a = k / 12 * TAU; spike(hide, -0.42 * L, Math.cos(a) * b * 0.3, Math.sin(a) * hh * 0.3, b * 0.06, 0.5 * L, -1, Math.cos(a) * 0.45, Math.sin(a) * 0.45); }
+    put(G_BOX, md.rad, 0, 0, 0, 0.02, 0.02, 0.02);
+  }
+  // three slow-pulsing glands for lights
+  md.lights.push(put(G_BALL, ember, 0.2 * L, b * 0.7, hh * 0.3, b * 0.05, b * 0.05, b * 0.05));
+  md.lights.push(put(G_BALL, ember, 0.2 * L, -b * 0.7, hh * 0.3, b * 0.05, b * 0.05, b * 0.05));
+  md.lights.push(put(G_BALL, sac, 0, 0, hh * 1.1, b * 0.08, b * 0.08, b * 0.08));
+  into.add(root);
+  return md;
+}
 function buildModel(spec, into = scene) {
+  if (HULLS[spec.d.hull].alien || (HULLS[spec.d.hull].station && spec.side === 'them' && spec.d.hull !== 'colony')) return buildAlienModel(spec, into);
   if (HULLS[spec.d.hull].station) return buildStationModel(spec, into);
   const { d, mods, side } = spec, H = HULLS[d.hull], R = rng(spec.seed), ci = HULL_KEYS.indexOf(d.hull), us = side === 'us';
   const root = new THREE.Group(), md = { root, built: mods, parts: [], tur: new Map(), plumes: [], lights: [], set: false, len: H.len };
