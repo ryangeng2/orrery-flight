@@ -182,6 +182,10 @@ body{background:var(--void);color:var(--ink);font-family:var(--f-ui);overflow:hi
 .endgame section{padding:22px 28px;text-align:center;max-width:360px}
 .endgame h2{margin:0 0 8px;font:600 22px var(--f-ui);letter-spacing:.2em;text-transform:uppercase;color:var(--thrust)}
 .endgame p{margin:0 0 16px;font:400 12px/1.5 var(--f-num);color:var(--dim)}
+.ng-b{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.ng-b button{display:flex;flex-direction:column;gap:6px;align-items:center;padding:12px 10px;line-height:1.2}
+.ng-b small{font:400 10px/1.4 var(--f-num);letter-spacing:0;text-transform:none;opacity:.85}
+.ng-b button[aria-pressed="true"]{outline:2px solid var(--path);outline-offset:2px}
 
 .fleet ol{max-height:40vh}
 .fleet li .am{grid-column:2/4;display:flex;gap:7px;margin-top:-2px;font:400 9.5px var(--f-num);color:var(--dim);white-space:nowrap;overflow:hidden}
@@ -433,7 +437,7 @@ input[type=range]{width:130px;accent-color:var(--thrust);margin:0}
       <div class="help-body">
       <details open><summary>Goal</summary><ul>
         <li>Destroy all enemy infrastructure to win; lose all of yours and you lose.</li>
-        <li>The enemy starts at Jupiter or Saturn, knows where your yard is, and expands toward you.</li>
+        <li>The enemy starts at Jupiter or Saturn, knows where your yard is, and expands toward you. <b>New game</b> lets you face a <b>cunning</b> one: it ambushes, feints, raids and builds against your designs.</li>
         <li>Defend the six colonies (Mercury, Venus, the Moon, Mars, Ceres, Ganymede): they produce resources, and if all of them fall the war is lost.</li>
         <li>Click a ship's name in the readout to change its callsign.</li></ul></details>
       <details open><summary>Select &amp; fleets</summary><ul>
@@ -453,6 +457,10 @@ input[type=range]{width:130px;accent-color:var(--thrust);margin:0}
         <li><b>Right-click</b> an enemy: target · <span class="k">Shift</span>: pursue · box several enemies, then right-click one: target the group</li>
         <li><span class="k">G</span> auto / manual fire (<span class="k">Z</span> <span class="k">X</span> <span class="k">C</span>) · <span class="k">E</span> evasive · <span class="k">V</span> vision rings · <span class="k">Y</span> shipyard</li>
         <li>Armour only shields hits on its own side (nose, flanks, tail). Fields shrink your sensors</li>
+        <li>A ship burning its drive is seen at full sensor range; coasting at 60%, running <b>silent</b> (<span class="k">Q</span>) at 30%. Firing gives a ship away for five minutes</li>
+        <li>Silent ships hold their guns until an enemy comes close, they are hit or a friend nearby fires: lay ambushes</li>
+        <li><b>ECM suites</b> (shipyard) make shots at a ship miss more and torpedoes chase ghosts; the shooter's own sensors cut through jamming</li>
+        <li><span class="k">R</span> withdraw: ships break off for repairs below half hull</li>
         <li>The aliens' lances reach 40,000 km, past your railguns: they hold just outside railgun range. Close in, or outlast them with torpedoes</li></ul></details>
       <details><summary>Camera &amp; keys</summary><ul>
         <li>Right-drag rotate · scroll zoom · <span class="k">W</span><span class="k">A</span><span class="k">S</span><span class="k">D</span> pan · <span class="k">F</span> follow · double-click focus · <span class="k">Space</span> sensors</li>
@@ -535,6 +543,8 @@ input[type=range]{width:130px;accent-color:var(--thrust);margin:0}
       <button id="b-yard" type="button" title="Design ships (Y)">Shipyard</button>
       <button id="b-wpn" type="button" aria-pressed="false" title="Ships fire on their own, or on your command (G)">Weapons: auto</button>
       <button id="b-eva" type="button" aria-pressed="false" title="Selected ships jink in a fight to slip railgun slugs (E)">Evasive: off</button>
+      <button id="b-sil" type="button" aria-pressed="false" title="Selected ships run silent: drives cold, guns held until an enemy comes close, they are hit or a friend nearby opens fire (Q)">Silent: off</button>
+      <button id="b-wd" type="button" aria-pressed="false" title="Selected ships break off for repairs when their hull falls below half (R)">Withdraw: off</button>
       <span class="sep"></span>
       <button id="b-sensors" type="button" aria-pressed="false">Sensors</button>
       <button id="b-mp" type="button" title="Play two-player co-op">Co-op</button>
@@ -547,6 +557,9 @@ input[type=range]{width:130px;accent-color:var(--thrust);margin:0}
 </div>
 
 <div class="endgame" id="endgame" hidden><section class="card" role="dialog" aria-label="Game over"><h2></h2><p></p><button id="eg-new" class="go" type="button">New game</button></section></div>
+<div class="endgame" id="newgame" hidden><section class="card" role="dialog" aria-label="New game"><h2>New game</h2><p>Choose your opponent.</p>
+  <div class="ng-b"><button type="button" data-foe="standard">Standard<small>builds, expands toward you and attacks in waves</small></button><button type="button" data-foe="cunning">Cunning<small>lays ambushes, feints, raids lone ships, designs its ships against yours and strikes where you are weak</small></button></div>
+  <button type="button" data-foe="">Cancel</button></section></div>
 
 <div class="yard" id="yard" hidden>
   <section class="card yard-card" role="dialog" aria-label="Shipyard">
@@ -1800,6 +1813,7 @@ const MOD = {
   torpMag:  { name: 'Torpedo magazine', abbr: 'TM', layer: 'in', mass: 15, hp: 5, torps: 6, col: '#ff7b6b', note: '6 torpedoes' },
   railMag:  { name: 'Railgun magazine', abbr: 'RM', layer: 'in', mass: 8, hp: 4, slugs: 40, col: '#b8c4d8', note: '40 slugs' },
   pdcMag:   { name: 'PDC magazine', abbr: 'PM', layer: 'in', mass: 4, hp: 3, rounds: 2000, col: '#8fd18f', note: '2,000 rounds' },
+  ecm:      { name: 'ECM suite', abbr: 'EC', layer: 'in', mass: 10, hp: 4, ecm: 1, col: '#ffb070', note: 'jams fire control: shots at this ship miss more, torpedoes chase ghosts' },
   torpedo:  { name: 'Torpedo launcher', abbr: 'TT', layer: 'out', mass: 8, hp: 4, wpn: 1, col: '#ff7b6b', note: 'range 150,000 km' },
   railgun:  { name: 'Railgun', abbr: 'RG', layer: 'out', mass: 15, hp: 6, wpn: 1, col: '#b8c4d8', note: 'range 35,000 km · a shot every 45 s' },
   lance:    { name: 'Lance', abbr: 'LN', layer: 'out', mass: 18, hp: 6, draw: 3, heat: 20, wpn: 1, col: '#ff4040', note: 'alien beam · range 40,000 km' },
@@ -1881,7 +1895,7 @@ const defaultDesigns = () => [
 // a design's numbers (or a ship's, counting only the modules still working)
 function statsOf(mods, working = () => true, hullMass = 30, drive = 1) {
   const s = { mass: hullMass, thrust: 0, power: 0, engDraw: 0, laserDraw: 0, cool: 0, fuel: 0, vision: 0, torps: 0, slugs: 0, rounds: 0, hp: 0, laserHeat: 0, harvest: 0, cargo: 0, dock: 0, store: 0,
-    wpn: { torpedo: 0, railgun: 0, laser: 0, pdc: 0, lance: 0 }, hab: 0 };
+    wpn: { torpedo: 0, railgun: 0, laser: 0, pdc: 0, lance: 0 }, hab: 0, ecm: 0, sensPts: 0 };
   let best = 0, nSens = 0;
   for (const m of mods) {
     const M = MOD[m.t];
@@ -1894,7 +1908,8 @@ function statsOf(mods, working = () => true, hullMass = 30, drive = 1) {
     if (M.hab) s.hab++;
     if (M.cool) s.cool += M.cool;
     if (M.fuel) s.fuel += M.fuel;
-    if (M.vision) { nSens++; best = Math.max(best, M.vision); }
+    if (M.vision) { nSens++; best = Math.max(best, M.vision); s.sensPts += m.t === 'sensorL' ? 2 : 1; }
+    if (M.ecm) s.ecm++;
     if (M.torps) s.torps += M.torps;
     if (M.slugs) s.slugs += M.slugs;
     if (M.rounds) s.rounds += M.rounds;
@@ -1966,6 +1981,11 @@ const wmode = { p1: 'auto', p2: 'auto' };        // each player's weapons mode (
 const VIS = { us: [], them: [] };     // x, y, z, r² for every ship that sees
 const CPa = [0, 0, 0], CPb = [0, 0, 0], CPS = new Float64Array(6);
 const foeOf = side => side === 'us' ? 'them' : 'us';
+// How far off a ship can be seen, as a share of the seer's sensor reach: with its drive burning (or a weapon fired
+// in the last five minutes) at full reach; coasting with the drive cold, SIG_COLD of it; running silent, SIG_SILENT.
+// Infrastructure is always plain to see. (A field hides nothing more: it blinds the sensors inside it.)
+const SIG_COLD = 0.6, SIG_SILENT = 0.3, FIRED_SHOWS = 300;
+const sigOf = (sh, t) => sh.station || sh.thrusting || sh.jinking || t - (sh.firedT ?? -Infinity) < FIRED_SHOWS ? 1 : sh.silent ? SIG_SILENT : SIG_COLD;
 // every ship's absolute position and velocity at time t (kept on the ship for this frame)
 function combatPositions(t) {
   for (const sh of ships) {
@@ -1979,21 +1999,33 @@ function combatPositions(t) {
   }
   // inside a gas cloud, asteroid field or debris, sensors reach an eighth as far
   updateFields(t);
-  for (const sh of ships) if (alive(sh)) sh.inField = fieldAt(sh.cp[0], sh.cp[1], sh.cp[2]);
+  for (const sh of ships) if (alive(sh)) { sh.inField = fieldAt(sh.cp[0], sh.cp[1], sh.cp[2]); sh.sig = sigOf(sh, t); }
   VIS.us.length = VIS.them.length = 0;
   for (const sh of ships) { const v = alive(sh) ? visionOf(sh) : 0; if (v > 0) VIS[sh.side].push(sh.cp[0], sh.cp[1], sh.cp[2], v * v); }
   for (const sh of ships) {
     if (!alive(sh)) continue;
-    const v = sees(foeOf(sh.side), sh.cp[0], sh.cp[1], sh.cp[2]);
-    if (sh.side === 'them') { sh.vis = v; if (v) { sh.seenP = sh.cp.slice(); } } else sh.visThem = v;
+    const v = sees(foeOf(sh.side), sh.cp[0], sh.cp[1], sh.cp[2], sh.sig);
+    if (sh.side === 'them') { sh.vis = v; if (v) { sh.seenP = sh.cp.slice(); } } else { sh.visThem = v; if (v) sh.seenThemT = t; }
   }
 }
-function sees(side, x, y, z) {
-  const v = VIS[side];
-  for (let i = 0; i < v.length; i += 4) { const dx = x - v[i], dy = y - v[i + 1], dz = z - v[i + 2]; if (dx * dx + dy * dy + dz * dz <= v[i + 3]) return true; }
+function sees(side, x, y, z, sig = 1) {
+  const v = VIS[side], s2 = sig * sig;
+  for (let i = 0; i < v.length; i += 4) { const dx = x - v[i], dy = y - v[i + 1], dz = z - v[i + 2]; if (dx * dx + dy * dy + dz * dz <= v[i + 3] * s2) return true; }
   return false;
 }
 const visibleTo = (side, sh) => sh.side === side || (side === 'us' ? sh.vis : sh.visThem);
+// fire control: how surely a shooter holds a target that jams it (1, a clean lock, against a ship with no ECM);
+// each sensor of the shooter's own cuts through the jamming
+const lockOn = (sh, tgt) => { const e = tgt.stats.ecm; if (!e) return 1; const s = 1 + sh.stats.sensPts; return Math.max(0.35, s / (s + 0.5 * e)); };
+// a unit vector v turned off by about ang radians, in a random direction
+function jitterDir(v, ang) {
+  const u = [Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5], d = u[0] * v[0] + u[1] * v[1] + u[2] * v[2];
+  for (let k = 0; k < 3; k++) u[k] -= d * v[k];
+  const l = Math.hypot(u[0], u[1], u[2]) || 1;
+  for (let k = 0; k < 3; k++) v[k] += u[k] / l * ang;
+  const m = Math.hypot(v[0], v[1], v[2]) || 1;
+  for (let k = 0; k < 3; k++) v[k] /= m;
+}
 const posAt = (sh, tau, t1, o) => { const b = tau - t1; o[0] = sh.cp[0] + sh.cv[0] * b; o[1] = sh.cp[1] + sh.cv[1] * b; o[2] = sh.cp[2] + sh.cv[2] * b; return o; };
 const PA1 = [0, 0, 0], PB1 = [0, 0, 0];
 function distAt(a, b, tau, t1) { posAt(a, tau, t1, PA1); posAt(b, tau, t1, PB1); return Math.hypot(PA1[0] - PB1[0], PA1[1] - PB1[1], PA1[2] - PB1[2]); }
@@ -2048,27 +2080,34 @@ function fireWeapon(sh, m, tgt, tau, t1) {
   const W = WPN[m.t];
   if (W.ammo && sh.ammo[W.ammo] <= 0) return false;
   posAt(sh, tau, t1, FW1); posAt(tgt, tau, t1, FW2);
-  const d = Math.hypot(FW2[0] - FW1[0], FW2[1] - FW1[1], FW2[2] - FW1[2]);
+  const d = Math.hypot(FW2[0] - FW1[0], FW2[1] - FW1[1], FW2[2] - FW1[2]), lock = lockOn(sh, tgt);
+  if (sh.silent) unsilence(sh, 'opens fire');
   if (m.t === 'torpedo') {
-    shots.push({ kind: 'torp', born: tau, side: sh.side, p: FW1.slice(), v: sh.cv.slice(), tgt, fuel: TORP.dv, end: tau + TORP.life, hp: 1, ad: [0, 0, 0], burn: true });
+    // a jammed torpedo homes on a ghost a few hundred km off its target
+    const decoy = Math.random() < lock ? null : [0, 0, 0];
+    if (decoy) { jitterDir(decoy, 1); for (let k = 0; k < 3; k++) decoy[k] *= 150 + 200 * Math.random(); }
+    shots.push({ kind: 'torp', born: tau, side: sh.side, by: sh, p: FW1.slice(), v: sh.cv.slice(), tgt, fuel: TORP.dv, end: tau + TORP.life, hp: 1, ad: [0, 0, 0], burn: true, decoy });
     addFx({ sh, mi: sh.mods.indexOf(m), col: 0xffa060, px: 16, dur: 260 });
   } else if (m.t === 'railgun') {
     aimRail(sh, tgt, W.speed, FD);
-    shots.push({ kind: 'slug', born: tau, side: sh.side, p: FW1.slice(), v: [sh.cv[0] + FD[0] * W.speed, sh.cv[1] + FD[1] * W.speed, sh.cv[2] + FD[2] * W.speed], tgt, end: tau + 1.5 * W.range / W.speed });
+    if (Math.random() > lock) jitterDir(FD, 4 * W.hitR / Math.max(d, 1));          // jammed: thrown off by a few hit radii
+    shots.push({ kind: 'slug', born: tau, side: sh.side, by: sh, p: FW1.slice(), v: [sh.cv[0] + FD[0] * W.speed, sh.cv[1] + FD[1] * W.speed, sh.cv[2] + FD[2] * W.speed], tgt, end: tau + 1.5 * W.range / W.speed });
     addFx({ sh, mi: sh.mods.indexOf(m), col: 0xe8f0ff, px: 24, dur: 170 });
   } else if (m.t === 'laser' || m.t === 'lance') {
     if (sh.stats.power <= 0 || sh.heat + MOD[m.t].heat > HEAT_CAP) return false;
     sh.heat += MOD[m.t].heat;
-    const hit = Math.random() < W.acc, off = beamFx(sh, m, tgt, null, 'laser', hit);
+    const hit = Math.random() < W.acc * lock, off = beamFx(sh, m, tgt, null, 'laser', hit);
     addFx({ sh, mi: sh.mods.indexOf(m), col: sh.side === 'us' ? 0xffc070 : 0xff6a50, px: 12, dur: 220 });
-    if (hit) { addFx({ sh: tgt, off, col: 0xffc27a, px: 18, dur: 280 }); damage(tgt, W.dmg * (1 - 0.5 * d / W.range), [FW1[0] - FW2[0], FW1[1] - FW2[1], FW1[2] - FW2[2]]); }
+    if (hit) { addFx({ sh: tgt, off, col: 0xffc27a, px: 18, dur: 280 }); damage(tgt, W.dmg * (1 - 0.5 * d / W.range), [FW1[0] - FW2[0], FW1[1] - FW2[1], FW1[2] - FW2[2]], m.t, sh); }
   } else if (m.t === 'pdc') {
-    const hit = Math.random() < W.accShip * (1 - d / W.range) ** 2;
+    const hit = Math.random() < W.accShip * lock * (1 - d / W.range) ** 2;
     beamFx(sh, m, tgt, null, 'pdc', hit);
-    if (hit) damage(tgt, W.dmg, [FW1[0] - FW2[0], FW1[1] - FW2[1], FW1[2] - FW2[2]]);
+    if (hit) damage(tgt, W.dmg, [FW1[0] - FW2[0], FW1[1] - FW2[1], FW1[2] - FW2[2]], 'pdc', sh);
   }
   if (W.ammo) sh.ammo[W.ammo]--;
   m.cd = W.reload + (W.charge || 0);
+  if (!(tau - sh.firedT < 60)) springNear(sh, `${sh.name} opened fire`);        // (once a minute is enough: a fight is a stream of shots)
+  sh.firedT = tau;
   return true;
 }
 // which way a ship points: along the push while its drive burns (a jinking ship too), otherwise in a fight
@@ -2093,12 +2132,15 @@ function zoneOf(sh, from) {
 }
 // a hit from direction `from`: the armour plates of the zone it strikes take it while any are left; then the
 // outer modules (weapons, radiators), then the inside. Plates of other zones do not shield it.
-function damage(sh, dmg, from) {
+function damage(sh, dmg, from, kind, by) {
   if (!alive(sh)) return;
   if (isGuest()) { sh.hitT = performance.now(); return; }          // the host keeps the score
   sh.hitT = performance.now();
   const zone = zoneOf(sh, from);
   sh.hitZone = zone;
+  if (sh.silent) unsilence(sh, 'is under fire');
+  if (!(worldT - sh.springT < 60)) { sh.springT = worldT; springNear(sh, `${sh.name} came under fire`); }
+  if (sh.side === 'them' && kind) aiNoteHit(kind, dmg, zone, by);
   let pool = sh.mods.filter(m => m.hp > 0 && m.t === 'armor' && m.grp === zone);
   if (!pool.length) pool = sh.mods.filter(m => m.hp > 0 && MOD[m.t].layer === 'out' && m.t !== 'armor');
   if (!pool.length) pool = sh.mods.filter(m => m.hp > 0 && MOD[m.t].layer === 'in');
@@ -2150,7 +2192,7 @@ function steerTorp(s, tx, ty, tz, h) {
   }
   s.burn = dv > 1e-4 && s.fuel > 0;
 }
-const SQf0 = [0, 0, 0], SQf1 = [0, 0, 0];
+const SQf0 = [0, 0, 0], SQf1 = [0, 0, 0], NO_DECOY = [0, 0, 0];
 function moveShots(tau, dt, t1) {
   for (const s of shots) {
     if (s.dead) continue;
@@ -2181,14 +2223,14 @@ function moveShots(tau, dt, t1) {
     for (let j = 1; j <= k && !s.dead; j++) {
       const f0 = (j - 1) / k, f1 = j / k;
       for (let c = 0; c < 3; c++) { SQf0[c] = SQ0[c] + (SQ1[c] - SQ0[c]) * f0; SQf1[c] = SQ0[c] + (SQ1[c] - SQ0[c]) * f1; }
-      if (torp) steerTorp(s, SQf0[0], SQf0[1], SQf0[2], h);       // where the target is now (the same moment as the torpedo)
+      if (torp) { const g = s.decoy || NO_DECOY; steerTorp(s, SQf0[0] + g[0], SQf0[1] + g[1], SQf0[2] + g[2], h); }       // where the target (or the ghost it was jammed onto) is now
       SP0[0] = s.p[0]; SP0[1] = s.p[1]; SP0[2] = s.p[2];
       s.p[0] += s.v[0] * h; s.p[1] += s.v[1] * h; s.p[2] += s.v[2] * h;
       if (sweep(SP0, s.p, SQf0, SQf1) < reach) {
         const off = hullOff();
         if (torp) { addFx({ sh: s.tgt, off, col: 0xff8a3a, px: 50, dur: 850, grow: 1.6 }); addFx({ sh: s.tgt, off, col: 0xffffff, px: 26, dur: 280 }); }
         else addFx({ sh: s.tgt, off, col: 0xdfe8ff, px: 22, dur: 360 });
-        damage(s.tgt, torp ? TORP.dmg : WPN.railgun.dmg, [s.tgt.cv[0] - s.v[0], s.tgt.cv[1] - s.v[1], s.tgt.cv[2] - s.v[2]]); s.dead = true;
+        damage(s.tgt, torp ? TORP.dmg : WPN.railgun.dmg, [s.tgt.cv[0] - s.v[0], s.tgt.cv[1] - s.v[1], s.tgt.cv[2] - s.v[2]], torp ? 'torpedo' : 'railgun', s.by); s.dead = true;
       }
     }
   }
@@ -2201,7 +2243,7 @@ function pointDefence(sh, m, tau, t1, mayShoot) {
   let best = null, bd = WPN.pdc.range;
   for (const s of shots) if (!s.dead && s.kind === 'torp' && s.side !== sh.side) { const d = Math.hypot(s.p[0] - FW1[0], s.p[1] - FW1[1], s.p[2] - FW1[2]); if (d < bd) { bd = d; best = s; } }
   if (best) {
-    sh.ammo.rounds--; m.cd = WPN.pdc.reload; beamFx(sh, m, null, null, 'pdc', false, best);
+    sh.ammo.rounds--; m.cd = WPN.pdc.reload; sh.firedT = tau; beamFx(sh, m, null, null, 'pdc', false, best);
     if (Math.random() < WPN.pdc.accTorp * 4 * (1 - bd / WPN.pdc.range) ** 3) { best.dead = true; addFx({ p: best.p, col: 0xffd27a, px: 14, dur: 260 }); }
     return;
   }
@@ -2214,7 +2256,7 @@ function laserDefence(sh, m, tau, t1, urgent) {
   let best = null, bd = urgent ? WPN.laser.lastDitch : WPN.pdc.range;
   for (const s of shots) if (!s.dead && s.kind === 'torp' && s.side !== sh.side && (!urgent || s.tgt === sh)) { const d = Math.hypot(s.p[0] - FW1[0], s.p[1] - FW1[1], s.p[2] - FW1[2]); if (d < bd) { bd = d; best = s; } }
   if (!best || sh.stats.power <= 0 || sh.heat + MOD.laser.heat > HEAT_CAP) return false;
-  sh.heat += MOD.laser.heat; m.cd = WPN.laser.reload;
+  sh.heat += MOD.laser.heat; m.cd = WPN.laser.reload; sh.firedT = tau;
   beamFx(sh, m, null, best.p, 'laser', false);
   addFx({ sh, mi: sh.mods.indexOf(m), col: sh.side === 'us' ? 0xffc070 : 0xff6a50, px: 12, dur: 220 });
   if (Math.random() < WPN.laser.accTorp * (1 - bd / WPN.pdc.range) ** 3) { best.dead = true; addFx({ p: best.p, col: 0xffd27a, px: 14, dur: 260 }); }
@@ -2245,7 +2287,7 @@ function updateJinks(span) {
   for (const sh of ships) {
     if (!alive(sh)) continue;
     if (!sh.jx) { sh.jx = [0, 0, 0]; sh.jv = [0, 0, 0]; sh.jd = [1, 0, 0]; sh.jseg = 0; }
-    const on = !!sh.evasive && combatHot && !sh.thrusting && sh.fuel > 0 && sh.stats.accel > 0 && !!sh.cp;
+    const on = !!sh.evasive && !sh.silent && combatHot && !sh.thrusting && sh.fuel > 0 && sh.stats.accel > 0 && !!sh.cp;
     if (on !== sh.jinking) { sh.jinking = on; sh.jseg = 0; fleetDirty = true; }
     if (!on) {
       // eased back onto its path
@@ -2270,6 +2312,59 @@ function setEvasive(on, list = selectedShips()) {
   toHost({ k: 'evasive', ids: ids(list), on });
   showToast(on ? `Evasive: ${list.length === 1 ? list[0].name : list.length + ' ships'} jink in a fight to slip railgun slugs (costs propellant, shows the flank)` : `${list.length === 1 ? list[0].name : list.length + ' ships'} hold steady, nose to the target`);
   fleetDirty = true;
+}
+// Silent running: drive cold (seen at SIG_SILENT of a sensor's reach while it coasts) and guns held, PDCs and lasers
+// aside, until an enemy it can see comes within half its reach, it is hit, or a friend nearby opens fire. Then it
+// fights as any other ship (the ambush is sprung).
+function setSilent(on, list = selectedShips().filter(s => !s.station)) {
+  if (!list.length) { showToast('Select a ship first'); return; }
+  if (on === undefined) on = !list.every(s => s.silent);
+  for (const s of list) s.silent = on;
+  toHost({ k: 'silent', ids: ids(list), on });
+  const who = list.length === 1 ? list[0].name : list.length + ' ships';
+  showToast(on ? `Silent running: ${who} keep their drives cold (seen at a third of the range while coasting) and hold fire until an enemy comes close, they are hit or a friend nearby opens fire` : `${who}: silent running off`, 7000);
+  fleetDirty = true;
+}
+function unsilence(sh, why) {
+  if (!sh.silent) return;
+  sh.silent = false; fleetDirty = true;
+  if (sh.side === 'us') showToast(`${sh.name} ${why}: silent running off`);
+}
+const SPRING_R = 1e5;
+// a ship opening fire (or coming under it) springs the silent friends round it
+function springNear(sh, why) {
+  for (const o of ships) if (o.silent && o.side === sh.side && alive(o) && o.cp && sh.cp && dist3(o.cp, sh.cp) < SPRING_R) unsilence(o, why);
+}
+// a silent ship's guns open when an enemy ship it can see comes within half its reach (stations do not move: an
+// ambush lies in wait for ships)
+function ambushReady(sh, tau, t1) {
+  const R = 0.5 * reachOf(sh);
+  for (const o of ships) if (o.side !== sh.side && alive(o) && !o.station && visibleTo(sh.side, o) && distAt(sh, o, tau, t1) < R) return true;
+  return false;
+}
+// Withdraw: a ship set to it breaks off when its hull falls below the mark and goes to the nearest friendly station
+// to be repaired (the formation it leaves flies on under the next ship)
+function setWithdraw(on, list = selectedShips().filter(s => !s.station)) {
+  if (!list.length) { showToast('Select a ship first'); return; }
+  if (on === undefined) on = !list.every(s => s.withdraw);
+  for (const s of list) s.withdraw = on ? WITHDRAW_AT : 0;
+  toHost({ k: 'withdraw', ids: ids(list), on });
+  const who = list.length === 1 ? list[0].name : list.length + ' ships';
+  showToast(on ? `${who} will break off for repairs below ${Math.round(WITHDRAW_AT * 100)}% hull` : `${who} fight on whatever their damage`);
+  fleetDirty = true;
+}
+const WITHDRAW_AT = 0.5;
+function withdrawFrame() {
+  for (const s of ships) {
+    if (!alive(s) || s.station) continue;
+    if (s.withdrawing) { if (hullFrac(s) > 0.95) s.withdrawing = false; continue; }
+    if (!s.withdraw || hullFrac(s) >= s.withdraw || s.stats.accel <= 0 || s.fuel <= 0) continue;
+    const H = nearestOwn(s); if (!H) continue;
+    s.withdrawing = true; s.target = null; s.targetGroup = null; s.silent = false;
+    if (s.side === 'them') s.mission = 'return';
+    commandFleet({ type: 'body', j: H.prim, rp: Math.hypot(H.S[0], H.S[1], H.S[2]) }, 'orbit', null, [s], true);
+    if (s.side === 'us') showToast(`${s.name} is badly hurt (hull ${Math.round(hullFrac(s) * 100)}%): withdrawing to ${H.name}`, 6000);
+  }
 }
 const WEAPON_ORDER = ['torpedo', 'railgun', 'laser', 'lance'];
 const ALIEN_HOLD = 37000;          // km: where alien warships stand off, out of a railgun's reach and inside their lances'
@@ -2306,7 +2401,8 @@ function combatFrame(t0, t1) {
     for (const sh of ships) {
       if (!alive(sh)) continue;
       sh.heat = Math.max(0, sh.heat - sh.stats.cool * dt);
-      const free = sh.side === 'them' || (wmode[sh.owner] || weaponsMode) === 'auto';
+      if (sh.silent && ambushReady(sh, tau, t1)) unsilence(sh, 'springs its ambush');
+      const free = !sh.silent && (sh.side === 'them' || (wmode[sh.owner] || weaponsMode) === 'auto');
       let tgt = null, d = Infinity;
       for (const m of sh.mods) {
         if (m.hp <= 0 || !MOD[m.t].wpn) continue;
@@ -2461,7 +2557,7 @@ const EP = [0, 0, 0];
 function posNow(sh) { if (sh.cp) return sh.cp; shipAbs(sh, EP); return EP; }
 // what a design costs: base metals for structure, noble metals for weapons, sensors and reactors (ammunition and
 // propellant are drawn from the depot when the ship fits out); and its build time at one slipway
-const NOBLE_SHARE = { lance: 0.9, hab: 0.3, torpedo: 0.8, railgun: 0.7, laser: 0.9, pdc: 0.6, sensorS: 0.8, sensorL: 0.8, reactor: 0.5, harvester: 0.3, dock: 0.2, torpMag: 0.2, railMag: 0.2, pdcMag: 0.2 };
+const NOBLE_SHARE = { lance: 0.9, hab: 0.3, torpedo: 0.8, railgun: 0.7, laser: 0.9, pdc: 0.6, sensorS: 0.8, sensorL: 0.8, ecm: 0.7, reactor: 0.5, harvester: 0.3, dock: 0.2, torpMag: 0.2, railMag: 0.2, pdcMag: 0.2 };
 function designCost(d) {
   const c = { base: HULLS[d.hull].mass, noble: 0, mass: HULLS[d.hull].mass };
   for (const m of modsOf(d)) { const M = MOD[m.t], f = NOBLE_SHARE[m.t] || 0; c.base += M.mass * (1 - f); c.noble += M.mass * f; c.mass += M.mass; }
@@ -2539,7 +2635,7 @@ function completeJob(Y, job) {
   }
   placeBeside(sh, Y, 400 + 300 * Math.random());
   if (Y.side === 'us') sh.owner = Y.owner;           // a yard builds for whoever owns it
-  if (Y.side === 'them') { sh.evasive = sh.stats.accel >= 3; sh.vis = false; }
+  if (Y.side === 'them') { alienFit(sh, d); sh.vis = false; }
   if (Y.side === 'us') showToast(`${Y.name} finished ${sh.name} (${d.name})${infra ? ': take it in tow to place it' : ': fitting out'}`, 6000);
   fleetDirty = econDirty = true;
 }
@@ -2819,7 +2915,9 @@ const tugFirst = list => { const i = list.findIndex(s => !s.station); if (i > 0)
 // a few, then warships (bigger as time goes on) and every so often new infrastructure, which a warship tows to a
 // site nearer you; it sends its warships against your infrastructure in waves, the first knowing where your
 // starting yard and depot are, the rest whatever its sensors have seen since; it defends its own.
-const AI = { home: 6, known: new Map(), wave: 0, strike: null, t: -Infinity };
+const AI = { home: 6, known: new Map(), wave: 0, strike: null, t: -Infinity, mode: 'standard', intel: null, traps: [], raid: null, feint: null };
+// the opponent the next game is played against: 'standard' or 'cunning' (kept between visits)
+let foeMode = (() => { try { return localStorage.getItem('orrery-foe') === 'cunning' ? 'cunning' : 'standard'; } catch (_) { return 'standard'; } })();
 const AI_COLLECTOR = { name: 'Drone', hull: 'drone', eng: 3, reac: 1, rad: 0, tank: 4, armor: [1, 1, 0], util: ['harvester', 'cargo', 'cargo'], hard: [] };
 // the aliens' warships: lances first, a torpedo or two, PDC spines; three times a frigate's tonnage and more
 const ALIEN_DESIGNS = {
@@ -2830,7 +2928,13 @@ const ALIEN_DESIGNS = {
 function aiWarship() {
   const days = (worldT - game.t0) / DAY, R = Math.random();
   const hull = days > 40 && R < 0.3 ? 'leviathan' : days > 12 && R < 0.55 ? 'ravager' : 'stalker';
-  return JSON.parse(JSON.stringify(ALIEN_DESIGNS[hull]));
+  return AI.mode === 'cunning' ? counterDesign(hull) : JSON.parse(JSON.stringify(ALIEN_DESIGNS[hull]));
+}
+// an alien warship as it leaves the yard: nimble ones jink (the cunning foe's only once it has met railguns), and
+// the cunning foe's break off for repairs when badly hurt
+function alienFit(sh, d) {
+  sh.evasive = d && d.evasive !== undefined ? d.evasive : sh.stats.accel >= 3;
+  if (AI.mode === 'cunning' && !sh.stats.harvest) sh.withdraw = 0.35;
 }
 function aiSite(maxD = Infinity, from = null) {
   // sites for new infrastructure, nearer you as it spreads: rock fields of the belts and Trojans, Mars, the Moon
@@ -2854,6 +2958,7 @@ function aiFree(s) { return !s.station && !(s.stats.harvest > 0) && !s.mission &
 function aiThink() {
   const mine = ships.filter(s => s.side === 'them' && alive(s));
   if (!mine.some(s => s.station)) return;
+  aiObserve();
   // what it has seen of your infrastructure
   for (const s of ships) if (s.side === 'us' && s.station && alive(s) && s.visThem && s.cp) AI.known.set(s, { p: s.cp.slice(), j: s.prim, r: Math.hypot(s.S[0], s.S[1], s.S[2]), t: worldT });
   for (const s of [...AI.known.keys()]) if (!alive(s)) AI.known.delete(s);
@@ -2920,6 +3025,7 @@ function aiThink() {
   // the attack: once enough warships are free, a wave goes for your nearest known infrastructure (or Earth)
   const waveN = AI.coop ? Math.min(9, 4 + AI.wave) : Math.min(6, 3 + AI.wave), fueled = s => s.fuel > 0.85 * s.stats.fuel && s.ammo.slugs >= 0.8 * s.stats.slugs && s.ammo.torps >= 0.8 * s.stats.torps;
   const ready = war.filter(s => aiFree(s) && fueled(s));
+  if (AI.mode === 'cunning') { cunningThink(war, seenUs, waveN, fueled); return; }
   if (AI.strike && AI.strike.aim && AI.strike.aim !== 'home' && ready.length >= waveN + 2 && AI.strike.list.filter(alive).length < 2 * waveN) {
     // more than enough at home: they go to reinforce the wave under way
     const more = ready.slice(0, waveN), S = AI.strike, [j, r] = S.aim.split(':').map(Number);
@@ -2994,6 +3100,260 @@ function aimStrike() {
 // a fleet chased by the very one it would go after stands and fights instead (tracking back goes round in circles)
 function loopsBack(L, T) { for (let s = fleetLeader(T), k = 0; s.track && k < 12; k++) { s = fleetLeader(s.track.tgt); if (s === fleetLeader(L)) return true; } return false; }
 
+// ---- The cunning foe. On top of what every foe does (collectors, building, expansion, defence) it keeps intel on
+// your ships and designs its own against them; lays traps, silent warships round an outlying station of its own
+// that fall on whatever comes for it; raids your lone ships; and strikes where you are weakest, massing first,
+// sending a feint ahead to draw your fleet off, focusing its fire, and pulling back when it is outgunned. Its idle
+// warships run silent, so you cannot count them from afar.
+const newIntel = () => ({ seen: new Set(), silentSeen: new Set(), last: new Map(), wpn: { torpedo: 0, railgun: 0, laser: 0, pdc: 0 }, ecm: 0, sensL: 0,
+  hurt: { torpedo: 0, railgun: 0, laser: 0, pdc: 0 }, zone: { nose: 0, flank: 0, tail: 0 }, ambushed: 0, eye: 0 });
+// a hit on one of its ships: what did it, where it landed, and whether the shooter had been out of sight (an ambush)
+function aiNoteHit(kind, dmg, zone, by) {
+  const I = AI.intel;
+  if (!I || !(kind in I.hurt)) return;
+  I.hurt[kind] += dmg; I.zone[zone] += dmg;
+  if (by && by.side === 'us' && worldT - (by.seenThemT ?? -Infinity) > 1800) I.ambushed += dmg;
+}
+// what it sees of your ships: their loadouts (once each), and where each was last seen and how strong it was
+function aiObserve() {
+  const I = AI.intel; if (!I) return;
+  for (const s of ships) {
+    if (s.side !== 'us' || !alive(s) || !s.visThem || !s.cp) continue;
+    I.last.set(s, { p: s.cp.slice(), t: worldT, pow: combatPower(s), war: !s.station && reachOf(s) > 0 });
+    if (s.silent) I.silentSeen.add(s.id);
+    if (s.station || I.seen.has(s.id)) continue;
+    I.seen.add(s.id);
+    for (const w of s.designObj.hard) if (w in I.wpn) I.wpn[w]++;
+    for (const u of s.designObj.util) { if (u === 'ecm') I.ecm++; if (u === 'sensorL') I.sensL++; }
+  }
+  for (const [s, e] of I.last) if (!alive(s) || worldT - e.t > 20 * DAY) I.last.delete(s);
+}
+// a rough fighting strength: damage a second from each kind of weapon, scaled by how much hull there is to get through
+function combatPower(s) {
+  const w = s.stats.wpn;
+  return (w.torpedo * (s.ammo.torps > 0 ? 0.5 : 0) + w.railgun * (s.ammo.slugs > 0 ? 0.18 : 0) + w.laser * 1.1 + w.pdc * 0.35 + w.lance * 0.7) * Math.sqrt(Math.max(1, s.stats.hp));
+}
+// what it thinks guards a place: your warships last seen near it in the last ten days, and the stations there
+function defenceAt(p) {
+  let d = 0;
+  for (const [, e] of AI.intel.last) if (e.war && worldT - e.t < 10 * DAY && dist3(e.p, p) < 3e6) d += e.pow;
+  for (const [s, k] of AI.known) if (alive(s) && dist3(k.p, p) < 3e6) d += combatPower(s);
+  return d;
+}
+// Its warships, designed against yours: the same hull and about the same tonnage, the loadout bent by what it has
+// seen you field and what has hurt it. Point defence against torpedoes, torpedoes where your point defence is thin,
+// jammers against aimed fire, a long sensor on every other ship once it has been ambushed (or seen you run
+// silent), jinking once it has met railguns, and armour where the hits land.
+function counterDesign(hull) {
+  const B = ALIEN_DESIGNS[hull], H = HULLS[hull], I = AI.intel, d = JSON.parse(JSON.stringify(B));
+  const sum = o => Object.values(o).reduce((a, b) => a + b, 0), wT = sum(I.wpn), hT = sum(I.hurt);
+  const share = k => 0.5 * (wT ? I.wpn[k] / wT : 0.25) + 0.5 * (hT ? I.hurt[k] / hT : 0.25);
+  const tS = share('torpedo'), rS = share('railgun'), lS = share('laser'), pS = wT ? I.wpn.pdc / wT : 0.25, n = B.hard.length;
+  const pdc = Math.max(1, Math.round(n * (0.1 + 0.5 * tS)));
+  const torp = Math.max(1, Math.min(n - pdc - 2, Math.round(n * (0.02 + 0.25 * (1 - pS) * (1 - tS)))));
+  d.hard = [...Array(n - pdc - torp).fill('lance'), ...Array(torp).fill('torpedo'), ...Array(pdc).fill('pdc')];
+  const ecm = wT && tS + lS + 0.5 * rS > 0.6 ? (n > 10 ? 2 : 1) : 0, eye = (I.ambushed > 15 || I.silentSeen.size > 0) && I.eye++ % 2 === 0;
+  d.util = [eye ? 'sensorL' : 'sensorS', ...Array(Math.max(1, Math.ceil(torp / 2))).fill('torpMag'), ...Array(Math.max(1, Math.ceil(pdc / 3))).fill('pdcMag'), ...Array(ecm).fill('ecm')];
+  while (slotsUsed(d) > H.util) d.util.pop();
+  // armour plates make up the tonnage, laid half as the hull's pattern has it and half where the hits have landed
+  const plates0 = B.armor[0] + B.armor[1] + B.armor[2], zT = sum(I.zone);
+  d.armor = [0, 0, 0];
+  const plates = clampN(Math.round((designCost(B).mass - designCost(d).mass) / MOD.armor.mass), 3, 3 * H.armor);
+  ['nose', 'flank', 'tail'].forEach((z, i) => { d.armor[i] = clampN(Math.round(plates * (0.5 * B.armor[i] / plates0 + 0.5 * (zT ? I.zone[z] / zT : B.armor[i] / plates0))), 1, H.armor); });
+  d.armor[0] = clampN(d.armor[0] + plates - sum(d.armor), 1, H.armor);
+  d.evasive = rS > 0.3;
+  const tag = pdc >= 0.4 * n ? 'Warden' : torp >= 0.3 * n ? 'Spitter' : ecm ? 'Shroud' : eye ? 'Seer' : '';
+  d.name = tag ? `${B.name} ${tag}` : B.name;
+  return d;
+}
+// the best target for a group: worth the most, guarded the least, nearest, and in reach of its propellant;
+// for a feint (avoid: the main target's entry), somewhere well away from the main target that the feint gets to
+// no later than three days after the main wave would (maxD: how far that is)
+function chooseTarget(list, avoid, maxD = Infinity) {
+  const p = posNow(fleetLeader(list[0])).slice();
+  const aKm = Math.min(...list.map(s => s.stats.accel)) / 1000, dv = Math.min(...list.map(s => s.fuel / s.stats.mass));
+  const pow = list.reduce((a, s) => a + combatPower(s), 0);
+  let best = null;
+  for (const [s, k] of AI.known) {
+    if (!alive(s)) continue;
+    const d = dist3(k.p, p);
+    if (2 * Math.sqrt(d * aKm) > 0.7 * dv || !canReach(k.j, aKm * 1000)) continue;
+    if (avoid && (dist3(k.p, avoid.p) < 2e7 || d > maxD)) continue;
+    const val = isYard(s) ? 3 : isColony(s) ? 2.5 : 2, def = defenceAt(k.p);
+    const sc = val * pow / (pow + 1.5 * def) / (1 + d / (2 * AU)) * (avoid ? dist3(k.p, avoid.p) / AU : 1);
+    if (!best || sc > best.sc) best = { s, k, def, d, sc };
+  }
+  return best;
+}
+// a flat-out trip's length for the slowest of a group
+// send a group against a station it knows of: closing on the station itself, to stand off at its weapons' reach
+const goFor = (list, X, goal) => { if (X && alive(X)) orderTrack(X, list, { range: standoff(list) / 1.2, preset: 'envelop', quiet: true }); else commandFleet(goal, 'orbit', null, list, true); };
+const tripTime = (list, d) => 2 * Math.sqrt(d / (Math.max(1e-6, Math.min(...list.map(s => s.stats.accel))) / 1000));
+const sendHome = list => { const H = list.length ? nearestOwn(list[0]) : null; if (H) commandFleet({ type: 'body', j: H.prim, rp: Math.hypot(H.S[0], H.S[1], H.S[2]) }, 'orbit', null, list, true); };
+// focus fire: every gun of a group on one of your ships, its eyes first (ships with long sensors), then the nearly
+// dead, then the strongest; with no ship near, on the stations in sight
+function focusFire(list, stations) {
+  const L = fleetLeader(list[0]); if (!L.cp) return;
+  const R = 1.5 * Math.max(...list.map(reachOf)), Lp = L.cp;
+  const cands = ships.filter(s => s.side === 'us' && alive(s) && s.visThem && s.cp && !s.station && dist3(s.cp, Lp) < R);
+  if (!cands.length) { if (stations && stations.length) for (const s of list) { s.target = stations[0]; s.targetGroup = stations; } return; }
+  const pri = s => (s.stats.sensPts >= 2 ? 3 : 1) * (1.6 - hullFrac(s)) * (1 + combatPower(s) / 30) / (1 + dist3(s.cp, Lp) / 3e4);
+  cands.sort((a, b) => pri(b) - pri(a));
+  for (const s of list) { s.target = cands[0]; s.targetGroup = cands; }
+}
+const TRAP_R = 28000;
+function cunningThink(war, seenUs, waveN, fueled) {
+  for (const s of war) {
+    if (s.mission && s.mission !== 'trap') s.silent = false;
+    else if (!s.mission && aiFree(s)) s.silent = true;
+  }
+  const free = () => war.filter(s => aiFree(s) && fueled(s) && !s.withdrawing && hullFrac(s) > 0.8);
+  // the wave takes what it needs first; traps and raids get what is left
+  cunningStrike(seenUs, waveN, free);
+  cunningFeint(seenUs);
+  cunningTraps(seenUs, waveN, free);
+  cunningRaid(seenUs, waveN, free);
+}
+function cunningTraps(seenUs, waveN, free) {
+  AI.traps = AI.traps.filter(T => {
+    T.list = T.list.filter(s => alive(s) && !s.withdrawing && s.mission === 'trap');
+    if (T.list.length && alive(T.bait) && worldT < T.until) return true;
+    for (const s of T.list) { s.mission = null; s.silent = false; }
+    return false;
+  });
+  for (const T of AI.traps) {
+    const L = fleetLeader(T.list[0]), bp = posNow(T.bait).slice(), onBait = !!L.track && L.track.tgt === T.bait;
+    const foes = seenUs.filter(s => !s.station && dist3(s.cp, bp) < 4e5);
+    if (foes.length && T.list.some(s => !s.silent)) {
+      // sprung: all of them fall on what came for the bait
+      for (const s of T.list) s.silent = false;
+      if (onBait || !L.track) { const tg = foes.sort((a, b) => dist3(a.cp, bp) - dist3(b.cp, bp))[0]; orderTrack(tg, T.list, { range: standoff(T.list) / 1.2, preset: 'envelop', quiet: true }); }
+      focusFire(T.list);
+    } else if (!foes.length && !onBait && !L.ap.goal && !L.pending && !L.track) {
+      // the fight is over (or never came): back to lying in wait
+      orderTrack(T.bait, T.list, { range: TRAP_R, preset: 'screen', quiet: true });
+      for (const s of T.list) { s.silent = true; s.target = null; s.targetGroup = null; }
+    } else if (!foes.length && L.track && !onBait && dist3(posNow(L).slice(), bp) > 1.5e6) stopTrack(L);      // chased too far
+  }
+  // a new trap round the outlying station nearest you, once there are warships to spare for it (not one within
+  // sight of a station of yours: their long sensors would see the trap)
+  if (AI.traps.length >= 2) return;
+  const E = [0, 0, 0]; absPos(3, worldT, E);
+  const watched = st => { const p = posNow(st).slice(); for (const [, k] of AI.known) if (dist3(k.p, p) < 6e6) return true; return false; };
+  const bait = stationsOf('them').filter(st => st.deployed && !st.leader && st !== AI.homeYard && st !== AI.homeDepot && !AI.traps.some(T => T.bait === st) && !watched(st))
+    .sort((a, b) => dist3(posNow(a).slice(), E) - dist3(posNow(b).slice(), E))[0];
+  const pool = free();
+  if (!bait || pool.length < (AI.strike ? 3 : waveN + 3)) return;
+  const list = pool.sort((a, b) => combatPower(b) - combatPower(a)).slice(0, 3);
+  for (const s of list) { s.mission = 'trap'; s.silent = true; s.withdraw = 0.45; }
+  orderTrack(bait, list, { range: TRAP_R, preset: 'screen', quiet: true });
+  AI.traps.push({ list, bait, until: worldT + 45 * DAY });
+}
+// far from help: no station of yours it knows of within 3 million km, no warship of yours seen lately within 2 million
+function farFromHelp(s) {
+  for (const [, k] of AI.known) if (dist3(k.p, s.cp) < 3e6) return false;
+  for (const [o, e] of AI.intel.last) if (o !== s && e.war && worldT - e.t < 3 * DAY && dist3(e.p, s.cp) < 2e6) return false;
+  return true;
+}
+function cunningRaid(seenUs, waveN, free) {
+  const R = AI.raid;
+  if (R) {
+    R.list = R.list.filter(s => alive(s) && !s.withdrawing && s.mission === 'raid');
+    const L = R.list.length ? fleetLeader(R.list[0]) : null;
+    if (!L || !alive(R.tgt) || worldT > R.until || (!L.track && !L.ap.goal && !L.pending)) {
+      for (const s of R.list) { s.mission = 'return'; s.target = null; }
+      sendHome(R.list); AI.raid = null;
+    }
+    return;
+  }
+  const pool = free();
+  if (pool.length < (AI.strike ? 2 : waveN + 2)) return;
+  const lone = seenUs.filter(s => !s.station && (s.stats.harvest > 0 || reachOf(s) === 0) && farFromHelp(s));
+  if (!lone.length) return;
+  // the lone ship nearest any of its free warships, and the two of them nearest it
+  const near = s => Math.min(...pool.map(w => dist3(posNow(w), s.cp)));
+  const tgt = lone.sort((a, b) => near(a) - near(b))[0];
+  const P = pool.sort((a, b) => dist3(posNow(a), tgt.cp) - dist3(posNow(b), tgt.cp)).slice(0, 2), p = posNow(P[1]).slice();
+  const aKm = Math.min(...P.map(s => s.stats.accel)) / 1000, dv = Math.min(...P.map(s => s.fuel / s.stats.mass));
+  if (4 * Math.sqrt(dist3(tgt.cp, p) * aKm) > 0.8 * dv) return;           // there and back flat out
+  for (const s of P) { s.mission = 'raid'; s.target = tgt; s.withdraw = 0.5; s.silent = false; }
+  orderTrack(tgt, P, { range: standoff(P) / 1.2, preset: 'envelop', quiet: true });
+  AI.raid = { list: P, tgt, until: worldT + 12 * DAY };
+}
+// the feint: two ships make a show at another of your stations, fighting what they find and breaking off when hurt
+function cunningFeint(seenUs) {
+  const F = AI.feint; if (!F) return;
+  F.list = F.list.filter(s => alive(s) && !s.withdrawing && s.mission === 'feint');
+  if (!F.list.length || worldT > F.until) { for (const s of F.list) { s.mission = 'return'; s.target = null; } sendHome(F.list); AI.feint = null; return; }
+  const L = fleetLeader(F.list[0]), Lp = posNow(L).slice();
+  const T = seenUs.filter(s => dist3(s.cp, Lp) < 1.5e6).sort((a, b) => dist3(a.cp, Lp) - dist3(b.cp, Lp))[0];
+  if (T && !(L.track && L.track.tgt === T) && !loopsBack(L, T)) { for (const s of F.list) s.target = T; orderTrack(T, F.list, { range: standoff(F.list) / 1.2, preset: 'envelop', quiet: true }); }
+}
+function cunningStrike(seenUs, waveN, free) {
+  const S = AI.strike;
+  if (S) {
+    S.list = S.list.filter(s => alive(s) && !s.withdrawing);
+    if (!S.list.length) { AI.strike = null; return; }
+    const L = fleetLeader(S.list[0]), Lp = posNow(L).slice(), ours = S.list.reduce((a, s) => a + combatPower(s), 0);
+    if (S.launchAt) {
+      // waiting for the feint to draw you off
+      if (worldT < S.launchAt) return;
+      S.launchAt = 0; S.aim = S.key; goFor(S.list, S.tgt, S.goal); return;
+    }
+    if (S.aim === 'home') { if (!L.ap.goal && !L.pending && !L.track) { for (const s of S.list) s.mission = null; AI.strike = null; } return; }
+    const near = seenUs.filter(s => dist3(s.cp, Lp) < 1.5e6), theirs = near.filter(s => !s.station).reduce((a, s) => a + combatPower(s), 0);
+    const lowFuel = S.list.reduce((a, s) => a + s.fuel / Math.max(1, s.stats.fuel), 0) / S.list.length < 0.2;
+    // outgunned (or running dry): pull back rather than lose the wave
+    if (theirs > 1.6 * ours || lowFuel) { S.aim = 'home'; for (const s of S.list) { s.target = null; s.targetGroup = null; } sendHome(S.list); return; }
+    const nearSt = seenUs.filter(s => s.station && dist3(s.cp, Lp) < 5e6).sort((a, b) => dist3(a.cp, Lp) - dist3(b.cp, Lp));
+    const nearSh = near.filter(s => !s.station).sort((a, b) => dist3(a.cp, Lp) - dist3(b.cp, Lp))[0];
+    const T = nearSh && (!nearSt[0] || dist3(nearSh.cp, Lp) < 0.5 * dist3(nearSt[0].cp, Lp)) ? nearSh : nearSt[0];
+    if (T) {
+      const here = S.list.filter(s => dist3(posNow(s), Lp) < 5e6);
+      if (here.length && !(L.track && L.track.tgt === T) && !loopsBack(L, T)) orderTrack(T, here, { range: standoff(here) / 1.2, preset: 'envelop', quiet: true });
+      if (here.length) focusFire(here, nearSt);
+    } else if (!L.ap.goal && !L.pending && !L.track) {
+      // got there and found nothing (or finished what it found): on to the next target if it can win there, or home
+      if (S.tgt && alive(S.tgt) && !S.tgt.visThem) AI.known.delete(S.tgt);
+      const N = chooseTarget(S.list, null);
+      if (N && 1.3 * N.def < ours) { S.goal = { type: 'body', j: N.k.j, rp: N.k.r }; S.key = N.k.j + ':' + Math.round(N.k.r); S.tgt = N.s; S.aim = S.key; goFor(S.list, S.tgt, S.goal); }
+      else { S.aim = 'home'; sendHome(S.list); }
+    }
+    return;
+  }
+  // a new wave, only once it can win where it means to strike
+  const pool = free();
+  if (pool.length < waveN) return;
+  const T = chooseTarget(pool, null);
+  if (!T) return;
+  const pow = pool.reduce((a, s) => a + combatPower(s), 0);
+  if (1.3 * T.def > pow && pool.length < 2 * waveN) return;              // not enough yet: gather more
+  // it takes what it needs, the strongest first, until it has 1.6 times what guards the target (and at least a
+  // wave's worth); the weakest two of the rest make the feint, and what is left is free for traps and raids
+  pool.sort((a, b) => combatPower(b) - combatPower(a));
+  const main = [];
+  let mp = 0, F = null, D = null;
+  for (const s of pool) { if (main.length >= waveN && mp >= 1.6 * T.def) break; main.push(s); mp += combatPower(s); }
+  const feint = pool.filter(s => !main.includes(s)).slice(-2);
+  if (feint.length === 2 && !AI.feint) {
+    // as far as the feint flies in the main wave's trip and three days more (flat out: d = a·t²/4)
+    const t = tripTime(main, T.d) + 3 * DAY, a = Math.min(...feint.map(s => s.stats.accel)) / 1000;
+    D = chooseTarget(feint, T.k, a * t * t / 4);
+  }
+  if (D) F = { list: feint, goal: { type: 'body', j: D.k.j, rp: D.k.r }, until: worldT + 15 * DAY };
+  const goal = { type: 'body', j: T.k.j, rp: T.k.r };
+  AI.strike = { list: main, t: worldT, aim: null, goal, key: T.k.j + ':' + Math.round(T.k.r), tgt: T.s, launchAt: 0 };
+  for (const s of main) s.mission = 'strike';
+  AI.wave++;
+  if (F) {
+    AI.feint = F;
+    for (const s of F.list) { s.mission = 'feint'; s.withdraw = 0.6; s.silent = false; }
+    goFor(F.list, D.s, F.goal);
+    // the main wave sets out so as to arrive about half a day after the feint
+    AI.strike.launchAt = worldT + Math.max(1, tripTime(F.list, D.d) - tripTime(main, T.d) + DAY / 2);
+  } else { AI.strike.aim = AI.strike.key; goFor(main, T.s, goal); }
+}
+
 // ---- the game: won when the enemy has no infrastructure left, lost when you have none
 const game = { t0: 0, over: false };
 function checkGameEnd() {
@@ -3010,6 +3370,7 @@ let hvTick = -Infinity, aiTick = -Infinity;
 function economyFrame(dt) {
   towFrame();
   if (dt > 0) { mineFrame(dt); buildFrame(dt); resupply(dt); colonyFrame(dt); }
+  withdrawFrame();
   if (worldT - hvTick > 900) { hvTick = worldT; for (const s of ships) if (s.hv) harvestThink(s); }
   for (const [fleet, next] of retrack.splice(0)) { const list = fleet.filter(alive); if (list.length && alive(next)) orderTrack(next, list, { range: standoff(list) / 1.2, preset: 'envelop', quiet: true, pursuit: true }); }
   if (worldT - aiTick > 1800) { aiTick = worldT; aiThink(); }
@@ -3017,7 +3378,7 @@ function economyFrame(dt) {
 }
 // a new game: your yard and depot in Earth orbit with a small fleet and a collector; the enemy's at Jupiter or Saturn
 function newGame(coop = false) {
-  AI.coop = coop;
+  AI.coop = coop; AI.mode = foeMode; AI.intel = newIntel(); AI.traps = []; AI.raid = null; AI.feint = null;
   game.t0 = worldT; game.over = false; $('endgame').hidden = true;
   AI.home = Math.random() < 0.5 ? 6 : 7; AI.known.clear(); AI.wave = 0; AI.strike = null; aiTick = hvTick = -Infinity; buildSeq = 0;
   const Y = makeStation('us', 'shipyard'), D = makeStation('us', 'depot');
@@ -3032,7 +3393,7 @@ function newGame(coop = false) {
   EY.stock = { fuel: 1500, base: 2500, noble: 1200 }; ED.stock = { fuel: 4000, base: 7000, noble: 3000 };
   EY.deployed = ED.deployed = true; AI.homeYard = EY; AI.homeDepot = ED;
   for (const s of [EY, ED]) s.vis = false;
-  for (let i = 0; i < 3; i++) { const d = aiWarship(); const s = makeShip(ENEMY_NAMES[enemySeq++ % ENEMY_NAMES.length], 30000, 0, 0, d, 'them'); placeInOrbit(s, H, r * (1.05 + 0.04 * i), a0 + 0.3 + 0.2 * i); s.evasive = s.stats.accel >= 3; s.vis = false; }
+  for (let i = 0; i < 3; i++) { const d = aiWarship(); const s = makeShip(ENEMY_NAMES[enemySeq++ % ENEMY_NAMES.length], 30000, 0, 0, d, 'them'); placeInOrbit(s, H, r * (1.05 + 0.04 * i), a0 + 0.3 + 0.2 * i); alienFit(s, d); s.vis = false; }
   for (let i = 0; i < 2; i++) { const s = makeShip(ENEMY_NAMES[enemySeq++ % ENEMY_NAMES.length], 30000, 0, 0, AI_COLLECTOR, 'them'); placeInOrbit(s, H, r * 0.95, a0 - 0.3 - 0.2 * i); s.vis = false; }
   // in co-op, player 2 starts at Mars with the same, and the enemy has more of everything
   const p2st = [];
@@ -3047,7 +3408,7 @@ function newGame(coop = false) {
     for (const k of RES) { EY.stock[k] *= 1.8; ED.stock[k] *= 1.8; }
     const EY2 = makeStation('them', 'shipyard'); placeBeside(EY2, EY, -2500); EY2.deployed = true; EY2.vis = false;
     EY2.stock = { fuel: 1000, base: 2000, noble: 1000 };
-    for (let i = 0; i < 2; i++) { const s2 = makeShip(ENEMY_NAMES[enemySeq++ % ENEMY_NAMES.length], 30000, 0, 0, aiWarship(), 'them'); placeInOrbit(s2, H, r * (1.2 + 0.04 * i), a0 + 0.9 + 0.2 * i); s2.evasive = s2.stats.accel >= 3; s2.vis = false; }
+    for (let i = 0; i < 2; i++) { const d2 = aiWarship(), s2 = makeShip(ENEMY_NAMES[enemySeq++ % ENEMY_NAMES.length], 30000, 0, 0, d2, 'them'); placeInOrbit(s2, H, r * (1.2 + 0.04 * i), a0 + 0.9 + 0.2 * i); alienFit(s2, d2); s2.vis = false; }
     const c3 = makeShip(ENEMY_NAMES[enemySeq++ % ENEMY_NAMES.length], 30000, 0, 0, AI_COLLECTOR, 'them'); placeInOrbit(c3, H, r * 0.9, a0 - 0.9); c3.vis = false;
   }
   // the six colonies: everyone knows where they are
@@ -3115,7 +3476,7 @@ function updateEconPanels() {
   // the resource bar: what your infrastructure holds
   const own = stationsOf('us').filter(ownShip), t = noStock(); for (const s of own) for (const k of RES) t[k] += s.stock[k];
   const allyN = stationsOf('us').length - own.length;
-  const rb = RES.map(k => `<span class="rb"><i class="r-${k}"></i>${RES_SHORT[k]} <b>${fmtT(t[k])}</b> t</span>`).join('') + `<span class="rb dim">Infrastructure <b>${own.length}</b>${NET.role !== 'solo' ? ` · ally <b>${allyN}</b>` : ''}</span>`;
+  const rb = RES.map(k => `<span class="rb"><i class="r-${k}"></i>${RES_SHORT[k]} <b>${fmtT(t[k])}</b> t</span>`).join('') + `<span class="rb dim">Infrastructure <b>${own.length}</b>${NET.role !== 'solo' ? ` · ally <b>${allyN}</b>` : ''}${(isGuest() ? NET.foe : AI.mode) === 'cunning' ? ' · foe <b>cunning</b>' : ''}</span>`;
   const resEl = $('resbar'); if (resEl._h !== rb) { resEl._h = rb; resEl.innerHTML = rb; }
 }
 stnEl.addEventListener('click', e => {
@@ -3211,7 +3572,7 @@ function encShip(sh) {
     dv: sh.dv, f: sh.fuel, ht: r3(sh.heat), am: [sh.ammo.torps, sh.ammo.slugs, sh.ammo.rounds].map(r3), hp: sh.mods.map(m => Math.round(m.hp * 100) / 100),
     L: sh.leader ? sh.leader.id : -1, sl: sh.slot, j: sh.joining ? 1 : 0, ev: sh.evasive ? 1 : 0, v: sh.vis ? 1 : 0, vt: sh.visThem ? 1 : 0,
     th: sh.thrusting ? 1 : 0, td: sh.thrustDir || null, tg: sh.target ? sh.target.id : -1, tgg: sh.targetGroup ? ids(sh.targetGroup) : null,
-    ap: { g: encGoal(sh.ap.goal), h: sh.ap.hold ? 1 : 0, s: encSel(sh.ap.sel) } };
+    ap: { g: encGoal(sh.ap.goal), h: sh.ap.hold ? 1 : 0, s: encSel(sh.ap.sel) }, si: sh.silent ? 1 : 0, wd: sh.withdraw || 0, wg: sh.withdrawing ? 1 : 0, ft: sh.firedT };
   if (sh.form) e.fm = { p: sh.form.preset, sp: sh.form.spacing, c: [...sh.form.cells] };
   if (sh.track) { const T = sh.track; e.tr = { g: T.tgt.id, r: T.range, pr: T.preset, c: [...T.cells], lk: T.locked ? 1 : 0, tw: T.tow ? 1 : 0, pu: T.pursuit ? 1 : 0 }; }
   if (sh.pending) e.pe = { sel: encSel(sh.pending.sel), kind: sh.pending.kind, what: sh.pending.what, until: sh.pending.until };
@@ -3235,7 +3596,7 @@ function sendState(force) {
     if (sh._sentD !== dj) { sh._sentD = dj; NET.root.child('designs/' + sh.id).set(dj); }
   }
   const st = { t: worldT, rate: effRate, paused, over: game.over ? ($('endgame').querySelector('h2').textContent) : '', endTxt: game.over ? $('endgame').querySelector('p').textContent : '',
-    wm: wmode, want: NET.want, known: AI.known.size, sh: ships.filter(s => !s._gone).map(encShip) };
+    wm: wmode, want: NET.want, known: AI.known.size, foe: AI.mode, sh: ships.filter(s => !s._gone).map(encShip) };
   NET.root.child('state').set(JSON.stringify(st));
   for (const s of ships) if (s.destroyed || s.crashed >= 0) s._sentDead = (s._sentDead || 0) + 1;
 }
@@ -3248,7 +3609,7 @@ function shipFromSnap(e) {
 }
 function applyState(js) {
   const st = JSON.parse(js);
-  NET.rate = st.rate; NET.want = st.want || NET.want; NET.known = st.known;
+  NET.rate = st.rate; NET.want = st.want || NET.want; NET.known = st.known; NET.foe = st.foe;
   if (st.paused !== paused) setPaused(st.paused);
   Object.assign(wmode, st.wm || {});
   weaponsMode = wmode[NET.me] || 'auto'; bWpn.textContent = weaponsMode === 'auto' ? 'Weapons: auto' : 'Weapons: manual';
@@ -3266,6 +3627,7 @@ function applyState(js) {
     sh.ammo.torps = e.am[0]; sh.ammo.slugs = e.am[1]; sh.ammo.rounds = e.am[2];
     if (e.hp.length === sh.mods.length) { e.hp.forEach((h, k) => { sh.mods[k].hp = h; }); sh.stats = statsOf(sh.mods, m => m.hp > 0, sh.hullMass, sh.drive); }
     sh.slot = e.sl; sh.evasive = !!e.ev; sh.thrusting = !!e.th; if (e.td) sh.thrustDir = e.td;
+    sh.silent = !!e.si; sh.withdraw = e.wd || 0; sh.withdrawing = !!e.wg; if (e.ft != null) sh.firedT = e.ft;
     if (sh.side === 'them') sh.vis = !!e.v; else sh.visThem = !!e.vt;
     if (e.sp) sh.seenP = e.sp;
     sh.ap.goal = decGoal(e.ap.g, sh.ap.goal); sh.ap.hold = !!e.ap.h; sh._apSel = e.ap.s;
@@ -3330,6 +3692,8 @@ function applyCmd(c) {
       case 'stopTrack': { const X = shipsOf([c.l], 'p2')[0]; if (X) stopTrack(X); break; }
       case 'standDown': standDown(L); break;
       case 'evasive': for (const s of L) s.evasive = c.on; break;
+      case 'silent': for (const s of L) s.silent = !!c.on; break;
+      case 'withdraw': for (const s of L) s.withdraw = c.on ? WITHDRAW_AT : 0; break;
       case 'wmode': wmode.p2 = c.m; break;
       case 'fire': if (L.length) fireNow(c.kind, L); break;
       case 'build': { const Y = shipsOf([c.y], 'p2')[0]; if (Y && isYard(Y) && validDesign(c.d)) queueBuild(Y, c.d); break; }
@@ -4087,7 +4451,22 @@ function userPause(v) { if (!toHost({ k: 'pause', v })) setPaused(v); }
 bPlay.onclick = () => userPause(!paused);
 $('b-slow').onclick = () => setWarp(wi - 1);
 $('b-fast').onclick = () => setWarp(wi + 1);
-$('b-reset').onclick = () => { if (isGuest()) { showToast('The host starts new games'); return; } resetFleet(NET.ally); };
+// New game: pick the opponent first
+const ngEl = $('newgame');
+function askNewGame() {
+  if (isGuest()) { showToast('The host starts new games'); return; }
+  for (const b of ngEl.querySelectorAll('[data-foe]')) if (b.dataset.foe) b.setAttribute('aria-pressed', b.dataset.foe === foeMode);
+  ngEl.hidden = false;
+}
+ngEl.addEventListener('click', e => {
+  const b = e.target.closest('button[data-foe]'); if (!b) return;
+  ngEl.hidden = true;
+  if (!b.dataset.foe) return;
+  foeMode = b.dataset.foe; try { localStorage.setItem('orrery-foe', foeMode); } catch (_) { /* not kept */ }
+  resetFleet(NET.ally);
+  showToast(foeMode === 'cunning' ? 'A cunning foe: expect traps round its outlying stations, feints, raids on lone ships, and ships built against yours' : 'A new game against the standard foe', 7000);
+});
+$('b-reset').onclick = askNewGame;
 $('b-sensors').onclick = toggleSensors;
 $('b-auto').onclick = () => setAutoWarp(!autoWarp);
 $('b-fleet').onclick = newFleet;
@@ -4145,6 +4524,8 @@ window.addEventListener('keydown', e => {
   else if (e.code === 'KeyY') openYard();
   else if (e.code === 'KeyG') setWeaponsMode(weaponsMode === 'auto' ? 'manual' : 'auto');
   else if (e.code === 'KeyE') setEvasive();
+  else if (e.code === 'KeyQ') setSilent();
+  else if (e.code === 'KeyR') setWithdraw();
   else if (e.code === 'KeyH') setBar(!barOn);
   else if (e.code === 'Slash' || e.code === 'F1') { e.preventDefault(); setHelp(!helpOpen); }
   else if (e.code === 'KeyV') { showVision = !showVision; showToast(showVision ? 'Vision rings shown' : 'Vision rings hidden'); }
@@ -4259,7 +4640,7 @@ function updateFleet() {
     sh.row.classList.toggle('sel', sh.sel);
     sh.row.classList.toggle('lost', !alive(sh));
     if (sh.row.dataset.cls !== sh.designObj.hull) sh.row.dataset.cls = sh.designObj.hull;
-    const stEl = sh.row.querySelector('.st'), text = (!alive(sh) ? st : st === '—' ? `Orbiting ${BODY[sh.prim].name}` : st) + (alive(sh) && sh.evasive ? sh.jinking ? ' · jinking' : ' · evasive' : '') + (alive(sh) ? econTag(sh) : '');
+    const stEl = sh.row.querySelector('.st'), text = (!alive(sh) ? st : st === '—' ? `Orbiting ${BODY[sh.prim].name}` : st) + (alive(sh) && sh.evasive ? sh.jinking ? ' · jinking' : ' · evasive' : '') + (alive(sh) && sh.silent ? ' · silent' : '') + (alive(sh) && sh.withdrawing ? ' · withdrawing' : '') + (alive(sh) ? econTag(sh) : '');
     if (stEl.textContent !== text) stEl.textContent = text;
     const hb = sh.row.querySelector('.hpb i'), hw = `${Math.round(hullFrac(sh) * 100)}%`;
     if (hb.style.width !== hw) hb.style.width = hw;
@@ -4517,7 +4898,7 @@ function saveDesigns() { try { localStorage.setItem('orrery-designs-2', JSON.str
 let designs = loadDesigns(), yardIdx = 0;
 const designByName = n => designs.find(d => d.name === n) || designs[0];
 ydHull.innerHTML = HULL_KEYS.map(k => `<option value="${k}">${HULLS[k].name}-class</option>`).join('');
-const UTIL_TYPES = ['sensorS', 'sensorL', 'torpMag', 'railMag', 'pdcMag', 'harvester', 'cargo'], HARD_TYPES = ['torpedo', 'railgun', 'laser', 'pdc'];
+const UTIL_TYPES = ['sensorS', 'sensorL', 'ecm', 'torpMag', 'railMag', 'pdcMag', 'harvester', 'cargo'], HARD_TYPES = ['torpedo', 'railgun', 'laser', 'pdc'];
 const ICON = {
   engine: '<path d="M3 8h7l5-3.5v15L10 16H3z"/><path d="M15 9l5-1.5M15 15l5 1.5M15 12h6"/>',
   reactor: '<circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="9" ry="3.4"/><ellipse cx="12" cy="12" rx="9" ry="3.4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9" ry="3.4" transform="rotate(120 12 12)"/>',
@@ -4526,6 +4907,7 @@ const ICON = {
   sensorS: '<path d="M4 15a9 9 0 0 1 10-10"/><path d="M4 15l7-7"/><circle cx="11" cy="8" r="1.3"/><path d="M8 21h8M12 15v6"/>',
   sensorL: '<path d="M2 13a11 11 0 0 1 13-11"/><path d="M2 13l9-9"/><circle cx="11" cy="4" r="1.5"/><path d="M4 21h13M10 13v8"/><path d="M17 8a5 5 0 0 1 3 4M18 4a9 9 0 0 1 4 7"/>',
   torpMag: '<path d="M3 6h12l4 2-4 2H3zM3 14h12l4 2-4 2H3z"/>',
+  ecm: '<path d="M3 5l5 7-5 7M10 5l5 7-5 7M17 5l4 7-4 7"/>',
   railMag: '<rect x="4" y="4.5" width="16" height="3.5"/><rect x="4" y="10.25" width="16" height="3.5"/><rect x="4" y="16" width="16" height="3.5"/>',
   pdcMag: '<circle cx="7" cy="7" r="1.7"/><circle cx="12" cy="7" r="1.7"/><circle cx="17" cy="7" r="1.7"/><circle cx="7" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="17" cy="12" r="1.7"/><circle cx="7" cy="17" r="1.7"/><circle cx="12" cy="17" r="1.7"/><circle cx="17" cy="17" r="1.7"/>',
   torpedo: '<path d="M2 12l3-3h11l6 3-6 3H5z"/><path d="M6 9v6M2 9v6"/>',
@@ -4601,6 +4983,7 @@ function renderYard() {
     <dt>Power</dt><dd>${s.power} made · ${s.engDraw + s.laserDraw} used</dd>
     <dt>Heat</dt><dd>${s.laserHeat.toFixed(1)}/s made · ${s.cool}/s shed</dd>
     <dt>Vision</dt><dd>${s.vision ? fmtDist(s.vision) : 'none'}</dd>
+    <dt>Electronic war</dt><dd>${s.ecm ? `jams: hostile fire ${Math.round((1 - 2 / (2 + 0.5 * s.ecm)) * 100)}% worse` : 'no jammer'} · <small>sees through ${s.sensPts} pt${s.sensPts === 1 ? '' : 's'}</small></dd>
     <dt>Hit points</dt><dd>${s.hp}</dd>${s.harvest ? `<dt>Harvest</dt><dd>${s.harvest} t/h · hold ${nf0.format(s.cargo)} t</dd>` : ''}
     <dt>Cost</dt><dd>${(c => `${nf0.format(c.base)} t base · ${nf0.format(c.noble)} t noble · ${fmtDur(buildSecs(c, 2))}`)(designCost(d))}</dd>
     <dt>Weapons</dt><dd>${l.wp}</dd>
@@ -4727,6 +5110,8 @@ function setWeaponsMode(m) {
 }
 bWpn.onclick = () => setWeaponsMode(weaponsMode === 'auto' ? 'manual' : 'auto');
 $('b-eva').onclick = () => setEvasive();
+$('b-sil').onclick = () => setSilent();
+$('b-wd').onclick = () => setWithdraw();
 for (const b of wpnEl.querySelectorAll('[data-fire]')) b.onclick = () => fireNow(b.dataset.fire);
 $('wpn-clear').onclick = () => { for (const s of selectedShips()) s.target = null; fleetDirty = true; showToast('Target cleared: ships pick the nearest enemy in sight'); };
 function updateCombatPanels() {
@@ -4735,6 +5120,12 @@ function updateCombatPanels() {
   const be = $('b-eva');
   if (be.textContent !== et) be.textContent = et;
   be.setAttribute('aria-pressed', sel.length > 0 && ne === sel.length);
+  const toggle = (id, name, on) => {
+    const n = sel.filter(on).length, t = !sel.length ? name : n === sel.length ? `${name}: on` : n ? `${name}: some` : `${name}: off`, b = $(id);
+    if (b.textContent !== t) b.textContent = t;
+    b.setAttribute('aria-pressed', sel.length > 0 && n === sel.length);
+  };
+  toggle('b-sil', 'Silent', s => s.silent); toggle('b-wd', 'Withdraw', s => s.withdraw > 0);
   // the weapons card: in manual fire, for the selection
   show(wpnEl, weaponsMode === 'manual' && sel.length > 0);
   if (!wpnEl.hidden) {
@@ -4765,7 +5156,7 @@ contactList.addEventListener('click', e => {
   if (e.shiftKey) { if (marked.has(s)) marked.delete(s); else marked.add(s); fleetDirty = needDraw = true; } else designate(s);
 });
 contactList.addEventListener('contextmenu', e => { e.preventDefault(); const li = e.target.closest('li'); if (!li) return; const s = ships.find(x => x.id === +li.dataset.id); if (s) engageClick(s, e.shiftKey); });
-$('eg-new').onclick = () => { if (isGuest()) { showToast('The host starts new games'); return; } resetFleet(NET.ally); };
+$('eg-new').onclick = () => { $('endgame').hidden = true; askNewGame(); };
 $('b-help').onclick = () => setHelp(!helpOpen);
 $('help-close').onclick = () => setHelp(false);
 $('b-mp').onclick = () => { mpEl.hidden = !mpEl.hidden; renderMP(); };
@@ -5237,6 +5628,9 @@ function buildModel(spec, into = scene) {
     } else if (m.t === 'sensorL') {
       put(G_CYL, metal, 0.02 * L, 0, hh * 1.32, b * 0.5, b * 0.5, hh * 0.12, i);
       put(G_DOME, matFor('dome', '#e8edf3', 0.32), 0.02 * L, 0, hh * 1.36, b * 0.42, b * 0.42, b * 0.36, i);
+    } else if (m.t === 'ecm') {
+      const x = -0.06 * L - m.k * 0.05 * L, p = prof(x), z0 = p.z + p.h;
+      for (const s of [-1, 1]) put(G_BOX, matFor('ecm', '#b9c2cf', 0.45), x, s * 0.42 * p.w, z0 + hh * 0.2, 0.05 * L, 0.05, hh * 0.4, i);
     }
   });
   // weapons on hardpoints: turrets on the dorsal and ventral decks; the first railgun as a spinal mount

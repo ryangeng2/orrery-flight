@@ -1,8 +1,10 @@
 # Orrery Flight
 
 A solar-system fleet game in one HTML file (three.js): patched-conic orbital flight flown flat out, formations
-and fleets, ship design, combat with fog of war, an economy of propellant and metals, towed infrastructure,
-and an enemy faction that expands from Jupiter or Saturn.
+and fleets, ship design, combat with fog of war (drive signatures, silent running, jamming), an economy of
+propellant and metals, towed infrastructure, and an enemy faction that expands from Jupiter or Saturn. **New
+game** offers a standard opponent or a cunning one that lays ambushes, feints, raids lone ships and designs its
+warships against yours.
 
 **Play:** https://ryangeng2.github.io/orrery-flight/
 
