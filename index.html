@@ -133,6 +133,7 @@ body{background:var(--void);color:var(--ink);font-family:var(--f-ui);overflow:hi
 .contacts li.mark{border-style:dashed;border-color:rgba(255,107,90,.6)}
 .contacts li.sel{background:rgba(255,107,90,.12);border-color:rgba(255,107,90,.45)}
 #h-name{cursor:text}
+.fleet .fl-hd input.fl-in{width:120px;font-size:10.5px;letter-spacing:.12em;color:var(--path);padding:0 4px}
 .hud-head input.rename{font:600 12px var(--f-ui);letter-spacing:.16em;text-transform:uppercase;color:var(--thrust);background:rgba(160,185,230,.08);border:1px solid var(--edge);border-radius:4px;padding:1px 5px;width:150px}
 [data-cls=colony]{--s:14px;--shape:polygon(35% 0,65% 0,65% 35%,100% 35%,100% 65%,65% 65%,65% 100%,35% 100%,35% 65%,0 65%,0 35%,35% 35%)}
 [data-cls=stalker]{--s:12px;--shape:polygon(50% 0,78% 45%,100% 100%,50% 76%,0 100%,22% 45%)}
@@ -438,7 +439,7 @@ input[type=range]{width:130px;accent-color:var(--thrust);margin:0}
       <details open><summary>Select &amp; fleets</summary><ul>
         <li><b>Click</b> a ship or row · <span class="k">Shift</span>-click adds · <b>drag</b> a box · <span class="k">Ctrl</span><span class="k">A</span> all</li>
         <li><span class="k">Shift</span>+<span class="k">1</span>–<span class="k">9</span> saves a group, <span class="k">1</span>–<span class="k">9</span> recalls it</li>
-        <li><b>+ Fleet</b> makes a fleet. Its header: click selects, <b>▾</b> folds it, <b>+</b> adds, <b>−</b> removes, <b>✕</b> disbands</li></ul></details>
+        <li><b>+ Fleet</b> makes a fleet. Its header: click selects, <b>▾</b> folds it, <b>+</b> adds, <b>−</b> removes, <b>✕</b> disbands; double-click its name to rename it</li></ul></details>
       <details><summary>Orders</summary><ul>
         <li><b>Right-click</b> a planet or moon: orbit it · empty space or <span class="k">M</span>: move there (<span class="k">Shift</span> + mouse sets height)</li>
         <li><b>Right-click</b> one of your ships: track it · <b>left-click</b> a planet: trip time</li>
@@ -1172,9 +1173,13 @@ function openPlanner(sel) {
   if (!lead || !alive(lead)) { showToast('Select a ship first'); return; }
   nav.sel = sel; nav.open = true; navDirty = true; updateNav();
 }
+// the pull of a moon's planet at the moon (km/s²): a ship that cannot out-push it cannot get there
+const parentPull = j => PARENT[j] > 0 ? GM[PARENT[j]] / (OA[j] * OA[j]) : 0;
+const canReach = (j, a) => parentPull(j) < 0.8 * a / 1000;
 // give the bound ship an order
 function engageGoal(sel) {
   if (crashed >= 0) return false;
+  if (sel.type === 'body' && !canReach(sel.j, accel)) return false;
   ap.hold = false; ap.node = null; ap.burning = false;
   ap.goal = makeGoal(sel); ap.sel = sel; predDirty = true; navDirty = true;
   return true;
@@ -2407,8 +2412,8 @@ const BUILD_RATE = 6 / 3600, INFRA_SPEED = 4;   // t of hull per second per slip
 const TOW_REACH = 3000, TOW_GAP = 150;           // km: how close a tug must be to take a station in tow; the tow line
 // what each body offers, and why (asteroid fields, debris and gas clouds offer theirs by kind)
 const BODY_RES = { 1: ['noble'], 2: ['noble'], 3: ['noble', 'fuel'], 4: ['noble', 'fuel'], 5: ['noble'], 6: ['fuel'], 7: ['fuel'], 8: ['fuel'], 9: ['fuel'],
-  10: ['base', 'noble'], 11: ['base', 'noble'], 12: ['noble'], 13: ['fuel'], 14: ['fuel', 'noble'], 15: ['fuel', 'noble'], 16: ['base', 'noble'],
-  17: ['fuel'], 18: ['fuel'], 19: ['fuel', 'noble'], 20: ['fuel'], 21: ['fuel'] };
+  10: ['base', 'noble'], 11: ['base', 'noble'], 12: ['noble'], 13: ['fuel'], 14: ['fuel', 'noble'], 15: ['fuel', 'base', 'noble'], 16: ['base', 'noble'],
+  17: ['fuel'], 18: ['fuel', 'base'], 19: ['fuel', 'base', 'noble'], 20: ['fuel', 'base'], 21: ['fuel'] };     // (the rocky-cored moons give base metals too)
 const BODY_WHY = { 13: 'deuterium from its ice', 14: 'deuterium from its ice', 15: 'deuterium from its ice', 17: 'methane and deuterium', 18: 'deuterium from its ice', 19: 'deuterium from its ice', 20: 'deuterium from its ice', 21: 'deuterium from its ice', 3: 'deuterium from the oceans', 4: 'helium-3 in the regolith', 6: 'hydrogen, deuterium, helium-3', 7: 'hydrogen, deuterium, helium-3', 8: 'deuterium, helium-3', 9: 'deuterium, helium-3' };
 const FIELD_RES = { gas: ['fuel'], rock: ['base', 'noble'], debris: ['base'] };
 // the gravity well: lifting out of a deeper one brings up less at a time (escape velocity, against the Moon's)
@@ -2516,7 +2521,11 @@ let buildSeq = 0;
 function completeJob(Y, job) {
   const d = job.d, infra = !!HULLS[d.hull].station;
   let sh;
-  if (infra) sh = makeStation(Y.side, d.hull);
+  if (infra) {
+    sh = makeStation(Y.side, d.hull);
+    const have = networkStock(Y), seed = { fuel: Math.min(600, have.fuel * 0.25), base: Math.min(300, have.base * 0.15), noble: Math.min(300, have.noble * 0.15) };
+    if (!payFrom(Y, seed)) for (const k of RES) sh.stock[k] = seed[k];
+  }
   else {
     const names = Y.side === 'us' ? (Y.owner === 'p2' ? SHIP_NAMES2 : SHIP_NAMES) : ENEMY_NAMES, k = buildSeq++;
     sh = makeShip(names[(k + 5) % names.length] + (k + 5 >= names.length ? ' ' + (Math.floor((k + 5) / names.length) + 1) : ''), 30000, 0, 0, d, Y.side);
@@ -2562,7 +2571,11 @@ function resupply(dt) {
   for (const sh of ships) {
     if (!alive(sh) || !sh.cp) continue;
     const L = fleetLeader(sh);
-    if (!sh.station && (L.ap.goal || L.pending || chasing(L))) continue;
+    if (!sh.station && (L.ap.goal || L.pending || chasing(L))) {
+      // under way: only a ship short of propellant with some in its hold tops up (from the hold)
+      if (sh.cargo && sh.cargo.fuel > 0 && sh.fuel < 0.25 * sh.stats.fuel) { const got = draw([sh.cargo], 'fuel', Math.min(sh.cargo.fuel, (sh.stats.fuel - sh.fuel) / FUEL_PER_T)); sh.fuel += got * FUEL_PER_T; if (sh.fuel > 0) sh.dry = false; }
+      continue;
+    }
     if (threatNear(sh)) continue;
     const src = suppliers(sh);
     if (!src.length) continue;
@@ -2598,12 +2611,16 @@ const srcFactor = src => src.type === 'body' ? wellFactor(src.j) : 1;
 const SRCP = [0, 0, 0];
 function srcPos(src) { if (src.type === 'body') { absPos(src.j, worldT, SRCP); return SRCP; } return FIELDS[src.fi].p; }
 function nearestSource(sh, want) {
-  const p = posNow(sh);
+  const p = posNow(sh).slice();
+  const aKm = Math.max(1e-9, fleetAccel(sh) / 1000), dvHave = sh.fuel / sh.stats.mass;
   let best = null, bs = Infinity;
   const consider = (src) => {
     if (!srcRes(src).includes(want)) return;
+    if (src.type === 'body' && !canReach(src.j, fleetAccel(sh))) return;     // deeper in a planet's well than it can climb
+    if (sh.hv && sh.hv.bad && sh.hv.bad.has(src.type + (src.j ?? src.fi))) return;     // given up on
     const d = dist3(srcPos(src), p);
     if (d > 15 * AU) return;                                   // the Kuiper belt is too far to work
+    if (4 * Math.sqrt(d * aKm) > 0.85 * dvHave + 1) return;   // there and back flat out: more Δv than it has
     const sc = (d + 2e7) / srcFactor(src);                     // nearness, and how much each lift brings up
     if (sc < bs) { bs = sc; best = src; }
   };
@@ -2615,11 +2632,11 @@ function atSource(sh, src) {
   if (src.type === 'body') return sh.prim === src.j && !sh.ap.goal && Math.hypot(sh.S[0], sh.S[1], sh.S[2]) < Math.max(60 * RAD[src.j], 2 * wellFloor(src.j));
   const f = FIELDS[src.fi]; return !!sh.cp && dist3(sh.cp, f.p) < f.R;
 }
-function nearestDrop(sh) {
-  const p = posNow(sh);
+function nearestDrop(sh, anyRoom = false) {
+  const p = posNow(sh).slice();
   let best = null, bd = Infinity;
   for (const s of stationsOf(sh.side)) {
-    if (RES.every(k => s.stock[k] >= storeCap(s) - 1)) continue;
+    if (s.leader || (!anyRoom && RES.every(k => s.stock[k] >= storeCap(s) - 1))) continue;
     const d = dist3(posNow(s), p) * (s.stats.store ? 1 : 1.5) * (s.owner === sh.owner ? 1 : 3);   // its owner's depots first
     if (d < bd) { bd = d; best = s; }
   }
@@ -2638,11 +2655,23 @@ function harvestThink(sh) {
     if (!D || !alive(D)) { H.state = 'idle'; return; }
     if (sh.track && sh.track.locked && sh.track.tgt === D) {
       for (const k of RES) { const x = Math.min(sh.cargo[k], storeCap(D) - D.stock[k]); D.stock[k] += x; sh.cargo[k] -= x; }
-      stopTrack(sh); H.state = 'idle'; H.trips++; econDirty = fleetDirty = true;
+      stopTrack(sh); H.trips++; econDirty = fleetDirty = true;
+      // fill the tanks before going out again
+      H.state = sh.fuel < 0.9 * sh.stats.fuel ? 'refuel' : 'idle'; H.refuelT = worldT;
       return;
     }
     if (!sh.track) H.state = 'idle';
     return;
+  }
+  if (H.state === 'refuel') {
+    if (sh.fuel >= 0.9 * sh.stats.fuel || worldT - H.refuelT > 12 * 3600) H.state = 'idle'; else return;
+  }
+  // running low far from supply: go back to refuel first
+  if (sh.fuel < 0.3 * sh.stats.fuel && load < cap * 0.98) {
+    const near = stationsOf(sh.side).some(st => dist3(posNow(st).slice(), posNow(sh)) < SUPPLY_R);
+    if (near) { H.state = 'refuel'; H.refuelT = worldT; return; }
+    const D = nearestDrop(sh, true);
+    if (D) { orderTrack(D, [sh], { range: 400, preset: 'trail', quiet: true }); H.state = 'drop'; H.drop = D; return; }
   }
   if (load >= cap * 0.98 || (H.state === 'idle' && load > cap * 0.5 && !H.src)) {
     const D = nearestDrop(sh);
@@ -2655,7 +2684,9 @@ function harvestThink(sh) {
   if (!src) { H.state = 'none'; return; }
   if (atSource(sh, src)) { H.state = 'mine'; H.at = src; return; }
   const key = src.type + (src.j ?? src.fi);
-  if (H.state !== 'go' || H.key !== key || (!sh.ap.goal && !sh.pending)) { sendTo(sh, src); H.state = 'go'; H.key = key; H.at = null; }
+  // ten days on the way and still not there: give that source up and pick another
+  if (H.state === 'go' && H.key === key && worldT - (H.goT || worldT) > 10 * DAY) { (H.bad || (H.bad = new Set())).add(key); if (H.src && key === H.src.type + (H.src.j ?? H.src.fi)) H.src = null; H.state = 'idle'; H.goT = 0; return; }
+  if (H.state !== 'go' || H.key !== key || (!sh.ap.goal && !sh.pending)) { if (H.state !== 'go' || H.key !== key) H.goT = worldT; sendTo(sh, src); H.state = 'go'; H.key = key; H.at = null; }
 }
 function mineFrame(dt) {
   for (const sh of ships) {
@@ -2765,6 +2796,8 @@ function takeInTow(L, X, list = [L], then) {
   if (then) commandFleet(then.sel, then.kind, null, [L, ...followersOf(L)], !then.mine);
 }
 function towFrame() {
+  // a tug that has come close enough hooks its station there and then (it need not reach its exact square)
+  for (const s of ships) if (alive(s) && s.track && s.track.tow && !s.track.locked && s.cp && s.track.tgt.cp && dist3(s.cp, s.track.tgt.cp) < TOW_REACH / 2 && !towQ.includes(s)) towQ.push(s);
   for (const TL of towQ.splice(0)) {
     if (!alive(TL) || !TL.track || !TL.track.tow) continue;
     const X = TL.track.tgt, then = TL.track.then;
@@ -2784,16 +2817,16 @@ const AI = { home: 6, known: new Map(), wave: 0, strike: null, t: -Infinity };
 const AI_COLLECTOR = { name: 'Drone', hull: 'drone', eng: 3, reac: 1, rad: 0, tank: 4, armor: [1, 1, 0], util: ['harvester', 'cargo', 'cargo'], hard: [] };
 // the aliens' warships: lances first, a torpedo or two, PDC spines; three times a frigate's tonnage and more
 const ALIEN_DESIGNS = {
-  stalker:   { name: 'Stalker',   hull: 'stalker',   eng: 6,  reac: 3, rad: 5,  tank: 10, armor: [5, 4, 3],  util: ['sensorS', 'torpMag', 'pdcMag'], hard: ['lance', 'lance', 'lance', 'lance', 'torpedo', 'pdc', 'pdc'] },
-  ravager:   { name: 'Ravager',   hull: 'ravager',   eng: 9,  reac: 5, rad: 8,  tank: 14, armor: [8, 6, 4],  util: ['sensorS', 'sensorS', 'torpMag', 'pdcMag', 'pdcMag'], hard: ['lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'torpedo', 'pdc', 'pdc', 'pdc'] },
-  leviathan: { name: 'Leviathan', hull: 'leviathan', eng: 14, reac: 8, rad: 12, tank: 20, armor: [12, 9, 6], util: ['sensorL', 'torpMag', 'torpMag', 'pdcMag', 'pdcMag'], hard: ['lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'torpedo', 'torpedo', 'pdc', 'pdc', 'pdc', 'pdc'] },
+  stalker:   { name: 'Stalker',   hull: 'stalker',   eng: 6,  reac: 3, rad: 5,  tank: 12, armor: [5, 4, 3],  util: ['sensorS', 'torpMag', 'pdcMag'], hard: ['lance', 'lance', 'lance', 'lance', 'torpedo', 'pdc', 'pdc'] },
+  ravager:   { name: 'Ravager',   hull: 'ravager',   eng: 9,  reac: 5, rad: 8,  tank: 16, armor: [8, 6, 4],  util: ['sensorS', 'sensorS', 'torpMag', 'pdcMag', 'pdcMag'], hard: ['lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'torpedo', 'pdc', 'pdc', 'pdc'] },
+  leviathan: { name: 'Leviathan', hull: 'leviathan', eng: 14, reac: 8, rad: 12, tank: 22, armor: [12, 9, 6], util: ['sensorL', 'torpMag', 'torpMag', 'pdcMag', 'pdcMag'], hard: ['lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'lance', 'torpedo', 'torpedo', 'pdc', 'pdc', 'pdc', 'pdc'] },
 };
 function aiWarship() {
   const days = (worldT - game.t0) / DAY, R = Math.random();
   const hull = days > 40 && R < 0.3 ? 'leviathan' : days > 12 && R < 0.55 ? 'ravager' : 'stalker';
   return JSON.parse(JSON.stringify(ALIEN_DESIGNS[hull]));
 }
-function aiSite() {
+function aiSite(maxD = Infinity, from = null) {
   // sites for new infrastructure, nearer you as it spreads: rock fields of the belts and Trojans, Mars, the Moon
   const taken = stationsOf('them').map(s => posNow(s).slice());
   absPos(3, worldT, W1); absPos(AI.home, worldT, W2);
@@ -2801,6 +2834,7 @@ function aiSite() {
   let best = null, bs = Infinity;
   const consider = (src, p) => {
     if (taken.some(q => dist3(q, p) < 3e6)) return;
+    if (from && dist3(p, from) > maxD) return;                 // beyond what its tug can tow it to
     const dE = dist3(p, W1), dH = dist3(p, W2), w = Math.min(0.8, 0.1 + 0.2 * Math.max(0, n - 2));     // first near home, then on toward you
     const sc = w * dE + (1 - w) * dH;
     if (sc < bs) { bs = sc; best = src; }
@@ -2822,7 +2856,7 @@ function aiThink() {
   // collectors: gather what it is shortest of
   for (const c of col) if (c.hv && (c.hv.want === 'off' || c.hv.state === 'idle' || c.hv.state === 'none')) {
     const need = { fuel: stock.fuel / 3000, base: stock.base / 4000, noble: stock.noble / 2000 };
-    c.hv.want = RES.reduce((a, b) => need[a] <= need[b] ? a : b);
+    c.hv.want = RES.slice().sort((a, b) => need[a] - need[b]).find(k => nearestSource(c, k)) || 'fuel';
   }
   // production
   const pendingInfra = infra.filter(s => !s.deployed && s !== AI.homeYard && s !== AI.homeDepot).length + yards.reduce((n, Y) => n + Y.queue.filter(j => j.cost.infra).length, 0);
@@ -2835,10 +2869,13 @@ function aiThink() {
   // expansion: a new station is towed to its site by a free warship, and let go there
   for (const st of infra) {
     if (st.deployed || st.leader || st === AI.homeYard || st === AI.homeDepot) continue;
-    if (!st.site) st.site = aiSite();
-    if (!st.site) { st.deployed = true; continue; }
-    const tug = war.filter(aiFree).sort((a, b) => dist3(posNow(a).slice(), posNow(st)) - dist3(posNow(b), posNow(st)))[0];
+    if (war.some(w => w.towing === st && alive(w))) continue;          // a tug is already on its way
+    const tug = war.filter(s => aiFree(s) && s.fuel > 0.8 * s.stats.fuel).sort((a, b) => dist3(posNow(a).slice(), posNow(st)) - dist3(posNow(b), posNow(st)))[0];
     if (!tug) continue;
+    // how far it can tow: flat out at the shared push, the tug paying for both masses, on nine tenths of its propellant
+    const m = tug.stats.mass, M = st.stats.mass, aTow = tug.stats.accel / 1000 * m / (m + M), dvTow = 0.9 * tug.fuel / m / (1 + M / m);
+    if (!st.site) st.site = aiSite((dvTow / 2) ** 2 / aTow, posNow(st).slice());
+    if (!st.site) { st.deployed = true; continue; }
     const sel = st.site.type === 'body' ? { type: 'body', j: st.site.j, rp: 12 * RAD[st.site.j] } : { type: 'field', fi: st.site.fi };
     tug.towing = st;
     if (dist3(posNow(tug).slice(), posNow(st)) < TOW_REACH) takeInTow(tug, st, [tug], { sel, kind: sel.type === 'field' ? 'stop' : 'orbit' });
@@ -2861,6 +2898,18 @@ function aiThink() {
     if (list.length && !loopsBack(list[0], T)) { for (const s of list) s.target = T; orderTrack(T, list, { range: standoff(list) / 1.2, preset: 'envelop', quiet: true }); for (const s of list) s.mission = 'defend'; }
   }
   for (const s of war) if (s.mission === 'defend' && !s.track && !s.leader) s.mission = null;
+  for (const s of war) if (s.mission === 'defend' && !s.leader && s.track) {
+    const home = nearestOwn(s), T = s.track.tgt;
+    if (s.fuel < 0.4 * s.stats.fuel || (home && dist3(posNow(T).slice(), posNow(home)) > 1e7)) {
+      stopTrack(s); s.mission = 'return';
+      if (home) commandFleet({ type: 'body', j: home.prim, rp: Math.hypot(home.S[0], home.S[1], home.S[2]) }, 'orbit', null, [s, ...followersOf(s)], true);
+    }
+  }
+  for (const s of war) if (s.mission === 'return' && !s.leader && !s.ap.goal && !s.pending) s.mission = null;
+  for (const s of war) if (aiFree(s) && s.fuel < 0.3 * s.stats.fuel && s.fuel > 0) {
+    const home = nearestOwn(s);
+    if (home && dist3(posNow(home).slice(), posNow(s)) > SUPPLY_R) { s.mission = 'return'; commandFleet({ type: 'body', j: home.prim, rp: Math.hypot(home.S[0], home.S[1], home.S[2]) }, 'orbit', null, [s], true); }
+  }
   // the attack: once enough warships are free, a wave goes for your nearest known infrastructure (or Earth)
   const waveN = AI.coop ? Math.min(9, 4 + AI.wave) : Math.min(6, 3 + AI.wave), fueled = s => s.fuel > 0.85 * s.stats.fuel && s.ammo.slugs >= 0.8 * s.stats.slugs && s.ammo.torps >= 0.8 * s.stats.torps;
   const ready = war.filter(s => aiFree(s) && fueled(s));
@@ -2889,7 +2938,7 @@ function aiThink() {
       const nearSh = seenUs.filter(s => !s.station && dist3(s.cp, L.cp) < 1.5e6).sort((a, b) => dist3(a.cp, L.cp) - dist3(b.cp, L.cp))[0];
       const T = nearSh && (!nearSt || dist3(nearSh.cp, L.cp) < 0.5 * dist3(nearSt.cp, L.cp)) ? nearSh : nearSt;
       const lowFuel = list.reduce((a, s) => a + s.fuel / Math.max(1, s.stats.fuel), 0) / list.length < 0.2;
-      if (lowFuel && S.aim !== 'home') { S.aim = 'home'; const H = AI.homeYard && alive(AI.homeYard) ? AI.homeYard : infra[0]; commandFleet({ type: 'body', j: H.prim, rp: Math.hypot(H.S[0], H.S[1], H.S[2]) }, 'orbit', null, list, true); }
+      if (lowFuel && S.aim !== 'home') { S.aim = 'home'; const H = nearestOwn(L) || infra[0]; commandFleet({ type: 'body', j: H.prim, rp: Math.hypot(H.S[0], H.S[1], H.S[2]) }, 'orbit', null, list, true); }
       else if (T && S.aim !== 'home') {
         const tracking = L.track && L.track.tgt === T;
         // the ships of the wave that are here go in (stragglers still on the way are not pulled off their course)
@@ -2906,11 +2955,22 @@ function aiThink() {
   }
 }
 // a strike goes for the nearest infrastructure of yours it knows of; knowing of none, it heads for Earth
+// the nearest of a ship's own side's stations (not one under tow)
+function nearestOwn(sh) { const p = posNow(sh).slice(); let best = null, bd = Infinity; for (const st of stationsOf(sh.side)) { if (st.leader) continue; const d = dist3(posNow(st), p); if (d < bd) { bd = d; best = st; } } return best; }
 function aimStrike() {
   const S = AI.strike, list = S.list.filter(alive); if (!list.length) return;
   const L = list[0], p = posNow(L).slice();
+  // only what the wave can reach on seven tenths of its propellant, flat out (the rest to fight and get back)
+  const aKm = Math.min(...list.map(s => s.stats.accel)) / 1000, dv = Math.min(...list.map(s => s.fuel / s.stats.mass));
+  const reach = d => 2 * Math.sqrt(d * aKm) < 0.7 * dv;
   let best = null, bd = Infinity;
-  for (const [s, k] of AI.known) { const d = dist3(k.p, p); if (d < bd) { bd = d; best = k; } }
+  for (const [s, k] of AI.known) { const d = dist3(k.p, p); if (d < bd && reach(d) && canReach(k.j, aKm * 1000)) { bd = d; best = k; } }
+  absPos(3, worldT, W1);
+  if (!best && !reach(dist3(W1, p))) {
+    // nothing in reach: the wave stands down until the enemy has spread closer (or tanks up)
+    for (const s of list) s.mission = null; AI.strike = null; AI.wave = Math.max(0, AI.wave - 1);
+    return;
+  }
   const goal = best ? { type: 'body', j: best.j, rp: best.r } : { type: 'body', j: 3, rp: 40000 };     // (the orbit order keeps it above the well floor)
   const key = goal.j + ':' + Math.round(goal.rp);
   if (S.aim === key && (L.ap.goal || L.pending)) return;
@@ -3032,7 +3092,7 @@ function renderHarvest(list) {
   const H = list[0].hv, want = list.every(s => s.hv.want === H.want) ? H.want : '';
   const cap = list.reduce((a, s) => a + s.stats.cargo, 0), load = list.reduce((a, s) => a + cargoLoad(s), 0);
   const what = RES.filter(k => list.some(s => s.cargo[k] > 0.5)).map(k => `${fmtT(list.reduce((a, s) => a + s.cargo[k], 0))} ${RES_SHORT[k].toLowerCase()}`).join(' · ');
-  const st = { mine: H.at ? `mining at ${SRC_NAME(H.at)} (×${srcFactor(H.at).toFixed(2)})` : 'mining', go: 'flying to the source', drop: `bringing it to ${H.drop ? H.drop.name : 'a depot'}`, full: 'full: no depot with room', none: 'no source of that in reach', idle: 'idle' }[H.state] || H.state;
+  const st = { mine: H.at ? `mining at ${SRC_NAME(H.at)} (×${srcFactor(H.at).toFixed(2)})` : 'mining', go: 'flying to the source', drop: `bringing it to ${H.drop ? H.drop.name : 'a depot'}`, full: 'full: no depot with room', none: 'no source of that in reach', idle: 'idle', refuel: 'refuelling' }[H.state] || H.state;
   return `<header><span class="brand">Collector${list.length > 1 ? 's' : ''}</span><span class="form-sub">${list.length === 1 ? list[0].name : list.length + ' selected'} · ${fmtT(list[0].stats.harvest * list.length)} t/h at the source</span></header>
     <div class="seg" role="group" aria-label="Harvest">${['off', ...RES].map(k => `<button type="button" data-hv="${k}" aria-pressed="${want === k}">${k === 'off' ? 'Off' : RES_SHORT[k]}</button>`).join('')}</div>
     <p class="stn-net">Source: <b>${H.src ? SRC_NAME(H.src) : 'nearest'}</b> ${H.src ? '<button type="button" data-src="auto">Nearest</button>' : ''}<button type="button" data-src="pick" aria-pressed="${pickSrc}">${pickSrc ? 'Right-click a body or field…' : 'Pick source'}</button></p>
@@ -3076,7 +3136,7 @@ hvEl.addEventListener('click', e => {
 // the fleet list's note on what a station or collector is doing
 function econTag(sh) {
   if (sh.station && isYard(sh) && sh.queue.length) { const j = sh.queue[0]; return j.wait ? ` · waiting for ${j.wait}` : ` · building ${j.d.name} ${Math.round(100 * (1 - j.left / j.cost.mass))}%`; }
-  if (sh.hv && sh.hv.want !== 'off') return ` · ${{ mine: 'mining', go: 'to source', drop: 'unloading', full: 'hold full', none: 'no source', idle: 'harvesting' }[sh.hv.state] || 'harvesting'} ${RES_SHORT[sh.hv.want].toLowerCase()}`;
+  if (sh.hv && sh.hv.want !== 'off') return ` · ${{ mine: 'mining', go: 'to source', drop: 'unloading', full: 'hold full', none: 'no source', idle: 'harvesting', refuel: 'refuelling' }[sh.hv.state] || 'harvesting'} ${RES_SHORT[sh.hv.want].toLowerCase()}`;
   return '';
 }
 // picking a source for the selected collectors: a body or field under the cursor
@@ -3367,7 +3427,9 @@ function genDesign() {
   const hull = ['corvette', 'frigate', 'frigate', 'destroyer'][Math.floor(Math.random() * 4)];
   return autoDesign(HULLS[hull].name, hull);
 }
-const ENEMY_NAMES = ['Vulture', 'Jackal', 'Viper', 'Hyena', 'Mamba', 'Wraith', 'Shrike', 'Adder', 'Harrier', 'Cobra'];
+// what your crews call the enemy's ships: pests
+const ENEMY_NAMES = ['Rat', 'Flea', 'Weevil', 'Tick', 'Louse', 'Roach', 'Termite', 'Locust', 'Aphid', 'Mite', 'Gnat', 'Leech', 'Maggot', 'Mosquito', 'Earwig',
+  'Silverfish', 'Botfly', 'Chigger', 'Bedbug', 'Borer', 'Midge', 'Cutworm', 'Mealybug', 'Woodlouse', 'Thrips', 'Hornworm', 'Pinworm', 'Nit', 'Grub', 'Blowfly'];
 let enemySeq = 0;
 // an enemy fleet of three, about 1.5 million km out from Earth (a little beyond its sphere of influence)
 function spawnEnemyFleet() {
@@ -3629,15 +3691,34 @@ function selectFleet(F) {
   selectOnly([flag, ...membersOf(F).filter(s => s !== flag)]);
   formDirty = true;
 }
+// a fleet's name, edited in place in its header (Enter keeps it, Esc cancels)
+function renameFleet(F, el) {
+  const tx = el.querySelector('.fl-tx'); if (!tx) return;
+  const inp = document.createElement('input'); inp.className = 'rename fl-in'; inp.value = F.name; inp.maxLength = 24; inp.spellcheck = false; inp.setAttribute('aria-label', 'Fleet name');
+  tx.hidden = true; tx.after(inp); inp.focus(); inp.select();
+  const done = ok => {
+    if (!inp.isConnected) return;
+    const name = cleanName(inp.value).slice(0, 24);
+    if (ok && name && name !== F.name) { F.name = name; tx.textContent = name; showToast(`Fleet renamed: ${name}`); }
+    inp.remove(); tx.hidden = false; fleetDirty = formDirty = true;
+  };
+  inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') done(true); else if (e.key === 'Escape') done(false); });
+  inp.addEventListener('click', e => e.stopPropagation());
+  inp.addEventListener('blur', () => done(true));
+}
 function fleetHeader(F) {
   const el = document.createElement('li');
   el.className = 'fl-hd';
-  el.innerHTML = `<span class="fl-nm"><button type="button" class="fold" data-a="fold" aria-label="Fold or unfold ${F.name}">▾</button>${F.name}<small></small></span><span class="fl-b"><button type="button" data-a="add" title="Add the selected ships to ${F.name}">+</button><button type="button" data-a="rem" title="Take the selected ships out of ${F.name}">−</button><button type="button" data-a="del" title="Disband ${F.name}">✕</button></span>`;
+  el.innerHTML = `<span class="fl-nm"><button type="button" class="fold" data-a="fold" aria-label="Fold or unfold ${F.name}">▾</button><span class="fl-tx" title="Double-click to rename">${F.name}</span><small></small></span><span class="fl-b"><button type="button" data-a="add" title="Add the selected ships to ${F.name}">+</button><button type="button" data-a="rem" title="Take the selected ships out of ${F.name}">−</button><button type="button" data-a="del" title="Disband ${F.name}">✕</button></span>`;
   el.addEventListener('click', e => {
     const a = e.target.closest('button'); e.stopPropagation();
     if (!a) selectFleet(F); else if (a.dataset.a === 'fold') { F.folded = !F.folded; fleetSig = ''; syncFleetList(); } else if (a.dataset.a === 'add') addToFleet(F); else if (a.dataset.a === 'rem') leaveFleet(F); else disbandFleet(F);
   });
-  el.addEventListener('dblclick', e => { if (e.target.closest('button')) return; const f = flagOf(F); if (f) { lead = f; bindLead(); setFocus(-1); } });
+  el.addEventListener('dblclick', e => {
+    if (e.target.closest('button') || e.target.closest('input')) return;
+    if (e.target.closest('.fl-tx')) { renameFleet(F, el); return; }           // the name: rename the fleet
+    const f = flagOf(F); if (f) { lead = f; bindLead(); setFocus(-1); }
+  });
   el.addEventListener('contextmenu', e => e.preventDefault());
   return el;
 }
