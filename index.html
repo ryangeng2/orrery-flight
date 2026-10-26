@@ -792,11 +792,11 @@ function forSelected(fn) {
   return list.length;
 }
 
-function clearTrail() { trHead = trCount = 0; trailT = -Infinity; }
+function clearTrail() { trHead = trCount = 0; trailT = -Infinity; SH.trEpoch++; }
 function pushTrail(x = S[0], y = S[1], z = S[2], t = simT) {
   const k = 3 * trHead;
   TR[k] = x; TR[k + 1] = y; TR[k + 2] = z;
-  trHead = (trHead + 1) % TRAIL_MAX; trCount = Math.min(trCount + 1, TRAIL_MAX); trailT = t;
+  trHead = (trHead + 1) % TRAIL_MAX; trCount = Math.min(trCount + 1, TRAIL_MAX); trailT = t; SH.trN++;
 }
 const TK = new Float64Array(6);
 function trailAlong(dt, mu) {
@@ -1354,7 +1354,7 @@ function reshape(L, change) {
 function attach(f, L) {
   shipAbs(f, FA);
   f.leader = L; f.ap.goal = null; f.ap.node = null; f.ap.burning = false; f.ap.hold = false; f.patchCount = 0;
-  f.joinT = performance.now(); f.trHead = f.trCount = 0; f.trailT = -Infinity;
+  f.joinT = performance.now(); f.trHead = f.trCount = 0; f.trailT = -Infinity; f.trEpoch++;
   f._joinFrom = FA.slice();
 }
 // after attaching wingmen: lay out the grid; one already close to its cell eases in, one farther off flies there
@@ -1396,7 +1396,7 @@ function finishJoin(f) {
   f.prim = L.prim; f.t = L.t;
   shipAbs(f, FA);
   for (let k = 0; k < 3; k++) f.joinOff[k] = was[k] - FA[k];
-  f.joinT = performance.now(); f.trHead = f.trCount = 0; f.trailT = -Infinity;
+  f.joinT = performance.now(); f.trHead = f.trCount = 0; f.trailT = -Infinity; f.trEpoch++;
   fleetDirty = formDirty = navDirty = true;
 }
 function detach(f) {
@@ -1406,7 +1406,7 @@ function detach(f) {
     if (f.ap.goal && f.ap.goal.kind === 'meet') { f.ap.goal = null; f.ap.node = null; f.ap.burning = false; }
   }
   for (let k = 0; k < 3; k++) f.joinOff[k] = 0;
-  f.leader = null; f.predDirty = true; f.trHead = f.trCount = 0; f.trailT = -Infinity; formDirty = true;
+  f.leader = null; f.predDirty = true; f.trHead = f.trCount = 0; f.trailT = -Infinity; f.trEpoch++; formDirty = true;
 }
 // a leader that leaves (new orders, or lost) hands its remaining wingmen to the one nearest it in the grid,
 // keeping their arrangement
@@ -1701,7 +1701,7 @@ function stopTrack(TL, why) {
   if (tr.locked) {
     // fly on from here; wingmen ease back into their own formation
     reshape(TL, () => { TL.track = null; });
-    TL.trHead = TL.trCount = 0; TL.trailT = -Infinity;
+    TL.trHead = TL.trCount = 0; TL.trailT = -Infinity; TL.trEpoch++;
     if (SH === TL) clearTrail();
   } else if (TL.ap.goal && TL.ap.goal.kind === 'meet') { TL.ap.goal = null; TL.ap.node = null; TL.ap.burning = false; }
   TL.track = null; TL.predDirty = true;
@@ -1961,6 +1961,7 @@ function useFuel(sh, dv) {
 // ================================================================
 const shots = [], beams = [];          // torpedoes and slugs in flight; laser and PDC flashes to draw
 let weaponsMode = 'auto', combatHot = false, aiT = -Infinity;
+const COMBAT_LEAD = 120;               // s: how much of a frame a fight that has just begun is fought over
 const wmode = { p1: 'auto', p2: 'auto' };        // each player's weapons mode (weaponsMode is this player's)
 const VIS = { us: [], them: [] };     // x, y, z, r² for every ship that sees
 const CPa = [0, 0, 0], CPb = [0, 0, 0], CPS = new Float64Array(6);
@@ -2282,6 +2283,7 @@ function reachOf(sh) {
 function combatFrame(t0, t1) {
   updateJinks(t1 - t0);
   combatPositions(t1);
+  const was = combatHot;
   // in reach of a fight: a pair of enemies within reach of torpedoes (and a bit), or anything in flight
   let hot = shots.length > 0;
   if (!hot) outer: for (const a of ships) {
@@ -2291,9 +2293,13 @@ function combatFrame(t0, t1) {
   }
   combatHot = hot;
   for (const sh of ships) if (alive(sh)) sh.aimTgt = hot ? pickTarget(sh, t1, t1) : null;
-  const span = t1 - t0;
+  let span = t1 - t0;
   if (span <= 0) return;
-  if (!hot) { for (const sh of ships) if (alive(sh)) sh.heat = Math.max(0, sh.heat - sh.stats.cool * span); return; }
+  const cool = dt => { for (const sh of ships) if (alive(sh)) sh.heat = Math.max(0, sh.heat - sh.stats.cool * dt); };
+  if (!hot) { cool(span); return; }
+  // a fight that has only just begun is fought over the last two minutes of the frame: before that the ships were
+  // still closing (a long frame at a high warp would otherwise replay hours of approach, a step every two seconds)
+  if (!was && span > COMBAT_LEAD) { cool(span - COMBAT_LEAD); t0 = t1 - COMBAT_LEAD; span = COMBAT_LEAD; }
   const n = Math.max(1, Math.min(3000, Math.ceil(span / 2))), dt = span / n;
   for (let i = 1; i <= n; i++) {
     const tau = t0 + i * dt;
@@ -2894,7 +2900,8 @@ function aiThink() {
   const threats = seenUs.filter(s => infra.some(i => dist3(i.cp || posNow(i), s.cp) < 3e6));
   const free = war.filter(aiFree);
   if (threats.length && free.length) {
-    const T = threats[0], list = free.filter(s => dist3(s.cp, T.cp) < 2e7);
+    // (a ship finished this frame has no combat position yet)
+    const T = threats[0], list = free.filter(s => dist3(posNow(s), T.cp) < 2e7);
     if (list.length && !loopsBack(list[0], T)) { for (const s of list) s.target = T; orderTrack(T, list, { range: standoff(list) / 1.2, preset: 'envelop', quiet: true }); for (const s of list) s.mission = 'defend'; }
   }
   for (const s of war) if (s.mission === 'defend' && !s.track && !s.leader) s.mission = null;
@@ -2932,17 +2939,17 @@ function aiThink() {
     const S = AI.strike, list = S.list.filter(alive);
     if (!list.length) AI.strike = null;
     else {
-      const L = fleetLeader(list[0]);
+      const L = fleetLeader(list[0]), Lp = posNow(L).slice();
       // in sight: your infrastructure first, then your ships
-      const nearSt = seenUs.filter(s => s.station && dist3(s.cp, L.cp) < 5e6).sort((a, b) => dist3(a.cp, L.cp) - dist3(b.cp, L.cp))[0];
-      const nearSh = seenUs.filter(s => !s.station && dist3(s.cp, L.cp) < 1.5e6).sort((a, b) => dist3(a.cp, L.cp) - dist3(b.cp, L.cp))[0];
-      const T = nearSh && (!nearSt || dist3(nearSh.cp, L.cp) < 0.5 * dist3(nearSt.cp, L.cp)) ? nearSh : nearSt;
+      const nearSt = seenUs.filter(s => s.station && dist3(s.cp, Lp) < 5e6).sort((a, b) => dist3(a.cp, Lp) - dist3(b.cp, Lp))[0];
+      const nearSh = seenUs.filter(s => !s.station && dist3(s.cp, Lp) < 1.5e6).sort((a, b) => dist3(a.cp, Lp) - dist3(b.cp, Lp))[0];
+      const T = nearSh && (!nearSt || dist3(nearSh.cp, Lp) < 0.5 * dist3(nearSt.cp, Lp)) ? nearSh : nearSt;
       const lowFuel = list.reduce((a, s) => a + s.fuel / Math.max(1, s.stats.fuel), 0) / list.length < 0.2;
       if (lowFuel && S.aim !== 'home') { S.aim = 'home'; const H = nearestOwn(L) || infra[0]; commandFleet({ type: 'body', j: H.prim, rp: Math.hypot(H.S[0], H.S[1], H.S[2]) }, 'orbit', null, list, true); }
       else if (T && S.aim !== 'home') {
         const tracking = L.track && L.track.tgt === T;
         // the ships of the wave that are here go in (stragglers still on the way are not pulled off their course)
-        const here = list.filter(s => dist3(posNow(s).slice(), L.cp) < 5e6);
+        const here = list.filter(s => dist3(posNow(s), Lp) < 5e6);
         if (!tracking && here.length && !loopsBack(L, T)) {
           for (const s of here) { s.target = T; s.targetGroup = T.station ? seenUs.filter(x => x.station) : null; }
           orderTrack(T, here, { range: standoff(here) / 1.2, preset: 'envelop', quiet: true });
@@ -3567,14 +3574,14 @@ function makeShip(name, r, ang, incl, design, side = 'us') {
   const sh = {
     id: shipSeq++, name, S: new Float64Array([r * Math.cos(ang), r * Math.sin(ang), 0, -v * Math.sin(ang) * ci, v * Math.cos(ang) * ci, v * si]),
     prim: 3, t: worldT, crashed: -1, dv: 0, ap: { goal: null, sel: null, node: null, burning: false, hold: false },
-    TR: new Float32Array(TRAIL_MAX * 3), trHead: 0, trCount: 0, trailT: -Infinity, trailDt: 60,
+    TR: new Float32Array(TRAIL_MAX * 3), trHead: 0, trCount: 0, trailT: -Infinity, trailDt: 60, trN: 0, trEpoch: 0,
     patches: Array.from({ length: PATCH_MAX }, () => ({ prim: 0, t0: 0, n: 0, pts: new Float32Array(PATCH_PTS * 3) })),
     patchCount: 0, pred: { enc: [], impact: -1, impT: 0, impPrim: 0, imp: [0, 0, 0], nodeAt: null }, predDirty: true, lastPred: 0, thrusting: false,
     sel: false, group: 0, leader: null, slot: 0, formDir: [1, 0, 0], formRight: [0, 0, -1], form: null, joinOff: [0, 0, 0], joinT: 0, dvPrev: 0, joining: false, joinSt: null, pending: null, track: null,
   };
   sh.side = side; sh.owner = side === 'us' ? 'p1' : null; sh.target = null; sh.vis = side === 'us'; sh.visThem = false; sh.hitT = -1e9;
   fitShip(sh, design || designs[0]);
-  sh.trail = dynLine(TRAIL_MAX + 1, 0xffffff, true);
+  sh.trail = trailLine();
   sh.lines = PATCH_COL.map(c => dynLine(PATCH_PTS, c, false, 0.9));
   sh.label = makeLabel(name, '', side === 'us' ? 'ship' : 'ship enemy');
   if (side === 'them') sh.ghostLbl = makeLabel('? ' + name, '', 'ship enemy ghostship');
@@ -4232,10 +4239,14 @@ function updateHUD() {
   if (nav.open) renderNavCost();
 }
 const fmtK = n => n >= 1000 ? (n / 1000).toFixed(n % 1000 ? 1 : 0) + 'k' : String(Math.floor(n));
+// the right column ends above the weapons and navigation cards when they are up (watched for, so that no frame
+// has to stop and measure the page)
+{
+  const mid = $('mid-r'), rc = document.querySelector('.right');
+  new ResizeObserver(() => { const h = mid.offsetHeight, mh = h ? `calc(100% - ${h + 10}px)` : ''; if (rc.style.maxHeight !== mh) rc.style.maxHeight = mh; }).observe(mid);
+}
 function updateFleet() {
   syncFleetList();
-  // the right column ends above the weapons and navigation cards when they are up
-  { const mr = $('mid-r').offsetHeight, mh = mr ? `calc(100% - ${mr + 10}px)` : ''; const rc = document.querySelector('.right'); if (rc.style.maxHeight !== mh) rc.style.maxHeight = mh; }
   updateEconPanels(); syncHelp();
   updateCombatPanels();
   // the side panel relabels its grid when the ship it is laid out on enters or leaves orbit
@@ -5455,35 +5466,83 @@ function blobTexture() {
 const blobTex = blobTexture(), GAS_COL = [0x4fb6c8, 0x8a6ad8, 0xc8607a, 0x6a9a5a, 0xd09a4a];
 const rockMat = new THREE.PointsMaterial({ size: 2, sizeAttenuation: false, vertexColors: true, transparent: true, opacity: 0.85, depthWrite: false });
 const debrisMat = new THREE.PointsMaterial({ size: 1.6, sizeAttenuation: false, vertexColors: true, transparent: true, opacity: 0.9, depthWrite: false });
-for (const f of FIELDS) {
-  const R = rng(hashStr(f.name) ^ Math.round(f.R)), obj = new THREE.Group();
+// The two hundred fields are drawn in three batches (rock dots, debris dots, and one mesh of soft billboards for
+// the clouds and the dust round rock fields), not as hundreds of objects: a draw call each was most of a frame's
+// rendering. Each frame drawFields tells every batch where its fields are now.
+const HAZE_COL = new THREE.Color(0x8a7a66);
+const dots = { rock: { loc: [], col: [], runs: [] }, debris: { loc: [], col: [], runs: [] } }, boards = [];
+FIELDS.forEach((f, fi) => {
+  const R = rng(hashStr(f.name) ^ Math.round(f.R));
   if (f.kind === 'gas') {
-    const col = GAS_COL[Math.floor(R() * GAS_COL.length)];
+    const col = new THREE.Color(GAS_COL[Math.floor(R() * GAS_COL.length)]);
     for (let k = 0; k < 7; k++) {
-      const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: blobTex, color: col, transparent: true, opacity: 0.1 + 0.12 * R(), depthWrite: false }));
-      s.position.set((R() - 0.5) * f.R, (R() - 0.5) * f.R, (R() - 0.5) * f.R * 0.5); s.scale.setScalar(f.R * (0.9 + 0.8 * R()));
-      s.material.rotation = R() * TAU; obj.add(s);
+      const op = 0.1 + 0.12 * R(), x = (R() - 0.5) * f.R, y = (R() - 0.5) * f.R, z = (R() - 0.5) * f.R * 0.5;
+      boards.push({ fi, off: [x, y, z], size: f.R * (0.9 + 0.8 * R()), rot: R() * TAU, col, op });
     }
   } else {
     // a clumpy swarm: most points near the centre, some subclumps
-    const n = f.name.startsWith('Kuiper') ? 160 : f.name.startsWith('Main') ? 220 : f.R < 1e5 ? 900 : 400, pos = new Float32Array(3 * n), col = new Float32Array(3 * n);
+    const n = f.name.startsWith('Kuiper') ? 160 : f.name.startsWith('Main') ? 220 : f.R < 1e5 ? 900 : 400, B = dots[f.kind], i0 = B.loc.length;
     const sub = Array.from({ length: 4 }, () => [(R() - 0.5) * f.R, (R() - 0.5) * f.R, (R() - 0.5) * f.R * 0.4]);
     for (let i = 0; i < n; i++) {
       const c = sub[i % 4], r = f.R * 0.55 * Math.pow(R(), 0.7), th = R() * TAU, ph = Math.acos(2 * R() - 1);
-      pos[3 * i] = c[0] * 0.6 + r * Math.sin(ph) * Math.cos(th); pos[3 * i + 1] = c[1] * 0.6 + r * Math.sin(ph) * Math.sin(th); pos[3 * i + 2] = c[2] * 0.6 + r * Math.cos(ph) * 0.45;
+      B.loc.push(c[0] * 0.6 + r * Math.sin(ph) * Math.cos(th), c[1] * 0.6 + r * Math.sin(ph) * Math.sin(th), c[2] * 0.6 + r * Math.cos(ph) * 0.45);
       const v = 0.55 + 0.45 * R();
-      if (f.kind === 'rock') { col[3 * i] = 0.62 * v; col[3 * i + 1] = 0.56 * v; col[3 * i + 2] = 0.48 * v; }
-      else { col[3 * i] = 0.72 * v; col[3 * i + 1] = 0.78 * v; col[3 * i + 2] = 0.86 * v; }
+      if (f.kind === 'rock') B.col.push(0.62 * v, 0.56 * v, 0.48 * v); else B.col.push(0.72 * v, 0.78 * v, 0.86 * v);
     }
-    const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3));
-    g.computeBoundingSphere();
-    obj.add(new THREE.Points(g, f.kind === 'rock' ? rockMat : debrisMat));
+    B.runs.push([fi, i0, B.loc.length]);
     // a faint dust haze round a rock field
-    if (f.kind === 'rock') { const h = new THREE.Sprite(new THREE.SpriteMaterial({ map: blobTex, color: 0x8a7a66, transparent: true, opacity: 0.07, depthWrite: false })); h.scale.setScalar(f.R * 1.6); obj.add(h); }
+    if (f.kind === 'rock') boards.push({ fi, off: [0, 0, 0], size: f.R * 1.6, rot: 0, col: HAZE_COL, op: 0.07 });
   }
-  f.obj = obj; scene.add(obj);
+});
+// each batch of dots holds its points round their fields' centres, and the GPU adds where each field is (a uniform
+// array, up to FIELD_CHUNK fields a batch: within what any GPU allows a vertex shader)
+const FIELD_CHUNK = 96, dotBatches = [];
+for (const k of ['rock', 'debris']) {
+  const B = dots[k];
+  for (let c = 0; c < B.runs.length; c += FIELD_CHUNK) {
+    const runs = B.runs.slice(c, c + FIELD_CHUNK), i0 = runs[0][1], i1 = runs[runs.length - 1][2], ix = new Float32Array((i1 - i0) / 3);
+    runs.forEach(([, a, b], r) => ix.fill(r, (a - i0) / 3, (b - i0) / 3));
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(Float32Array.from(B.loc.slice(i0, i1)), 3));
+    g.setAttribute('color', new THREE.BufferAttribute(Float32Array.from(B.col.slice(i0, i1)), 3));
+    g.setAttribute('fieldIx', new THREE.BufferAttribute(ix, 1));
+    const at = { value: Array.from({ length: FIELD_CHUNK }, () => new THREE.Vector3()) }, mat = (k === 'rock' ? rockMat : debrisMat).clone();
+    mat.onBeforeCompile = sh => {
+      sh.uniforms.fieldAt = at;
+      sh.vertexShader = `attribute float fieldIx;\nuniform vec3 fieldAt[${FIELD_CHUNK}];\n` + sh.vertexShader.replace('#include <begin_vertex>', 'vec3 transformed = position + fieldAt[int(fieldIx + 0.5)];');
+    };
+    const pts = new THREE.Points(g, mat); pts.frustumCulled = false; scene.add(pts);
+    dotBatches.push({ fields: runs.map(r => r[0]), at: at.value });
+  }
 }
+// the billboards: drawn as three.js draws a sprite (a quad facing the camera, sized in km, turned), back to front
+const boardMesh = (() => {
+  const n = boards.length, g = new THREE.BufferGeometry();
+  const corner = new Float32Array(8 * n), uv = new Float32Array(8 * n), sz = new Float32Array(4 * n), rot = new Float32Array(4 * n), tint = new Float32Array(16 * n);
+  const C = [-0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5], U = [0, 0, 1, 0, 1, 1, 0, 1];
+  boards.forEach((b, i) => {
+    for (let v = 0; v < 4; v++) {
+      const q = 4 * i + v;
+      corner[2 * q] = C[2 * v]; corner[2 * q + 1] = C[2 * v + 1]; uv[2 * q] = U[2 * v]; uv[2 * q + 1] = U[2 * v + 1];
+      sz[q] = b.size; rot[q] = b.rot; tint[4 * q] = b.col.r; tint[4 * q + 1] = b.col.g; tint[4 * q + 2] = b.col.b; tint[4 * q + 3] = b.op;
+    }
+  });
+  const pos = new THREE.BufferAttribute(new Float32Array(12 * n), 3); pos.setUsage(THREE.DynamicDrawUsage);
+  const idx = new THREE.BufferAttribute(new Uint16Array(6 * n), 1); idx.setUsage(THREE.DynamicDrawUsage);
+  g.setAttribute('position', pos); g.setAttribute('corner', new THREE.BufferAttribute(corner, 2)); g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  g.setAttribute('sz', new THREE.BufferAttribute(sz, 1)); g.setAttribute('rot', new THREE.BufferAttribute(rot, 1)); g.setAttribute('tint', new THREE.BufferAttribute(tint, 4));
+  g.setIndex(idx);
+  const mat = new THREE.ShaderMaterial({
+    uniforms: { map: { value: blobTex } }, transparent: true, depthWrite: false,
+    vertexShader: `attribute vec2 corner; attribute float sz, rot; attribute vec4 tint; varying vec2 vUv; varying vec4 vTint;
+      void main() { vUv = uv; vTint = tint; vec4 mv = modelViewMatrix * vec4(position, 1.0); vec2 a = corner * sz;
+        mv.xy += vec2(cos(rot) * a.x - sin(rot) * a.y, sin(rot) * a.x + cos(rot) * a.y); gl_Position = projectionMatrix * mv; }`,
+    fragmentShader: `uniform sampler2D map; varying vec2 vUv; varying vec4 vTint;
+      void main() { vec4 t = texture2D(map, vUv); gl_FragColor = vec4(vTint.rgb * t.rgb, vTint.a * t.a); }`,
+  });
+  const m = new THREE.Mesh(g, mat); m.frustumCulled = false; scene.add(m);
+  return { m, pos, idx, order: Array.from({ length: n }, (_, i) => i), depth: new Float64Array(n) };
+})();
 // and the belts themselves as a faint band of dust (only the clumps above blind sensors)
 const BELTS = [[2.1, 3.3, 0.06, 9000, [0.5, 0.45, 0.38]], [30, 50, 1.2, 12000, [0.42, 0.46, 0.55]]].map(([a0, a1, zz, n, c]) => {
   const R = rng(n), pos = new Float32Array(3 * n), col = new Float32Array(3 * n);
@@ -5498,9 +5557,28 @@ const BELTS = [[2.1, 3.3, 0.06, 9000, [0.5, 0.45, 0.38]], [30, 50, 1.2, 12000, [
   scene.add(pts);
   return { pts, n: Math.sqrt(GM[0] / (((a0 + a1) / 2 * AU) ** 3)) };
 });
+const fieldsAt = [NaN, NaN, NaN, NaN];
 function drawFields() {
-  for (const f of FIELDS) f.obj.position.set(f.p[0] - origin[0], f.p[1] - origin[1], f.p[2] - origin[2]);
   for (const b of BELTS) { b.pts.position.set(-origin[0], -origin[1], -origin[2]); b.pts.rotation.z = b.n * (simT - t0); }
+  for (const B of dotBatches) B.fields.forEach((fi, r) => { const p = FIELDS[fi].p; B.at[r].set(p[0] - origin[0], p[1] - origin[1], p[2] - origin[2]); });
+  // the billboards move only when the fields or the view's centre do
+  const moved = fieldsAt[0] !== origin[0] || fieldsAt[1] !== origin[1] || fieldsAt[2] !== origin[2] || fieldsAt[3] !== simT;
+  if (moved) {
+    fieldsAt[0] = origin[0]; fieldsAt[1] = origin[1]; fieldsAt[2] = origin[2]; fieldsAt[3] = simT;
+    const a = boardMesh.pos.array;
+    boards.forEach((b, i) => {
+      const p = FIELDS[b.fi].p, x = p[0] - origin[0] + b.off[0], y = p[1] - origin[1] + b.off[1], z = p[2] - origin[2] + b.off[2];
+      for (let v = 0; v < 4; v++) { a[12 * i + 3 * v] = x; a[12 * i + 3 * v + 1] = y; a[12 * i + 3 * v + 2] = z; }
+    });
+    boardMesh.pos.needsUpdate = true;
+  }
+  // back to front, as separate sprites were sorted
+  const { order, depth, idx } = boardMesh, a = boardMesh.pos.array, c = camera.position;
+  for (let i = 0; i < boards.length; i++) { const k = 12 * i; depth[i] = (a[k] - c.x) ** 2 + (a[k + 1] - c.y) ** 2 + (a[k + 2] - c.z) ** 2; }
+  order.sort((p, q) => depth[q] - depth[p]);
+  const ix = idx.array;
+  for (let j = 0; j < order.length; j++) { const q = 4 * order[j], k = 6 * j; ix[k] = q; ix[k + 1] = q + 1; ix[k + 2] = q + 2; ix[k + 3] = q; ix[k + 4] = q + 2; ix[k + 5] = q + 3; }
+  idx.needsUpdate = true;
 }
 
 // ---- combat drawing: vision spheres (as rings on the plane of each ship), shots in flight, beams
@@ -5646,20 +5724,38 @@ function setLine(L, pts, n, ax, ay, az) {
 }
 // a formation shows one course and one trail: its leader's, whenever any of its ships is selected
 const courseShown = sh => alive(sh) && simulated(sh) && (sh.sel || ships.some(f => f.leader === sh && f.sel));
+// A trail is drawn from a buffer that holds each of its points twice (at k, its place in the ship's ring of points,
+// and at k + TRAIL_MAX), so the newest points always lie in one unbroken run: a frame writes only the points added
+// since the last, and the fade along the trail is worked out on the GPU from each vertex's place in the run.
+const TRAIL_SLOT = new THREE.BufferAttribute(Float32Array.from({ length: 2 * TRAIL_MAX }, (_, k) => k), 1);
+const TRAIL_VS = `uniform float start, count, br; attribute float slot; varying vec3 vC;
+  void main() { float f = (0.12 + 0.45 * (slot - start) / count) * br; vC = vec3(f, f * 0.93, f * 0.83); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
+const TRAIL_FS = 'varying vec3 vC; void main() { gl_FragColor = vec4(vC, 1.0); }';
+function trailLine() {
+  const g = new THREE.BufferGeometry(), p = new THREE.BufferAttribute(new Float32Array(6 * TRAIL_MAX), 3);
+  p.setUsage(THREE.DynamicDrawUsage); g.setAttribute('position', p); g.setAttribute('slot', TRAIL_SLOT);
+  const mat = new THREE.ShaderMaterial({ uniforms: { start: { value: 0 }, count: { value: 1 }, br: { value: 1 } }, vertexShader: TRAIL_VS, fragmentShader: TRAIL_FS, transparent: true, depthWrite: false });
+  const l = new THREE.Line(g, mat);
+  l.frustumCulled = false; g.setDrawRange(0, 0); l.drawn = { n: 0, epoch: -1 };
+  scene.add(l); return l;
+}
 function drawTrail(sh) {
   const L = sh.trail;
   if (!alive(sh) || !simulated(sh) || (sh.side === 'them' && !sh.vis)) { L.visible = false; return; }
   L.visible = true;
-  const pa = L.geometry.attributes.position.array, ca = L.geometry.attributes.color.array, start = (sh.trHead - sh.trCount + TRAIL_MAX) % TRAIL_MAX;
-  const br = sh.sel ? 1 : 0.55;
-  for (let k = 0; k < sh.trCount; k++) {
-    const s = 3 * ((start + k) % TRAIL_MAX), d = 3 * k, f = (0.12 + 0.45 * k / sh.trCount) * br;
-    pa[d] = sh.TR[s]; pa[d + 1] = sh.TR[s + 1]; pa[d + 2] = sh.TR[s + 2]; ca[d] = f; ca[d + 1] = f * 0.93; ca[d + 2] = f * 0.83;
-  }
-  const d = 3 * sh.trCount; pa[d] = sh.S[0]; pa[d + 1] = sh.S[1]; pa[d + 2] = sh.S[2]; ca[d] = 0.57 * br; ca[d + 1] = 0.53 * br; ca[d + 2] = 0.47 * br;
-  L.geometry.setDrawRange(0, sh.trCount + 1);
+  const M = TRAIL_MAX, P = L.geometry.attributes.position, a = P.array, TR = sh.TR, D = L.drawn, head = sh.trHead, count = sh.trCount;
+  const put = i => { const s = 3 * i, d = 3 * (i + M); a[s] = a[d] = TR[s]; a[s + 1] = a[d + 1] = TR[s + 1]; a[s + 2] = a[d + 2] = TR[s + 2]; };
+  const start = (head - count + M) % M, n = sh.trN - D.n, all = sh.trEpoch !== D.epoch || n >= M;
+  if (all) for (let k = 0; k < count; k++) put((start + k) % M);
+  else for (let k = n; k > 0; k--) put((head - k + M) % M);
+  D.n = sh.trN; D.epoch = sh.trEpoch;
+  // the ship itself, just past the newest point
+  const e = 3 * (start + count); a[e] = sh.S[0]; a[e + 1] = sh.S[1]; a[e + 2] = sh.S[2];
+  if (!all && !n) { P.updateRange.offset = e; P.updateRange.count = 3; }
+  P.needsUpdate = true;
+  const U = L.material.uniforms; U.start.value = start; U.count.value = Math.max(1, count); U.br.value = sh.sel ? 1 : 0.55;
+  L.geometry.setDrawRange(start, count + 1);
   L.position.copy(meshes[sh.prim].position);
-  L.geometry.attributes.position.needsUpdate = L.geometry.attributes.color.needsUpdate = true;
 }
 const MK = new Float64Array(6), tracked = new Set(), aimed = new Set();
 const shown = [], STEM = new Float32Array(6 * (MAX_SHIPS + 1)), MOVEP = new Float32Array(6), TGT = [0, 0, 0];
