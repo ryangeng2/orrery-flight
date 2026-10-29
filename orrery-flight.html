@@ -5883,9 +5883,10 @@ window.addEventListener('pointerdown', e => { if (!menuEl.hidden && !menuEl.cont
 // as a spinal mount, torpedoes sit in launch cells), radiators spread as wings, sensors stand as masts or a
 // radome, and the engines form a cluster of bells with blue (yours) or orange (theirs) exhaust. A hull unit is
 // 10 m. Models are drawn (after Sins of a Solar Empire, far beyond true scale) whenever the view is no wider than
-// two million km: about 48 px long for a frigate up close, shrinking to 60% of that at the widest (other hulls by
-// the square root of their length: a station or a Ravager twice a frigate). Further out, ships show as icons.
-const CELL_KM = 0.01, MODEL_PX = 48, MODEL_REF_LEN = 9.5, MODEL_VIEW = 2e6, MODEL_NEAR = 1e5;
+// 600,000 km (a planet and its near orbits; the Earth–Moon view shows icons): about 48 px long for a frigate in views
+// up to 40,000 km wide, shrinking as (40,000 km / view width)^0.45 beyond (half that length at 250,000 km), other
+// hulls by the square root of their length (a station or a Ravager twice a frigate). Further out, ships are icons.
+const CELL_KM = 0.01, MODEL_PX = 48, MODEL_REF_LEN = 9.5, MODEL_VIEW = 6e5, MODEL_NEAR = 4e4;
 function rng(seed) { let s = (seed >>> 0) || 1; return () => { s ^= s << 13; s ^= s >>> 17; s ^= s << 5; return (s >>> 0) / 4294967296; }; }
 const hashStr = str => { let h = 2166136261; for (const c of str) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; };
 const matCache = {};
@@ -6461,7 +6462,7 @@ function animateModel(md, sh, rdt, now) {
 }
 function updateModels(rdt) {
   const now = performance.now(), Wv = 2 * cam.dist * Math.tan(camera.fov * D2R / 2) * Math.max(camera.aspect, 1);
-  const zf = 1 - 0.4 * clamp01(Math.log(Wv / MODEL_NEAR) / Math.log(MODEL_VIEW / MODEL_NEAR));
+  const zf = Math.min(1, Math.pow(MODEL_NEAR / Wv, 0.45));
   for (const sh of ships) {
     let md = sh.model;
     if (Wv > MODEL_VIEW || !alive(sh) || (sh.side === 'them' && !sh.vis)) { if (md) md.root.visible = false; sh.mpx = 0; continue; }
