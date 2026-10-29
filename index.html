@@ -425,6 +425,13 @@ input[type=range]{width:130px;accent-color:var(--thrust);margin:0}
 .sp-nm{font:600 13px var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--thrust)}
 .sp-nm[data-act]{cursor:text}
 .sp-nm[data-act]:hover{text-decoration:underline dotted}
+.sp-nm[data-act]::after,.sp-fl[data-act]::after{content:'✎';margin-left:6px;font-size:.85em;opacity:.5}
+.sp-fl[data-act]{cursor:text}
+.sp-fl[data-act]:hover{text-decoration:underline dotted}
+.fleet li .ren{position:absolute;right:30px;top:2px;display:none;padding:0 5px;min-width:0;font:600 11px/16px var(--f-num)}
+.fleet li:hover .ren{display:block}
+.fleet li.ally .ren{display:none}
+.fleet li input.row-in{grid-column:2;min-width:0;font:600 10.5px var(--f-ui);letter-spacing:.1em;text-transform:uppercase;color:var(--thrust);background:rgba(160,185,230,.08);border:1px solid var(--edge);border-radius:3px;padding:0 4px}
 .sp-hd input.rename{font:600 13px var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--thrust);background:rgba(160,185,230,.08);border:1px solid var(--edge);border-radius:4px;padding:1px 5px;width:170px}
 .sp-sub{font:400 11px var(--f-num);color:var(--dim)}
 .sp-fl{font:600 10px var(--f-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--path)}
@@ -581,8 +588,9 @@ input[type=range]{width:130px;accent-color:var(--thrust);margin:0}
       <details open><summary>Select &amp; fleets</summary><ul>
         <li><b>Click</b> a ship or row · <span class="k">Shift</span>-click adds · <b>drag</b> a box · <span class="k">Ctrl</span><span class="k">A</span> all. The panel at the foot shows what is selected and its orders</li>
         <li>Select ships in space and press <span class="k">N</span> (or <b>Group into fleet</b>) to make a fleet and name it; it is also saved as the next free group (<span class="k">1</span>–<span class="k">9</span> recalls it). <b>Add to fleet</b> in the panel adds the selection to one</li>
-        <li>Ships in no fleet wait under <b>Unassigned ships</b>, folded away. <b>+ Folder</b> files fleets: drag a fleet's header onto a folder (onto the Fleet title to take it out), or pick its folder in the panel</li>
-        <li>A fleet's header: click selects, <b>▾</b> folds, <b>+</b> adds, <b>−</b> removes, <b>✕</b> disbands; double-click its name to rename it</li></ul></details>
+        <li>Ships in no fleet wait under <b>Unassigned ships</b>, folded away. <b>+ Folder</b> files fleets and stations: drag a fleet's header or a station's row onto a folder (onto the Fleet title to take it out), or pick its folder in the panel. A new game files your stations in <b>Shipyards &amp; depots</b> and <b>Colonies</b></li>
+        <li><b>✎</b> renames: on a ship's or station's row (its callsign, painted on the hull), on a fleet's or folder's header; or click a name in the panel</li>
+        <li>A fleet's header: click selects, <b>▾</b> folds, <b>+</b> adds, <b>−</b> removes, <b>✕</b> disbands, <b>✎</b> (or double-click its name) renames it</li></ul></details>
       <details open><summary>Orders &amp; stances</summary><ul>
         <li><b>Right-click</b> a planet or moon: orbit it · empty space or <span class="k">M</span>: move there (<span class="k">Shift</span> + mouse sets height) · one of your ships: escort it</li>
         <li><b>Stances</b> (selection panel): <b>Aggressive</b> ships go after any enemy they see round the planet they are stationed at; <b>Defensive</b> ones only after enemies that come close, then come back; <b>Hold</b> never moves on its own</li>
@@ -1995,11 +2003,11 @@ const TORP = { accel: 0.05, dv: 70, dmg: 30, fuse: 30, life: 6 * 3600, cruise: 3
 // the bare hull's mass in tonnes, its length and beam in 10 m units (for the model), and its drive factor: what
 // each engine's thrust is multiplied by (a small hull's light frame takes more of it)
 const HULLS = {
-  corvette:  { name: 'Corvette',  eng: 2, reac: 1, rad: 2,  tank: 4,  util: 3,  hard: 2,  armor: 4,  mass: 20,  len: 7,  beam: 1.5, drive: 1.9 },
-  frigate:   { name: 'Frigate',   eng: 3, reac: 2, rad: 4,  tank: 6,  util: 4,  hard: 4,  armor: 6,  mass: 35,  len: 9.5, beam: 1.9, drive: 1.3 },
-  destroyer: { name: 'Destroyer', eng: 4, reac: 2, rad: 6,  tank: 8,  util: 6,  hard: 6,  armor: 8,  mass: 60,  len: 12, beam: 2.3, drive: 1 },
-  cruiser:   { name: 'Cruiser',   eng: 5, reac: 3, rad: 8,  tank: 10, util: 8,  hard: 8,  armor: 10, mass: 100, len: 15, beam: 2.8, drive: 0.8 },
-  titan:     { name: 'Titan',     eng: 6, reac: 4, rad: 10, tank: 14, util: 10, hard: 12, armor: 14, mass: 160, len: 19, beam: 3.4, drive: 0.65 },
+  corvette:  { name: 'Corvette',  eng: 2, reac: 1, rad: 2,  tank: 4,  util: 3,  hard: 2,  armor: 4,  mass: 20,  len: 6.5, beam: 1.8, drive: 1.9 },
+  frigate:   { name: 'Frigate',   eng: 3, reac: 2, rad: 4,  tank: 6,  util: 4,  hard: 4,  armor: 6,  mass: 35,  len: 9.5, beam: 1.6, drive: 1.3 },
+  destroyer: { name: 'Destroyer', eng: 4, reac: 2, rad: 6,  tank: 8,  util: 6,  hard: 6,  armor: 8,  mass: 60,  len: 13, beam: 2.4, drive: 1 },
+  cruiser:   { name: 'Cruiser',   eng: 5, reac: 3, rad: 8,  tank: 10, util: 8,  hard: 8,  armor: 10, mass: 100, len: 17, beam: 3, drive: 0.8 },
+  titan:     { name: 'Titan',     eng: 6, reac: 4, rad: 10, tank: 14, util: 10, hard: 12, armor: 14, mass: 160, len: 26, beam: 4.4, drive: 0.65 },
   // infrastructure: no engines (it is towed), fixed designs
   shipyard:  { name: 'Shipyard', eng: 0, reac: 2, rad: 4, tank: 2, util: 6, hard: 4, armor: 8, mass: 600, len: 28, beam: 9, drive: 0, station: true },
   depot:     { name: 'Supply depot', eng: 0, reac: 1, rad: 2, tank: 2, util: 6, hard: 4, armor: 6, mass: 300, len: 20, beam: 7, drive: 0, station: true },
@@ -3001,16 +3009,27 @@ const dist3 = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 const EP = [0, 0, 0];
 function posNow(sh) { if (sh.cp) return sh.cp; shipAbs(sh, EP); return EP; }
 // what a design costs: base metals for structure, noble metals for weapons, sensors and reactors (ammunition and
-// propellant are drawn from the depot when the ship fits out); and its build time at one slipway
+// propellant are drawn from the depot when the ship fits out); and its build time at one slipway. Your warships
+// cost more per tonne as they grow (materials × (mass / 350 t)^0.6) and take longer per tonne (6.5 h × (mass /
+// 200 t)^1.3 at one slipway: a 230 t corvette ~4 h at a two-slip yard, a 1,200 t titan ~2.5 days). Infrastructure and
+// the enemy's grown hulls go by tonnage alone. work: the job's size in tonnes of slipway work (BUILD_RATE a second
+// per slipway)
 const NOBLE_SHARE = { lance: 0.9, hab: 0.3, torpedo: 0.8, railgun: 0.7, laser: 0.9, pdc: 0.6, sensorS: 0.8, sensorL: 0.8, ecm: 0.7, reactor: 0.5, harvester: 0.3, dock: 0.2, torpMag: 0.2, railMag: 0.2, pdcMag: 0.2 };
 function designCost(d) {
   const c = { base: HULLS[d.hull].mass, noble: 0, mass: HULLS[d.hull].mass };
   for (const m of modsOf(d)) { const M = MOD[m.t], f = NOBLE_SHARE[m.t] || 0; c.base += M.mass * (1 - f); c.noble += M.mass * f; c.mass += M.mass; }
+  const H = HULLS[d.hull];
+  c.infra = !!H.station; c.work = c.mass;
+  if (!H.station && !H.alien) {
+    const f = Math.pow(c.mass / 350, 0.6);
+    c.base *= f; c.noble *= f;
+    c.work = BUILD_RATE * 6.5 * 3600 * Math.pow(c.mass / 200, 1.3);
+  }
   c.base = Math.round(c.base); c.noble = Math.round(c.noble);
-  c.infra = !!HULLS[d.hull].station;
   return c;
 }
-const buildSecs = (c, docks) => c.mass / (BUILD_RATE * Math.max(1, docks) * (c.infra ? INFRA_SPEED : 1));
+const jobWork = c => c.work || c.mass;
+const buildSecs = (c, docks) => jobWork(c) / (BUILD_RATE * Math.max(1, docks) * (c.infra ? INFRA_SPEED : 1));
 // the stations a shipyard builds from: itself, then the depots within reach
 function networkOf(Y) {
   const p = posNow(Y).slice();
@@ -3035,7 +3054,7 @@ function queueBuild(Y, d, quiet = false) {
   if (!quiet && Y.side !== 'us') { showToast(`${Y.name} is not your shipyard`); return false; }
   if (!quiet && toHost({ k: 'build', y: Y.id, d })) { showToast(`${d.name} queued at ${Y.name}`); return true; }
   const c = designCost(d);
-  Y.queue.push({ d: JSON.parse(JSON.stringify(d)), cost: c, left: c.mass, paid: false, wait: '' });
+  Y.queue.push({ d: JSON.parse(JSON.stringify(d)), cost: c, left: jobWork(c), paid: false, wait: '' });
   if (!quiet) showToast(`${d.name} queued at ${Y.name}: ${fmtT(c.base)} t base, ${fmtT(c.noble)} t noble · ${fmtDur(buildSecs(c, Y.stats.dock))}`);
   fleetDirty = econDirty = true;
   return true;
@@ -3105,6 +3124,7 @@ function completeJob(Y, job) {
   }
   placeBeside(sh, Y, 400 + 300 * Math.random());
   if (Y.side === 'us' && !infra) parkSpot(sh, Y);
+  if (Y.side === 'us' && infra) { const D = folders.find(D => D.kind === (isColony(sh) ? 'colony' : 'base')); if (D) sh.folder = D; }
   if (Y.side === 'us') sh.owner = Y.owner;           // a yard builds for whoever owns it
   if (Y.side === 'them') { alienFit(sh, d); sh.vis = false; }
   if (Y.side === 'us') showToast(`${Y.name} finished ${sh.name} (${d.name})${infra ? ': take it in tow to place it' : sh.parkAt ? `: fitting out, then parking ${fmtDist(sh.parkAt.rp - RAD[sh.parkAt.j])} up` : ': fitting out'}`, 6000);
@@ -3958,7 +3978,7 @@ function cancelJob(Y, i) {
 }
 // the fleet list's note on what a station or collector is doing
 function econTag(sh) {
-  if (sh.station && isYard(sh) && sh.queue.length) { const j = sh.queue[0]; return j.wait ? ` · waiting for ${j.wait}` : ` · building ${j.d.name} ${Math.round(100 * (1 - j.left / j.cost.mass))}%`; }
+  if (sh.station && isYard(sh) && sh.queue.length) { const j = sh.queue[0]; return j.wait ? ` · waiting for ${j.wait}` : ` · building ${j.d.name} ${Math.round(100 * (1 - j.left / jobWork(j.cost)))}%`; }
   if (sh.hv && sh.hv.want !== 'off') return ` · ${{ mine: 'mining', go: 'to source', drop: 'unloading', full: 'hold full', none: 'no source', idle: 'harvesting', refuel: 'refuelling' }[sh.hv.state] || 'harvesting'} ${RES_SHORT[sh.hv.want].toLowerCase()}`;
   return '';
 }
@@ -4123,7 +4143,7 @@ function applyState(js) {
     const el = $('endgame'); el.querySelector('h2').textContent = st.over; el.querySelector('p').textContent = st.endTxt; el.hidden = false;
   }
   if (!st.over && game.over) { game.over = false; $('endgame').hidden = true; }
-  if (!NET.gotSnap) { NET.gotSnap = true; renderMP(); { const mine = ships.filter(s => ownShip(s) && alive(s) && !s.station && !s.hv); if (mine.length && !fleets.length) makeFleet(mine, 'Mars Fleet'); } const L = ships.find(s => ownShip(s) && alive(s) && !s.station); if (L) { selectOnly([L]); setFocus(-1); } }
+  if (!NET.gotSnap) { NET.gotSnap = true; renderMP(); { const mine = ships.filter(s => ownShip(s) && alive(s) && !s.station && !s.hv); if (mine.length && !fleets.length) makeFleet(mine, 'Mars Fleet'); if (!folders.length) defaultFolders(); } const L = ships.find(s => ownShip(s) && alive(s) && !s.station); if (L) { selectOnly([L]); setFocus(-1); } }
   fleetDirty = econDirty = navDirty = formDirty = needDraw = true;
 }
 
@@ -4418,9 +4438,12 @@ function makeShip(name, r, ang, incl, design, side = 'us') {
   };
   sh.label.addEventListener('contextmenu', rc);
   sh.row = document.createElement('li');
-  sh.row.innerHTML = '<span class="mk"></span><span class="nm"></span><span class="gp"></span><span class="am"></span>';
+  sh.row.innerHTML = '<span class="mk"></span><span class="nm"></span><span class="gp"></span><span class="am"></span><button type="button" class="ren" title="Rename" aria-label="Rename">✎</button>';
   sh.row.children[1].innerHTML = `${name}<span class="st"></span><span class="hpb"><i></i></span>`;
-  sh.row.addEventListener('click', e => clickShip(sh, e.shiftKey));
+  sh.row.addEventListener('click', e => {
+    if (e.target.closest('.ren')) { e.stopPropagation(); if (ownShip(sh)) inlineEdit(sh.row.children[1], sh.name, 20, 'Callsign', v => renameShip(sh, v)); return; }
+    clickShip(sh, e.shiftKey);
+  });
   sh.row.addEventListener('dblclick', () => { lead = sh; bindLead(); setFocus(-1); });
   sh.row.addEventListener('contextmenu', rc);
   if (side === 'us') fleetList.appendChild(sh.row);
@@ -4558,10 +4581,10 @@ let dragFleet = null;
 function fleetHeader(F) {
   const el = document.createElement('li');
   el.className = 'fl-hd'; el.draggable = true;
-  el.innerHTML = `<span class="fl-nm"><button type="button" class="fold" data-a="fold" aria-label="Fold or unfold ${F.name}">▾</button><span class="fl-tx" title="Double-click to rename · drag onto a folder to file it">${F.name}</span><small></small></span><span class="fl-b"><button type="button" data-a="add" title="Add the selected ships to ${F.name}">+</button><button type="button" data-a="rem" title="Take the selected ships out of ${F.name}">−</button><button type="button" data-a="del" title="Disband ${F.name}">✕</button></span>`;
+  el.innerHTML = `<span class="fl-nm"><button type="button" class="fold" data-a="fold" aria-label="Fold or unfold ${F.name}">▾</button><span class="fl-tx" title="Double-click to rename · drag onto a folder to file it">${F.name}</span><small></small></span><span class="fl-b"><button type="button" data-a="ren" title="Rename ${F.name}">✎</button><button type="button" data-a="add" title="Add the selected ships to ${F.name}">+</button><button type="button" data-a="rem" title="Take the selected ships out of ${F.name}">−</button><button type="button" data-a="del" title="Disband ${F.name}">✕</button></span>`;
   el.addEventListener('click', e => {
     const a = e.target.closest('button'); e.stopPropagation();
-    if (!a) selectFleet(F); else if (a.dataset.a === 'fold') { F.folded = !F.folded; fleetSig = ''; syncFleetList(); } else if (a.dataset.a === 'add') addToFleet(F); else if (a.dataset.a === 'rem') leaveFleet(F); else disbandFleet(F);
+    if (!a) selectFleet(F); else if (a.dataset.a === 'ren') renameFleet(F, el); else if (a.dataset.a === 'fold') { F.folded = !F.folded; fleetSig = ''; syncFleetList(); } else if (a.dataset.a === 'add') addToFleet(F); else if (a.dataset.a === 'rem') leaveFleet(F); else disbandFleet(F);
   });
   el.addEventListener('dblclick', e => {
     if (e.target.closest('button') || e.target.closest('input')) return;
@@ -4583,20 +4606,35 @@ function fileFleet(F, D) {
   F.folder = D || null; fleetSig = ''; fleetDirty = true;
   showToast(D ? `${F.name} filed in ${D.name}` : `${F.name} taken out of its folder`);
 }
+// a station is filed in a folder of the fleet list too (st.folder): drag its row onto the folder, or pick the folder
+// in its panel. A new game files yours in "Shipyards & depots" and "Colonies" (folders with a kind); a station
+// your yards finish goes in the folder of its kind.
+let dragStn = null;
+function fileStation(st, D) {
+  if ((st.folder || null) === (D || null)) return;
+  st.folder = D || null; fleetSig = ''; fleetDirty = true;
+  showToast(D ? `${st.name} filed in ${D.name}` : `${st.name} taken out of its folder`);
+}
+function defaultFolders() {
+  const st = ships.filter(s => s.side === 'us' && s.station && alive(s) && ownShip(s)), col = st.filter(isColony), base = st.filter(s => !isColony(s));
+  if (base.length) { const D = newFolder('Shipyards & depots'); D.kind = 'base'; for (const s of base) s.folder = D; }
+  if (col.length) { const D = newFolder('Colonies'); D.kind = 'colony'; D.folded = true; for (const s of col) s.folder = D; }
+}
 function folderHeader(D) {
   const el = document.createElement('li'); el.className = 'fd-hd';
-  el.innerHTML = `<span class="fl-nm"><button type="button" class="fold" data-a="fold" aria-label="Fold or unfold the folder">▾</button><span class="fl-tx" title="Double-click to rename">${esc(D.name)}</span><small></small></span><span class="fl-b"><button type="button" data-a="del" title="Remove the folder (its fleets stay)">✕</button></span>`;
+  el.innerHTML = `<span class="fl-nm"><button type="button" class="fold" data-a="fold" aria-label="Fold or unfold the folder">▾</button><span class="fl-tx" title="Double-click to rename">${esc(D.name)}</span><small></small></span><span class="fl-b"><button type="button" data-a="ren" title="Rename the folder">✎</button><button type="button" data-a="del" title="Remove the folder (what is in it stays)">✕</button></span>`;
   el.addEventListener('click', e => {
     const a = e.target.closest('button'); e.stopPropagation();
     if (e.target.closest('input')) return;
-    if (a && a.dataset.a === 'del') { for (const F of fleets) if (F.folder === D) F.folder = null; folders.splice(folders.indexOf(D), 1); showToast(`Folder ${D.name} removed: its fleets stay`); }
+    if (a && a.dataset.a === 'ren') { renameFleet(D, el, 'Folder'); return; }
+    if (a && a.dataset.a === 'del') { for (const F of fleets) if (F.folder === D) F.folder = null; for (const s of ships) if (s.folder === D) s.folder = null; folders.splice(folders.indexOf(D), 1); showToast(`Folder ${D.name} removed: what was in it stays`); }
     else D.folded = !D.folded;
     fleetSig = ''; syncFleetList();
   });
   el.addEventListener('dblclick', e => { if (e.target.closest('.fl-tx')) renameFleet(D, el, 'Folder'); });
-  el.addEventListener('dragover', e => { if (dragFleet) { e.preventDefault(); el.classList.add('over'); } });
+  el.addEventListener('dragover', e => { if (dragFleet || dragStn) { e.preventDefault(); el.classList.add('over'); } });
   el.addEventListener('dragleave', () => el.classList.remove('over'));
-  el.addEventListener('drop', e => { e.preventDefault(); el.classList.remove('over'); if (dragFleet) { D.folded = false; fileFleet(dragFleet, D); syncFleetList(); } dragFleet = null; });
+  el.addEventListener('drop', e => { e.preventDefault(); el.classList.remove('over'); D.folded = false; if (dragFleet) fileFleet(dragFleet, D); else if (dragStn) fileStation(dragStn, D); syncFleetList(); dragFleet = dragStn = null; });
   el.addEventListener('contextmenu', e => e.preventDefault());
   return el;
 }
@@ -4608,15 +4646,24 @@ function sectionHd(key) {
   return el;
 }
 const looseHd = sectionHd('loose'), infraHd = sectionHd('infra'), allyHd = sectionHd('ally');
+// a station's row can be dragged onto a folder (or onto the Infrastructure header, out of its folder)
+function stnRow(sh) {
+  if (sh.row._drag) return;
+  sh.row._drag = true; sh.row.draggable = true; sh.row.title = 'Drag onto a folder to file it';
+  sh.row.addEventListener('dragstart', e => { dragStn = sh; e.dataTransfer.setData('text/plain', sh.name); e.dataTransfer.effectAllowed = 'move'; });
+  sh.row.addEventListener('dragend', () => { dragStn = null; });
+}
+infraHd.addEventListener('dragover', e => { if (dragStn) e.preventDefault(); });
+infraHd.addEventListener('drop', e => { e.preventDefault(); if (dragStn) { fileStation(dragStn, null); syncFleetList(); } dragStn = null; });
 // lay the list out: folders with their fleets, the other fleets (flagship first), infrastructure, then the ships
 // in no fleet; only when that changes
 function syncFleetList() {
   for (let i = fleets.length - 1; i >= 0; i--) if (!membersOf(fleets[i]).length) { for (const sh of ships) if (sh.fleet === fleets[i]) sh.fleet = null; fleets.splice(i, 1); }
   const groups = fleets.map(F => { const f = flagOf(F); return [F, [f, ...membersOf(F).filter(s => s !== f)]]; });
   const loose = ships.filter(s => s.side === 'us' && alive(s) && !s.fleet && ownShip(s)), allyL = ships.filter(s => s.side === 'us' && alive(s) && !ownShip(s));
-  const infraL = loose.filter(s => s.station && !s.leader), shipsL = loose.filter(s => !infraL.includes(s));
+  const infraAll = loose.filter(s => s.station && !s.leader), infraL = infraAll.filter(s => !s.folder || !folders.includes(s.folder)), shipsL = loose.filter(s => !infraAll.includes(s));
   const sig = folders.map(D => D.id + (D.folded ? 'f' : '') + D.name).join(',') + '/' + groups.map(([F, m]) => F.id + (F.folder ? '@' + F.folder.id : '') + (F.folded ? 'f' : '') + ':' + m.map(s => s.id)).join('|')
-    + '/' + fold.infra + infraL.map(s => s.id) + '/' + fold.loose + shipsL.map(s => s.id) + '/' + fold.ally + allyL.map(s => s.id);
+    + '/' + fold.infra + infraAll.map(s => s.id + (s.folder ? '@' + s.folder.id : '')) + '/' + fold.loose + shipsL.map(s => s.id) + '/' + fold.ally + allyL.map(s => s.id);
   if (sig === fleetSig) return;
   fleetSig = sig;
   const out = [];
@@ -4626,17 +4673,20 @@ function syncFleetList() {
     out.push(F.hd);
     if (!F.folded) for (const sh of m) { sh.row.classList.add('in'); sh.row.classList.toggle('in2', deep); out.push(sh.row); }
   };
-  for (const D of folders) {
+  const putFolder = D => {
     if (!D.hd) D.hd = folderHeader(D);
-    const mine = groups.filter(([F]) => F.folder === D), n = mine.reduce((a, [, m]) => a + m.length, 0);
+    const mine = groups.filter(([F]) => F.folder === D), n = mine.reduce((a, [, m]) => a + m.length, 0), stn = infraAll.filter(s => s.folder === D);
     D.hd.querySelector('.fold').textContent = D.folded ? '▸' : '▾';
-    D.hd.querySelector('small').textContent = `${mine.length} fleet${mine.length === 1 ? '' : 's'} · ${n} ship${n === 1 ? '' : 's'}`;
+    D.hd.querySelector('small').textContent = [mine.length || !stn.length ? `${mine.length} fleet${mine.length === 1 ? '' : 's'} · ${n} ship${n === 1 ? '' : 's'}` : '', stn.length ? `${stn.length} station${stn.length === 1 ? '' : 's'}` : ''].filter(Boolean).join(' · ');
     out.push(D.hd);
-    if (!D.folded) for (const [F, m] of mine) put(F, m, true);
-  }
+    if (!D.folded) { for (const [F, m] of mine) put(F, m, true); for (const sh of stn) { stnRow(sh); sh.row.classList.add('in'); sh.row.classList.remove('in2'); out.push(sh.row); } }
+  };
+  const stnOnly = D => !groups.some(([F]) => F.folder === D) && infraAll.some(s => s.folder === D);
+  for (const D of folders) if (!stnOnly(D)) putFolder(D);
   for (const [F, m] of groups) if (!F.folder) put(F, m, false);
+  for (const D of folders) if (stnOnly(D)) putFolder(D);
   infraHd.textContent = `${fold.infra ? '▸' : '▾'} Infrastructure · ${infraL.length}`;
-  if (infraL.length) { out.push(infraHd); if (!fold.infra) for (const sh of infraL) { sh.row.classList.remove('in', 'in2'); out.push(sh.row); } }
+  if (infraL.length) { out.push(infraHd); if (!fold.infra) for (const sh of infraL) { stnRow(sh); sh.row.classList.remove('in', 'in2'); out.push(sh.row); } }
   looseHd.textContent = `${fold.loose ? '▸' : '▾'} Unassigned ships · ${shipsL.length}`;
   looseHd.title = 'Ships in no fleet: select ships in space and press N (or Group into fleet) to make one';
   if (shipsL.length) { out.push(looseHd); if (!fold.loose) for (const sh of shipsL) { sh.row.classList.remove('in', 'in2'); out.push(sh.row); } }
@@ -4648,9 +4698,9 @@ function syncFleetList() {
 // the Fleet card's title takes a fleet dragged out of its folder
 {
   const hd = fleetList.previousElementSibling;
-  hd.addEventListener('dragover', e => { if (dragFleet) { e.preventDefault(); hd.classList.add('over'); } });
+  hd.addEventListener('dragover', e => { if (dragFleet || dragStn) { e.preventDefault(); hd.classList.add('over'); } });
   hd.addEventListener('dragleave', () => hd.classList.remove('over'));
-  hd.addEventListener('drop', e => { e.preventDefault(); hd.classList.remove('over'); if (dragFleet) { fileFleet(dragFleet, null); syncFleetList(); } dragFleet = null; });
+  hd.addEventListener('drop', e => { e.preventDefault(); hd.classList.remove('over'); if (dragFleet) fileFleet(dragFleet, null); else if (dragStn) fileStation(dragStn, null); syncFleetList(); dragFleet = dragStn = null; });
 }
 function pickLead() {
   if (lead && alive(lead) && (lead.sel || !selectedShips().length)) return;
@@ -4969,7 +5019,7 @@ function resetFleet(coop = false) {
   makeShip(SHIP_NAMES[3], 40000, 4.6, 0, pk);
   lead = ships[0]; selectOnly(ships.slice()); setWarp(3);
   newGame(coop);
-  { const home = ships.filter(s => s.side === 'us' && alive(s) && !s.station && !s.hv && s.owner === 'p1'); if (home.length) makeFleet(home, 'Home Fleet'); }
+  { const home = ships.filter(s => s.side === 'us' && alive(s) && !s.station && !s.hv && s.owner === 'p1'); if (home.length) makeFleet(home, 'Home Fleet'); defaultFolders(); }
   nav.open = false; nav.sel = null; sensors = null; setFocus(0);
   absPos(3, worldT, W1); cam.az = Math.atan2(W1[1], W1[0]); cam.el = 0.95;
 }
@@ -5106,12 +5156,23 @@ const fmtDur = s => {
 const fmtDv = kms => kms < 1 ? (kms * 1000).toFixed(0) + ' m/s' : kms < 100 ? kms.toFixed(2) + ' km/s' : nf0.format(kms) + ' km/s';
 const fmtDate = t => new Date(J2000_MS + t * 1000).toISOString().slice(0, 10);
 const H = { date: $('h-date'), rate: $('o-rate') };
-// callsigns: click the name in the selection panel to rename your ship (Enter keeps it, Esc cancels)
+// callsigns: click the name in the selection panel, or ✎ on its row in the fleet list, to rename your ship or
+// station (Enter keeps it, Esc cancels)
 const cleanName = raw => String(raw || '').replace(/[<>&"]/g, '').trim().slice(0, 20);
 function setShipName(sh, name) {
   sh.name = name; sh.label.lastChild.textContent = name;
+  if (sh.model) sh.model.built = null;            // rebuilt with the new hull number
   const nm = sh.row.children[1]; if (nm && nm.firstChild && nm.firstChild.nodeType === 3) nm.firstChild.nodeValue = name;
   fleetDirty = navDirty = formDirty = true;
+}
+// edit a name in place: an input where el was (Enter keeps it, Esc cancels, leaving it keeps it)
+function inlineEdit(el, value, max, label, done) {
+  const inp = document.createElement('input'); inp.className = 'rename row-in'; inp.value = value; inp.maxLength = max; inp.spellcheck = false; inp.setAttribute('aria-label', label);
+  el.after(inp); el.hidden = true; inp.focus(); inp.select();
+  const end = ok => { if (!inp.isConnected) return; const v = inp.value; inp.remove(); el.hidden = false; if (ok) done(v); };
+  inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') end(true); else if (e.key === 'Escape') end(false); });
+  for (const k of ['click', 'pointerdown', 'dblclick']) inp.addEventListener(k, e => e.stopPropagation());
+  inp.addEventListener('blur', () => end(true));
 }
 function renameShip(sh, raw) {
   const name = cleanName(raw);
@@ -5160,7 +5221,7 @@ function shipsMain(list) {
   let h = '<div class="sp-hd">';
   if (one) h += `<i class="mk" data-cls="${L.designObj.hull}"></i><b class="sp-nm"${mine ? ' data-act="rename" title="Click to rename"' : ''}>${esc(L.name)}</b><span class="sp-sub">${L.design === HULLS[L.designObj.hull].name ? '' : esc(L.design) + ' · '}${HULLS[L.designObj.hull].name}-class${mine ? '' : ' · your ally\'s'}</span>`;
   else { const by = new Map(); for (const s of list) by.set(s.design, (by.get(s.design) || 0) + 1); h += `<b class="sp-nm">${list.length} ships</b><span class="sp-sub">${[...by].map(([d, n]) => `${n} ${esc(d)}`).join(' · ')}</span>`; }
-  if (F) h += `<span class="sp-fl">${esc(F.name)}${one && flagOf(F) === L ? ' · flagship' : ''}</span>`;
+  if (F) h += `<span class="sp-fl"${mine ? ' data-act="rnfleet" title="Click to rename the fleet"' : ''}>${esc(F.name)}${one && flagOf(F) === L ? ' · flagship' : ''}</span>`;
   h += '</div>';
   let st = esc(L._st || '—');
   if (one) st += ` <span class="dim">· ${whereOf(L)}</span>`;
@@ -5225,14 +5286,14 @@ function shipsSide(list) {
 }
 function stationMain(Y) {
   const yard = isYard(Y), hp = hullFrac(Y), cap = storeCap(Y);
-  let h = `<div class="sp-hd"><i class="mk" data-cls="${Y.designObj.hull}"></i><b class="sp-nm">${esc(Y.name)}</b><span class="sp-sub">${esc(Y.design)}${Y.leader ? ' · in tow' : ''}${ownShip(Y) ? '' : ' · your ally\'s'}</span></div>`;
+  let h = `<div class="sp-hd"><i class="mk" data-cls="${Y.designObj.hull}"></i><b class="sp-nm"${ownShip(Y) ? ' data-act="rename" title="Click to rename"' : ''}>${esc(Y.name)}</b><span class="sp-sub">${esc(Y.design)}${Y.leader ? ' · in tow' : ''}${ownShip(Y) ? '' : ' · your ally\'s'}</span></div>`;
   h += `<div class="sp-st"><span class="dim">${whereOf(Y)}</span></div>`;
   h += '<div class="sp-grid">' + meter('Hull', hp, pct(hp), hp < 0.34 ? 'out' : hp < 0.67 ? 'lo' : '') + RES.map(k => meter(RES_SHORT[k], Y.stock[k] / cap, `${fmtT(Y.stock[k])}/${fmtT(cap)} t`, '', RES_COL[k])).join('') + '</div>';
   if (yard) {
     const net = networkOf(Y), ns = networkStock(Y);
     h += `<p class="sp-x">Builds from ${net.length > 1 ? `itself and ${net.length - 1} station${net.length > 2 ? 's' : ''} in reach` : 'its own store (nothing in reach)'}: ${RES.map(k => `<b>${fmtT(ns[k])}</b> ${RES_SHORT[k].toLowerCase()}`).join(' · ')}</p>`;
     h += '<h4 class="sp-h4">Building</h4>' + (Y.queue.length ? '<ol class="sp-q">' + Y.queue.map((j, i) => {
-      const done = 1 - j.left / j.cost.mass, left = j.left / (BUILD_RATE * Y.stats.dock * (j.cost.infra ? INFRA_SPEED : 1));
+      const done = 1 - j.left / jobWork(j.cost), left = j.left / (BUILD_RATE * Y.stats.dock * (j.cost.infra ? INFRA_SPEED : 1));
       return `<li><span>${esc(j.d.name)}</span><small>${i ? 'queued' : j.wait ? 'waiting for ' + j.wait : `${Math.round(done * 100)}% · ${fmtDur(left)} left`}</small><button type="button" data-cancel="${i}" title="Cancel (refunds what was paid)">✕</button>${i ? '' : barH(done)}</li>`;
     }).join('') + '</ol>' : '<p class="sp-x">Idle: pick something to build</p>');
   }
@@ -5243,7 +5304,7 @@ function stationMain(Y) {
 }
 function stationSide(Y) {
   if (!ownShip(Y)) return '<p class="sp-x">Your ally\'s station: you can look, not command.</p>';
-  let h = '';
+  let h = `<select data-act="sfolder" aria-label="Folder">${[['none', 'Folder: none'], ...folders.map(D => [D.id, 'Folder: ' + D.name]), ['new', 'New folder…']].map(([v, t]) => `<option value="${v}"${(Y.folder && folders.includes(Y.folder) ? Y.folder.id : 'none') === v ? ' selected' : ''}>${esc(t)}</option>`).join('')}</select>`;
   if (isYard(Y)) {
     h += '<button type="button" class="go" data-act="yard" title="Your catalog of designs, and the designer (Y)">Design ships…</button><div class="sp-lbl">Build here <span class="sp-sub">· Shift: ×5</span></div>';
     const opts = [...designs.map((d, i) => ({ d, key: 'd' + i })), { d: STATION_DESIGNS.depot, key: 'depot' }, { d: STATION_DESIGNS.shipyard, key: 'shipyard' }];
@@ -5291,6 +5352,7 @@ spMain.addEventListener('pointerdown', e => {
   } else if (t.dataset.cancel !== undefined) cancelJob(lead, +t.dataset.cancel);
   else if (t.dataset.act === 'untarget') { const list = selectedShips().filter(ownShip); for (const s of list) { s.target = null; s.targetGroup = null; s.targetLock = false; } toHost({ k: 'designate', x: -1, ids: ids(list) }); showToast('Target cleared: they pick their own'); }
   else if (t.dataset.act === 'rename') { startRename(t); return; }
+  else if (t.dataset.act === 'rnfleet') { if (lead && lead.fleet) nameFleet(lead.fleet); return; }
   fleetDirty = true; spMain._h = ''; renderSel();
 });
 spMain.addEventListener('dblclick', e => { if (e.target.closest('[data-id]')) setFocus(-1); });
@@ -5324,6 +5386,12 @@ spSide.addEventListener('click', e => {
 spSide.addEventListener('change', e => {
   const t = e.target, F = selectedShips().find(s => s.fleet) ? selectedShips().find(s => s.fleet).fleet : null;
   if (t.dataset.act === 'addfleet' && t.value !== '') { const X = fleets.find(x => x.id === +t.value); if (X) addToFleet(X); spSide._h = ''; renderSel(); return; }
+  if (t.dataset.act === 'sfolder' && lead && lead.station) {
+    const Y = lead;
+    if (t.value === 'new') { const D = newFolder(); fileStation(Y, D); syncFleetList(); renameFleet(D, D.hd, 'Folder'); }
+    else { fileStation(Y, t.value === 'none' ? null : folders.find(D => D.id === +t.value)); syncFleetList(); }
+    spSide._h = ''; renderSel(); return;
+  }
   if (t.dataset.act === 'folder' && F) {
     if (t.value === 'new') { const D = newFolder(); fileFleet(F, D); syncFleetList(); renameFleet(D, D.hd, 'Folder'); }
     else { fileFleet(F, t.value === 'none' ? null : folders.find(D => D.id === +t.value)); syncFleetList(); }
@@ -5993,11 +6061,11 @@ window.addEventListener('pointerdown', e => { if (!menuEl.hidden && !menuEl.cont
 // ship's heading.
 const SIL = {
   default: { px: [11, 14], h: [[12, 2], [20, 12], [12, 22]] },
-  corvette: { px: [11, 14], h: [[12, 1], [13, 6], [13.6, 10], [17.6, 8.6], [18.2, 4.5], [19.8, 4.5], [20, 14], [18.6, 15], [14.6, 18.5], [14.8, 22.5], [13.6, 23.2], [12.8, 21.5], [12, 21.5]] },
-  frigate: { px: [12, 16], h: [[12, 1], [14.5, 1.2], [16.6, 2.2], [16.6, 5.4], [13.7, 6], [13.7, 11.5], [15.8, 13], [16, 15.5], [18.5, 15.5], [18.5, 13.8], [19.4, 13], [20.3, 13.8], [20.3, 23], [18.5, 23], [18.5, 18.2], [16, 18.2], [16, 23], [13.5, 23.5], [12, 23.5]] },
-  destroyer: { px: [13, 18], h: [[12, 7], [13, 6.5], [13.4, 1.5], [14, 1], [15.2, 3.5], [15.8, 8], [16.6, 10.5], [16.6, 14], [20.6, 20], [20.6, 21.4], [16.2, 19.6], [15.2, 23], [12, 23]] },
-  cruiser: { px: [14, 20], h: [[12, 1], [13.4, 5], [14.5, 9], [16.2, 9], [16.2, 4.8], [17.7, 3.2], [19.2, 4.8], [19.2, 22.5], [18.4, 23.5], [17, 23.5], [16.2, 22.5], [16.2, 17.5], [14.5, 17.5], [14.3, 22], [13, 23], [12, 23]], cut: [[[14.5, 11], [16.2, 11], [16.2, 15.5], [14.5, 15.5]]] },
-  titan: { px: [15, 24], h: [[12, 0.5], [12.7, 4], [13.6, 8.5], [15, 12], [15.3, 12.5], [19.6, 19], [20.2, 18.5], [21, 19.5], [21, 23.5], [19.2, 23.5], [19, 22.5], [15.5, 22], [15.3, 23.5], [12, 23.5]] },
+  corvette: { px: [11, 13], h: [[12, 1.5], [13.4, 2], [15.2, 5.5], [16.2, 9], [17.2, 9.6], [17.2, 15.4], [16.3, 16], [16.3, 21.2], [15.4, 22.6], [12, 22.6]] },
+  frigate: { px: [12, 16], h: [[12, 0.6], [12.9, 3], [14, 8], [14.6, 13], [14.8, 16.5], [15.4, 17.2], [19.8, 21.6], [19.8, 23], [15.6, 21.2], [14.8, 23.2], [12, 23.2]] },
+  destroyer: { px: [13, 18], h: [[12, 0.5], [13.2, 4.2], [14.6, 9], [15.5, 10], [15.5, 17], [14.9, 17.6], [14.9, 21.6], [14, 23], [12, 23]] },
+  cruiser: { px: [14, 21], h: [[12, 0.5], [12.9, 3.2], [14.3, 8], [15, 10.5], [15.9, 11.2], [15.9, 15.2], [15, 16], [15, 17.6], [18.8, 21.6], [18.8, 22.8], [15.2, 21.4], [14.7, 23.3], [12, 23.3]] },
+  titan: { px: [16, 26], h: [[12, 0.3], [13, 2.8], [14, 6.2], [14.7, 8.5], [17.2, 9.6], [18.2, 11], [18.2, 20.2], [17.4, 21.8], [15.5, 21.8], [15.5, 23.5], [12, 23.5]] },
   drone: { px: [11, 15], h: [[12, 2], [15, 5], [16.6, 11], [16, 17], [13.6, 22], [12, 23]] },
   stalker: { px: [14, 22], h: [[12, 3], [12.8, 0.8], [14, 2.6], [15, 6.5], [15.3, 10], [19.6, 16.5], [15.2, 14.2], [14.2, 18], [12.8, 22], [12, 24]] },
   ravager: { px: [15, 26], h: [[12, 3.2], [12.9, 0.6], [13.9, 2.2], [15.2, 0.8], [16.2, 3.6], [16.6, 8], [16.6, 11], [21, 17.5], [16.2, 15.4], [15.2, 19], [13.2, 22.5], [12, 24]] },
@@ -6026,10 +6094,10 @@ const LBLD = new THREE.Vector3();
 }
 
 // ---- Ship models, built from each ship's design. A faceted hull is lofted through tapered octagonal sections:
-// each class has its own silhouette (see buildModel), with (with armour) flank sponsons, a prow plate and a tail
-// collar. It is plated by a generated texture in the side's livery (light grey with a dark band and an accent
-// colour that differs by design for yours, charcoal with red slashes for theirs) and carries a hull number and
-// lit ports. Weapons ride turrets on the dorsal and ventral decks (the first railgun runs down the keel
+// each class after a ship of The Expanse (see buildModel), with (with armour) flank sponsons, a prow plate and a tail
+// collar. It is plated by a generated texture in its navy's livery (MCRN gunmetal with a red band, or UNN white
+// with a blue band; a thin stripe in a colour that differs by design) or the enemy's (charcoal with red slashes),
+// and carries a hull number and lit ports. Weapons ride turrets on the dorsal and ventral decks (the first railgun runs down the keel
 // as a spinal mount, torpedoes sit in launch cells), radiators spread as wings, sensors stand as masts or a
 // radome, and the engines form a cluster of bells with blue (yours) or orange (theirs) exhaust. A hull unit is
 // 10 m. Models are drawn (after Sins of a Solar Empire, far beyond true scale) whenever the view is no wider than
@@ -6072,7 +6140,7 @@ function numberPlate(label, us) {
 function loft(sections, chamfer = 0.34) {
   const pos = [], uv = [], idx = [], x0 = sections[0][0], x1 = sections[sections.length - 1][0], c = chamfer;
   const ring = (w, h) => [[w, h * (1 - c)], [w * (1 - c), h], [-w * (1 - c), h], [-w, h * (1 - c)], [-w, -h * (1 - c)], [-w * (1 - c), -h], [w * (1 - c), -h], [w, -h * (1 - c)], [w, h * (1 - c)]];
-  sections.forEach(([x, w, h, z = 0, y = 0]) => ring(w, h).forEach(([py, pz], j) => { pos.push(x, y + py, z + pz); uv.push((x - x0) / (x1 - x0), j / 8); }));
+  sections.forEach(([x, w, h, z = 0, y = 0, tw = 1]) => ring(w, h).forEach(([py, pz], j) => { pos.push(x, y + (pz > 0 ? py * tw : py), z + pz); uv.push((x - x0) / (x1 - x0), j / 8); }));
   for (let i = 0; i < sections.length - 1; i++) for (let j = 0; j < 8; j++) {
     const a = i * 9 + j, b = a + 1, d = a + 9, e = d + 1;
     idx.push(a, b, d, b, e, d);
@@ -6092,13 +6160,14 @@ function loft(sections, chamfer = 0.34) {
 // plating: panels and seams, the livery bands and the hull number; the glow map adds lit ports and a dim copy
 // of the plating so the night side still reads
 const texCache = new Map(), ACCENT = ['#ffae42', '#3fc8d4', '#f2d24b', '#e5603d', '#6fa8ff', '#9fdc5c', '#d77bff'];
-function hullTextures(side, seed, label) {
-  const key = side + seed + label;
+function hullTextures(side, seed, label, navy) {
+  const key = side + seed + label + navy;
   if (texCache.has(key)) return texCache.get(key);
   const R = rng(seed), W = 512, Hh = 256;
   const mk = () => { const c = document.createElement('canvas'); c.width = W; c.height = Hh; return c; };
   const cv = mk(), g = cv.getContext('2d'), us = side === 'us';
-  const base = us ? '#a9b1ba' : '#2b2f35', dark = us ? '#6f7985' : '#181a1e', light = us ? '#ccd2d9' : '#3b4048';
+  const N = navy === 'mcrn' ? { base: '#5d636b', dark: '#40454c', light: '#79808a', band: '#b3302a' } : { base: '#b4bac1', dark: '#858d97', light: '#d3d8dd', band: '#2d6cc4' };
+  const base = us ? N.base : '#2b2f35', dark = us ? N.dark : '#181a1e', light = us ? N.light : '#3b4048';
   g.fillStyle = base; g.fillRect(0, 0, W, Hh);
   for (let i = 0; i < 190; i++) {
     g.fillStyle = R() < 0.55 ? dark : light; g.globalAlpha = 0.14 + 0.24 * R();
@@ -6108,9 +6177,9 @@ function hullTextures(side, seed, label) {
   for (let x = 6; x < W; x += 14 + Math.floor(R() * 30)) { g.beginPath(); g.moveTo(x + 0.5, 0); g.lineTo(x + 0.5, Hh); g.stroke(); }
   for (let y = 4; y < Hh; y += 9 + Math.floor(R() * 22)) { g.beginPath(); g.moveTo(0, y + 0.5); g.lineTo(W, y + 0.5); g.stroke(); }
   if (us) {
-    // a dark band and the design's accent colour
-    g.fillStyle = '#2a3038'; g.fillRect(286, 0, 18, Hh); g.fillRect(310, 0, 4, Hh);
-    g.fillStyle = ACCENT[seed % ACCENT.length]; g.fillRect(318, 0, 9, Hh); g.fillRect(132, 0, 5, Hh);
+    // the navy's band, and a stripe in the design's colour
+    g.fillStyle = N.band; g.fillRect(286, 0, 18, Hh); g.fillRect(310, 0, 5, Hh);
+    g.fillStyle = ACCENT[seed % ACCENT.length]; g.fillRect(132, 0, 4, Hh);
   } else {
     g.fillStyle = '#c4383a';
     for (let k = 0; k < 5; k++) { g.save(); g.translate(330 + k * 13, 0); g.transform(1, 0, -0.7, 1, 0, 0); g.fillRect(0, 20, 6, 70); g.fillRect(0, 150, 6, 70); g.restore(); }
@@ -6139,18 +6208,17 @@ function radiatorTexture() {
   g.strokeStyle = 'rgba(20,30,34,.9)'; g.lineWidth = 3; g.strokeRect(1.5, 1.5, 125, 61);
   return (radTex = new THREE.CanvasTexture(c));
 }
-// each class's model: section height to width (hh), how hard the edges are cut, the beam drawn (bw, times the
-// hull's), where the turret rows run (tx: front and back, fractions of the length), where the hull number goes
-// (nx), the spinal mount's height (sz, half-heights), a radome's place (dome), engine pods ([across in beams, up in
-// half-heights], mirrored; they take the first pair of engines, a corvette's all of them), and radiators: wings
-// out from the flanks from rx = [start, step], or vanes standing up (up = [start, step, across in beams (0: on the
-// deck), base in half-heights (null: the deck)])
+// each class's model: its navy (the livery), section height to width (hh), how hard the edges are cut, the beam
+// drawn (bw, times the hull's), how much narrower the top is (tw), where the turret rows run (tx: front and back,
+// fractions of the length), where the hull number goes (nx), the spinal mount's height (sz, half-heights), a
+// radome's place (dome), and radiators: wings out from the flanks (rx = [start, step, span in beams]), or vanes
+// standing up (up = [start, step, across in beams (0: on the deck), base in half-heights (null: the deck)])
 const HULL_FORM = {
-  corvette: { hh: 0.55, chamfer: 0.45, bw: 1, tx: [0.12, -0.2], nx: 0.12, sz: -0.6, dome: -0.05, pod: [0.55, 0], all: true, up: [-0.4, 0.1, 0, null] },
-  frigate: { hh: 0.8, chamfer: 0.3, bw: 0.95, tx: [0.38, -0.32], nx: -0.25, sz: -0.62, dome: 0.4, pod: [1.55, -0.05], rx: [0.03, 0.1] },
-  destroyer: { hh: 0.4, chamfer: 0.45, bw: 1.15, tx: [0.06, -0.38], nx: -0.02, sz: 0, dome: 0.02, rx: [-0.3, 0.15] },
-  cruiser: { hh: 0.75, chamfer: 0.25, bw: 0.9, tx: [0.3, -0.34], nx: 0.24, sz: -0.6, dome: 0.14, pod: [1.6, -0.1], up: [-0.42, 0.1, 1.6, 0.42] },
-  titan: { hh: 0.5, chamfer: 0.35, bw: 1.05, tx: [0.18, -0.08], nx: 0.06, sz: -0.6, dome: 0.26, pod: [2.15, -0.15], up: [-0.44, 0.07, 1.55, 0.1] },
+  corvette: { navy: 'mcrn', hh: 0.75, chamfer: 0.4, bw: 1, tx: [0.26, -0.3], nx: -0.2, sz: -0.62, dome: 0.2, rx: [-0.3, 0.1, 1.1] },
+  frigate: { navy: 'mcrn', hh: 1.25, chamfer: 0.38, bw: 1, tx: [0.22, -0.3], nx: 0.08, sz: -1.1, dome: 0.05, rx: [-0.2, 0.1, 1.0] },
+  destroyer: { navy: 'unn', hh: 0.55, chamfer: 0.3, bw: 1, tw: 0.7, tx: [0.3, -0.42], nx: 0.3, sz: -0.55, dome: 0.22, up: [-0.46, 0.05, 0, null] },
+  cruiser: { navy: 'mcrn', hh: 1.0, chamfer: 0.3, bw: 1, tx: [0.3, -0.3], nx: 0.25, sz: -0.6, dome: 0.2, up: [-0.3, 0.06, 0, null] },
+  titan: { navy: 'unn', hh: 0.75, chamfer: 0.35, bw: 1, tw: 0.8, tx: [0.32, 0.17], nx: 0.4, sz: -0.55, dome: -0.46, up: [-0.42, 0.07, 1.42, 0.45] },
 };
 const NOZZLES = { 1: [[0, 0]], 2: [[-0.5, 0], [0.5, 0]], 3: [[-0.55, -0.32], [0.55, -0.32], [0, 0.42]], 4: [[-0.5, -0.42], [0.5, -0.42], [-0.5, 0.42], [0.5, 0.42]],
   5: [[-0.62, -0.42], [0, -0.42], [0.62, -0.42], [-0.32, 0.42], [0.32, 0.42]], 6: [[-0.62, -0.42], [0, -0.42], [0.62, -0.42], [-0.62, 0.42], [0, 0.42], [0.62, 0.42]] };
@@ -6354,7 +6422,7 @@ function buildModel(spec, into = scene) {
   const { d, mods, side } = spec, H = HULLS[d.hull], R = rng(spec.seed), ci = HULL_KEYS.indexOf(d.hull), us = side === 'us';
   const root = new THREE.Group(), md = { root, built: mods, parts: [], tur: new Map(), plumes: [], lights: [], set: false, len: H.len };
   const F = HULL_FORM[d.hull], L = H.len, b = H.beam / 2 * (1 + 0.035 * d.armor[1]) * F.bw, hh = b * F.hh;
-  const [map, emap] = hullTextures(side, spec.seed, spec.label);
+  const [map, emap] = hullTextures(side, spec.seed, spec.label, F.navy);
   md.hullMat = new THREE.MeshStandardMaterial({ map, emissiveMap: emap, emissive: 0xffffff, emissiveIntensity: 0.9, roughness: 0.48, metalness: 0.6, flatShading: true });
   const metal = matFor(us ? 'metal' : 'metal-t', us ? '#4f5967' : '#24272c', 0.25), trim = matFor(us ? 'trim' : 'trim-t', us ? '#d9dee5' : '#b33436', 0.3);
   const dark = matFor('dark', '#1d2127', 0.15);
@@ -6363,24 +6431,28 @@ function buildModel(spec, into = scene) {
     if (mi >= 0) md.parts.push({ mi, mesh: m, mat });
     return m;
   };
-  // the hull: each class its own silhouette (after Homeworld 3's fleets), so they read apart at a glance
-  //   corvette  — an interceptor: a dart with forward-swept wings out to gun pods, and twin engine nacelles
-  //   frigate   — a hammerhead: a broad gun and sensor block on a slim neck, an aft block with a conning tower and
-  //               outrigger engine pods on pylons
-  //   destroyer — a fork: a flat wedge whose bow splits in two prongs round the spinal mount, swept shoulder wings,
-  //               a launch deck, and a bridge tower off to one side
-  //   cruiser   — a trimaran: a heavy centre hull with a citadel, and two long gun pods on pylons
-  //   titan     — a dreadnought: a spear-nosed hull on a broad delta, engine nacelles at the wingtips, a trench down
-  //               the spine and a command island off to one side
-  const nose = 1 + 0.12 * Math.min(d.armor[0], 8), tw = R() < 0.5 ? 1 : -1;
+  // the hull: each class after a ship of The Expanse (tall ships: decks stack along the thrust axis round one main
+  // drive), in its navy's livery
+  //   corvette  — the MCRN Morrigan-class patrol destroyer: short and stocky, a chisel bow, a bridge hump, PDC
+  //               blisters on the cheeks, an engineering collar
+  //   frigate   — the MCRN Corvette-class light frigate (the Rocinante, ex-Tachi): tall and slender, a pointed,
+  //               drooping nose with the cockpit, collar rings, torpedo hatches, swept fins and landing struts at
+  //               the stern, the railgun along the keel
+  //   destroyer — the UNN Munroe-class light destroyer: long, narrower above than below, a long tapered bow, a
+  //               stepped superstructure, armour slabs leaning in on the flanks
+  //   cruiser   — the MCRN Donnager-class battleship: long and tall, deck bands, armour blisters amidships, a
+  //               ventral hangar, four great fins in an X at the stern
+  //   titan     — the UNN Truman-class dreadnought, the biggest: a long hull between two armoured side hulls, a
+  //               three-tier superstructure, twin rails in the prow
+  const nose = 1 + 0.12 * Math.min(d.armor[0], 8), tw = F.tw || 1;
   const SHAPES = {
-    corvette: [[-L / 2, b * 0.55, hh * 0.7, 0], [-0.32 * L, b * 0.85, hh, 0], [0.0, b * 0.7, hh * 0.9, 0.04 * hh], [0.3 * L, b * 0.36, hh * 0.55, -0.02 * hh], [0.5 * L, b * 0.08 * nose, hh * 0.14, -0.1 * hh]],
-    frigate: [[-L / 2, b * 0.82, hh * 0.85, 0], [-0.4 * L, b, hh, 0], [-0.1 * L, b * 0.95, hh * 0.95, 0], [0.0, b * 0.42, hh * 0.55, 0.05 * hh], [0.27 * L, b * 0.38, hh * 0.5, 0.05 * hh], [0.3 * L, b * 1.1, hh * 0.78, 0], [0.45 * L, b * 1.05, hh * 0.72, 0], [0.5 * L, b * 0.6 * Math.sqrt(nose), hh * 0.4, -0.04 * hh]],
-    destroyer: [[-L / 2, b * 0.65, hh * 0.8, 0], [-0.42 * L, b * 0.95, hh, 0], [-0.12 * L, b, hh, 0], [0.1 * L, b * 0.6, hh * 0.95, 0], [0.24 * L, b * 0.3, hh * 0.75, 0], [0.27 * L, b * 0.1, hh * 0.3, 0]],
-    cruiser: [[-L / 2, b * 0.55, hh * 0.65, 0], [-0.42 * L, b * 0.72, hh * 0.9, 0], [0.12 * L, b * 0.7, hh, 0], [0.36 * L, b * 0.48, hh * 0.72, -0.03 * hh], [0.5 * L, b * 0.2 * nose, hh * 0.3, -0.08 * hh]],
-    titan: [[-L / 2, b * 0.72, hh * 0.8, 0], [-0.4 * L, b, hh, 0], [-0.02 * L, b * 0.9, hh, 0.02 * hh], [0.2 * L, b * 0.5, hh * 0.75, 0], [0.32 * L, b * 0.28, hh * 0.55, -0.03 * hh], [0.5 * L, b * 0.1 * nose, hh * 0.22, -0.08 * hh]],
+    corvette: [[-L / 2, b * 0.84, hh * 0.84, 0], [-0.36 * L, b, hh, 0], [0.06 * L, b, hh, 0], [0.24 * L, b * 0.86, hh * 0.88, -0.03 * hh], [0.38 * L, b * 0.56, hh * 0.6, -0.14 * hh], [0.5 * L, b * 0.2 * nose, hh * 0.24, -0.26 * hh]],
+    frigate: [[-L / 2, b * 0.86, hh * 0.82, 0], [-0.4 * L, b, hh, 0], [-0.2 * L, b * 0.95, hh * 0.96, 0], [0.15 * L, b * 0.78, hh * 0.86, 0], [0.33 * L, b * 0.6, hh * 0.68, -0.05 * hh], [0.45 * L, b * 0.32, hh * 0.4, -0.14 * hh], [0.5 * L, b * 0.1 * nose, hh * 0.14, -0.22 * hh]],
+    destroyer: [[-L / 2, b * 0.86, hh * 0.8, 0], [-0.4 * L, b, hh, 0], [0.02 * L, b, hh, 0], [0.2 * L, b * 0.8, hh * 0.9, -0.02 * hh], [0.4 * L, b * 0.42, hh * 0.62, -0.08 * hh], [0.5 * L, b * 0.12 * nose, hh * 0.28, -0.16 * hh]],
+    cruiser: [[-L / 2, b * 0.8, hh * 0.8, 0], [-0.42 * L, b, hh, 0], [-0.08 * L, b, hh, 0], [0.12 * L, b * 0.92, hh * 0.94, 0], [0.3 * L, b * 0.68, hh * 0.76, -0.03 * hh], [0.43 * L, b * 0.4, hh * 0.5, -0.08 * hh], [0.5 * L, b * 0.16 * nose, hh * 0.24, -0.12 * hh]],
+    titan: [[-L / 2, b * 0.78, hh * 0.8, 0], [-0.42 * L, b, hh, 0], [0.08 * L, b, hh, 0], [0.24 * L, b * 0.84, hh * 0.88, -0.02 * hh], [0.38 * L, b * 0.6, hh * 0.66, -0.06 * hh], [0.5 * L, b * 0.26 * nose, hh * 0.34, -0.12 * hh]],
   };
-  const S = SHAPES[d.hull];
+  const S = SHAPES[d.hull].map(s => [...s, 0, tw]);
   root.add(new THREE.Mesh(loft(S, F.chamfer), md.hullMat));
   const prof = x => {
     let i = 0; while (i < S.length - 2 && x > S[i + 1][0]) i++;
@@ -6390,6 +6462,16 @@ function buildModel(spec, into = scene) {
   const top = x => { const p = prof(x); return p.z + p.h; };
   const lit = glowMat('win', 0xbfe3ff), acc = glowMat(us ? 'pod' : 'pod-t', us ? 0x7fc8ff : 0xffb040);
   const hull = (secs, mat = md.hullMat, ch = 0.4) => { const m = new THREE.Mesh(loft(secs, ch), mat); root.add(m); return m; };
+  // a ring round the hull at x, a little proud of it
+  const band = (x, mat, k = 1.05, wx = 0.012) => { const p = prof(x); hull([[x - wx * L, p.w * k, p.h * k, p.z, 0, tw], [x + wx * L, p.w * k, p.h * k, p.z, 0, tw]], mat, F.chamfer); };
+  // a fin out from the hull at the angle a round the x axis (0: to port, π/2: up), from radius r0 to r1, its root
+  // chord c ending at x, swept back
+  const fin = (x, a, r0, r1, c, mat = md.hullMat) => {
+    const g = new THREE.Group(); g.rotation.x = a; root.add(g);
+    const s = r1 - r0;
+    g.add(new THREE.Mesh(loft([[x - c, s * 0.5, 0.05, 0, r0 + s * 0.5], [x - c * 0.6, s * 0.5, 0.05, 0, r0 + s * 0.5], [x, s * 0.08, 0.04, 0, r0 + s * 0.08]], 0.3), mat));
+    return g;
+  };
   // a tower standing on the deck at (x, y) from z0, h high, with a wider bridge on top, its windows lit forward;
   // it gives the height of its roof
   const tower = (x, y, lx, w, h, z0) => {
@@ -6400,80 +6482,69 @@ function buildModel(spec, into = scene) {
   };
   let mastX = -0.2 * L, mastY = 0, mastZ = hh * 1.6;
   if (d.hull === 'corvette') {
-    // a canopy; forward-swept wings out to gun pods; twin engine nacelles
-    hull([[-0.12 * L, b * 0.2, hh * 0.1, top(-0.12 * L)], [0.04 * L, b * 0.34, hh * 0.3, top(0.04 * L) + hh * 0.08], [0.2 * L, b * 0.12, hh * 0.08, top(0.2 * L)]], dark, 0.5);
-    put(G_BOX, lit, 0.1 * L, 0, top(0.1 * L) + hh * 0.2, 0.06 * L, b * 0.3, 0.02);
+    // the bridge hump, its windows lit forward; PDC blisters on the cheeks; an engineering collar; a keel block
+    hull([[-0.16 * L, b * 0.36, hh * 0.1, top(-0.16 * L)], [-0.02 * L, b * 0.48, hh * 0.22, top(-0.02 * L) + hh * 0.08], [0.14 * L, b * 0.3, hh * 0.1, top(0.14 * L)]], md.hullMat, 0.5);
+    put(G_BOX, lit, 0.1 * L, 0, top(0.1 * L) + hh * 0.12, 0.012 * L, b * 0.4, hh * 0.06);
     for (const s of [1, -1]) {
-      const x0 = -0.3 * L, y0 = s * b * 0.7, x1 = 0.02 * L, y1 = s * b * 2.2, a = Math.atan2(y1 - y0, x1 - x0), span = Math.hypot(x1 - x0, y1 - y0);
-      put(G_BOX, md.hullMat, (x0 + x1) / 2, (y0 + y1) / 2, -0.05 * hh, span, b * 0.5, hh * 0.14).rotation.z = a;
-      put(G_BOX, acc, (x0 + x1) / 2 + 0.02 * L, (y0 + y1) / 2, 0.03 * hh, span * 0.7, b * 0.08, hh * 0.04).rotation.z = a;
-      hull([[-0.14 * L, b * 0.18, hh * 0.32, -0.05 * hh, y1], [-0.06 * L, b * 0.24, hh * 0.38, -0.05 * hh, y1], [0.16 * L, b * 0.2, hh * 0.32, -0.05 * hh, y1], [0.24 * L, b * 0.08, hh * 0.14, -0.05 * hh, y1]], metal);
-      put(G_ROD, matFor('rail', '#c9d2de', 0.3), 0.22 * L, y1, -0.05 * hh, 0.22 * L, b * 0.07, b * 0.07);
-      hull([[-0.53 * L, b * 0.24, hh * 0.45, 0, s * b * 0.55], [-0.44 * L, b * 0.28, hh * 0.5, 0, s * b * 0.6], [-0.18 * L, b * 0.2, hh * 0.4, 0, s * b * 0.55], [-0.08 * L, b * 0.06, hh * 0.12, 0, s * b * 0.45]], metal);
+      hull([[-0.06 * L, b * 0.1, hh * 0.3, -0.1 * hh, s * b * 0.98], [0.02 * L, b * 0.18, hh * 0.4, -0.1 * hh, s * b * 1.04], [0.18 * L, b * 0.18, hh * 0.4, -0.12 * hh, s * b * 0.98], [0.26 * L, b * 0.06, hh * 0.2, -0.14 * hh, s * b * 0.9]], metal);
+      put(G_BOX, acc, -0.2 * L, s * (b + 0.012), hh * 0.35, 0.22 * L, 0.01, hh * 0.08);
     }
-    mastX = -0.1 * L; mastZ = top(-0.1 * L) + hh * 0.5;
+    band(-0.35 * L, metal, 1.07, 0.03);
+    put(G_BOX, dark, -0.05 * L, 0, -hh * 1.02, 0.5 * L, b * 0.5, hh * 0.1);
+    mastX = -0.02 * L; mastZ = top(-0.02 * L) + hh * 0.5;
   } else if (d.hull === 'frigate') {
-    // the head: a deck plate, armoured cheeks and a lit sensor slit across its face; conduits down the neck; the
-    // aft block with a conning tower and a dorsal fin; outrigger engine pods on pylons
-    put(G_BOX, metal, 0.375 * L, 0, top(0.375 * L) + hh * 0.04, 0.13 * L, b * 1.6, hh * 0.1);
-    for (const s of [1, -1]) put(G_BOX, md.hullMat, 0.39 * L, s * b * 1.12, 0, 0.16 * L, b * 0.14, hh * 1.2).rotation.z = -s * 0.12;
-    put(G_BOX, lit, 0.48 * L, 0, hh * 0.1, 0.02 * L, b * 0.9, hh * 0.1);
-    put(G_BOX, metal, 0.13 * L, 0, top(0.13 * L) + hh * 0.05, 0.28 * L, b * 0.2, hh * 0.12);
-    put(G_BOX, metal, 0.13 * L, 0, -hh * 0.5, 0.28 * L, b * 0.2, hh * 0.12);
-    mastX = -0.3 * L; mastZ = tower(-0.3 * L, 0, 0.1 * L, b * 0.45, hh * 0.35, top(-0.3 * L)) + hh * 0.3;
-    put(G_BOX, dark, -0.45 * L, 0, top(-0.45 * L) + hh * 0.5, 0.1 * L, b * 0.06, hh);
-    put(G_BOX, acc, -0.43 * L, 0, top(-0.45 * L) + hh * 0.85, 0.06 * L, b * 0.08, hh * 0.12);
-    for (const s of [1, -1]) {
-      const y = s * b * 1.55;
-      hull([[-0.52 * L, b * 0.22, hh * 0.3, -0.05 * hh, y], [-0.44 * L, b * 0.3, hh * 0.38, -0.05 * hh, y], [-0.18 * L, b * 0.3, hh * 0.38, -0.05 * hh, y], [-0.08 * L, b * 0.1, hh * 0.16, -0.05 * hh, y]], metal);
-      put(G_BOX, md.hullMat, -0.3 * L, s * b * 1.2, -0.05 * hh, 0.12 * L, b * 0.6, hh * 0.18);
-      put(G_BOX, acc, -0.3 * L, y + s * b * 0.302, -0.05 * hh, 0.18 * L, 0.01, hh * 0.08);
-    }
+    // cockpit windows in the nose; collar rings; torpedo hatches either side forward; two swept fins and two
+    // landing struts at the stern
+    put(G_BOX, lit, 0.4 * L, 0, top(0.4 * L) + 0.01, 0.06 * L, b * 0.36, 0.03);
+    for (const x of [-0.28 * L, -0.04 * L, 0.18 * L]) band(x, metal, 1.06, 0.015);
+    for (const s of [1, -1]) for (const z of [0.2, -0.15]) put(G_BOX, dark, 0.28 * L, s * prof(0.28 * L).w * 0.99, z * hh, 0.05 * L, 0.04, hh * 0.14);
+    fin(-0.36 * L, -0.3, b * 0.9, b * 2.7, 0.18 * L);
+    fin(-0.36 * L, Math.PI + 0.3, b * 0.9, b * 2.7, 0.18 * L);
+    fin(-0.4 * L, -Math.PI / 2 + 0.6, hh * 0.8, hh * 1.45, 0.07 * L, metal);
+    fin(-0.4 * L, -Math.PI / 2 - 0.6, hh * 0.8, hh * 1.45, 0.07 * L, metal);
+    for (const s of [1, -1]) put(G_BOX, acc, -0.53 * L, s * b * 2.55, -0.62 * hh, 0.02 * L, b * 0.1, 0.06);
+    mastX = -0.1 * L; mastZ = top(-0.1 * L) + hh * 0.3;
   } else if (d.hull === 'destroyer') {
-    // two prongs ahead with the spinal mount's throat between, swept shoulder wings with lit tips, side strakes,
-    // a launch deck of cells on one side aft and the bridge tower on the other
+    // a stepped superstructure, its bridge lit; armour slabs leaning in on the flanks; a ventral keel
+    const t1 = top(-0.1 * L);
+    hull([[-0.32 * L, b * 0.5, hh * 0.16, t1 + hh * 0.14, 0, 0.7], [-0.26 * L, b * 0.58, hh * 0.2, t1 + hh * 0.18, 0, 0.7], [0.08 * L, b * 0.52, hh * 0.2, t1 + hh * 0.18, 0, 0.7], [0.16 * L, b * 0.3, hh * 0.1, t1 + hh * 0.1, 0, 0.7]], md.hullMat, 0.35);
+    hull([[-0.24 * L, b * 0.3, hh * 0.14, t1 + hh * 0.48, 0, 0.7], [-0.2 * L, b * 0.36, hh * 0.18, t1 + hh * 0.52, 0, 0.7], [-0.02 * L, b * 0.32, hh * 0.18, t1 + hh * 0.52, 0, 0.7], [0.03 * L, b * 0.18, hh * 0.08, t1 + hh * 0.44, 0, 0.7]], metal, 0.35);
+    put(G_BOX, lit, 0.005 * L, 0, t1 + hh * 0.58, 0.012 * L, b * 0.46, hh * 0.07);
     for (const s of [1, -1]) {
-      hull([[0.0, b * 0.24, hh * 0.8, 0, s * b * 0.42], [0.36 * L, b * 0.2, hh * 0.65, -0.05 * hh, s * b * 0.4], [0.5 * L, b * 0.05 * nose, hh * 0.25, -0.12 * hh, s * b * 0.36]], md.hullMat, 0.45);
-      put(G_BOX, acc, 0.28 * L, s * b * 0.625, 0, 0.14 * L, 0.01, hh * 0.12);
-      hull([[-0.44 * L, b * 0.45, hh * 0.18, -0.2 * hh, s * b * 1.4], [-0.32 * L, b * 0.5, hh * 0.2, -0.2 * hh, s * b * 1.32], [-0.06 * L, b * 0.08, hh * 0.12, -0.15 * hh, s * b * 0.95]], md.hullMat, 0.5);
-      put(G_BOX, trim, -0.38 * L, s * b * 1.86, -0.2 * hh, 0.12 * L, b * 0.06, hh * 0.3);
-      put(G_BOX, metal, -0.05 * L, s * b * 0.99, -0.2 * hh, 0.6 * L, b * 0.06, hh * 0.22);
+      put(G_BOX, md.hullMat, -0.08 * L, s * b * 1.0, -0.15 * hh, 0.5 * L, b * 0.08, hh * 1.2).rotation.x = s * 0.2;
+      put(G_BOX, acc, -0.08 * L, s * b * 1.06, -0.2 * hh, 0.44 * L, 0.01, hh * 0.06);
     }
-    put(G_BOX, dark, 0.27 * L, 0, 0, 0.08 * L, b * 0.34, hh * 0.5);
-    for (let i = 0; i < 6; i++) for (let j = 0; j < 2; j++) put(G_BOX, matFor('vls', '#2c3138', 0.2), -0.4 * L + i * 0.05 * L, -tw * b * (0.22 + j * 0.3), hh + 0.02, 0.035 * L, b * 0.24, 0.04);
-    mastX = -0.24 * L; mastY = tw * b * 0.48; mastZ = tower(mastX, mastY, 0.1 * L, b * 0.34, hh, top(mastX)) + hh * 0.4;
+    hull([[-0.42 * L, b * 0.06, hh * 0.3, -hh * 1.1], [0.1 * L, b * 0.06, hh * 0.24, -hh * 1.05], [0.25 * L, b * 0.04, hh * 0.06, -hh * 0.9]], dark, 0.5);
+    mastX = -0.12 * L; mastZ = t1 + hh * 0.9;
   } else if (d.hull === 'cruiser') {
-    // two long gun pods on pylons, ringed, with twin barrels ahead, lit bays and an accent stripe; a citadel with
-    // bridge wings amidships, and a dorsal fin aft
+    // deck bands; armour blisters amidships; a ventral hangar, lit; a bridge on the back; four fins in an X astern
+    for (const x of [-0.34 * L, -0.18 * L, 0.2 * L, 0.34 * L]) band(x, dark, 1.04);
     for (const s of [1, -1]) {
-      const y = s * b * 1.6, z = -0.1 * hh;
-      hull([[-0.5 * L, b * 0.3, hh * 0.42, z, y], [-0.42 * L, b * 0.42, hh * 0.55, z, y], [0.26 * L, b * 0.42, hh * 0.55, z, y], [0.36 * L, b * 0.26, hh * 0.36, z, y]], md.hullMat, 0.3);
-      for (const x of [-0.3 * L, -0.05 * L, 0.18 * L]) hull([[x - 0.02 * L, b * 0.47, hh * 0.6, z, y], [x + 0.02 * L, b * 0.47, hh * 0.6, z, y]], metal, 0.3);
-      for (const o of [-0.12, 0.12]) put(G_ROD, matFor('rail', '#c9d2de', 0.3), 0.34 * L, y + o * b, z, 0.16 * L, b * 0.1, b * 0.1);
-      for (const x of [-0.28 * L, 0.06 * L]) put(G_BOX, metal, x, s * b * 1.12, z, 0.1 * L, b * 0.9, hh * 0.24);
-      for (let i = 0; i < 6; i++) put(G_BOX, lit, -0.36 * L + i * 0.1 * L, y + s * b * 0.425, z, 0.03 * L, 0.01, hh * 0.1);
-      put(G_BOX, acc, -0.1 * L, y, z + hh * 0.555, 0.5 * L, b * 0.1, 0.01);
+      hull([[-0.28 * L, b * 0.08, hh * 0.5, 0, s * b * 0.98], [-0.2 * L, b * 0.22, hh * 0.7, 0, s * b * 1.06], [0.08 * L, b * 0.22, hh * 0.7, 0, s * b * 1.06], [0.16 * L, b * 0.08, hh * 0.45, 0, s * b * 0.96]], md.hullMat);
+      put(G_BOX, acc, -0.06 * L, s * b * 1.285, 0, 0.26 * L, 0.01, hh * 0.08);
     }
-    const zc = tower(-0.2 * L, 0, 0.14 * L, b * 0.5, hh * 0.5, top(-0.2 * L));
-    for (const s of [1, -1]) put(G_BOX, metal, -0.18 * L, s * b * 0.48, zc - hh * 0.14, 0.06 * L, b * 0.3, hh * 0.12);
-    put(G_BOX, dark, -0.42 * L, 0, top(-0.42 * L) + hh * 0.45, 0.12 * L, b * 0.06, hh * 0.9);
-    mastZ = zc + hh * 0.3;
+    put(G_BOX, dark, -0.02 * L, 0, -hh * 1.0, 0.22 * L, b * 0.9, hh * 0.08);
+    put(G_BOX, lit, -0.02 * L, 0, -hh * 1.045, 0.2 * L, b * 0.06, 0.01);
+    for (let k = 0; k < 4; k++) fin(-0.36 * L, Math.PI / 4 + k * Math.PI / 2, b * 0.85, b * 2.0, 0.14 * L);
+    mastX = 0.06 * L; mastZ = tower(mastX, 0, 0.1 * L, b * 0.4, hh * 0.25, top(mastX)) + hh * 0.3;
   } else {
-    // a delta under the hull with nacelles at its tips and accent stripes; hangar lights down the flanks; a trench
-    // down the spine; armour slabs on the prow; a keel fin; the command island off to one side
+    // armoured side hulls along most of the length, joined by plating and lit along their decks; a three-tier
+    // superstructure with the bridge on top; twin rails in the prow; a keel
     for (const s of [1, -1]) {
-      hull([[-0.5 * L, b * 0.5, hh * 0.3, -0.15 * hh, s * b * 1.75], [-0.36 * L, b * 0.55, hh * 0.34, -0.15 * hh, s * b * 1.6], [-0.02 * L, b * 0.12, hh * 0.2, -0.1 * hh, s * b * 0.95]], md.hullMat, 0.5);
-      hull([[-0.53 * L, b * 0.18, hh * 0.38, -0.15 * hh, s * b * 2.15], [-0.44 * L, b * 0.22, hh * 0.42, -0.15 * hh, s * b * 2.15], [-0.26 * L, b * 0.2, hh * 0.38, -0.15 * hh, s * b * 2.12], [-0.16 * L, b * 0.06, hh * 0.12, -0.15 * hh, s * b * 2.05]], metal);
-      put(G_BOX, acc, -0.3 * L, s * b * 1.62, hh * 0.2, 0.3 * L, b * 0.08, 0.01);
-      put(G_BOX, lit, -0.12 * L, s * (prof(-0.12 * L).w + 0.012), 0, 0.36 * L, 0.01, hh * 0.1);
-      put(G_BOX, metal, 0.24 * L, s * b * 0.3, top(0.24 * L) - hh * 0.05, 0.16 * L, b * 0.32, hh * 0.1).rotation.x = s * 0.35;
+      const y = s * b * 1.42, z = -0.12 * hh;
+      hull([[-0.48 * L, b * 0.3, hh * 0.5, z, y, 0.8], [-0.4 * L, b * 0.36, hh * 0.6, z, y, 0.8], [0.12 * L, b * 0.36, hh * 0.6, z, y, 0.8], [0.26 * L, b * 0.2, hh * 0.4, z - 0.04 * hh, y, 0.8], [0.32 * L, b * 0.06, hh * 0.14, z - 0.08 * hh, y, 0.8]], md.hullMat, 0.35);
+      for (const x of [-0.3 * L, -0.05 * L]) put(G_BOX, metal, x, s * b * 1.08, z, 0.12 * L, b * 0.4, hh * 0.5);
+      for (let i = 0; i < 7; i++) put(G_BOX, lit, -0.38 * L + i * 0.08 * L, y + s * b * 0.365, z, 0.03 * L, 0.01, hh * 0.08);
+      put(G_BOX, acc, -0.1 * L, y + s * b * 0.365, z - hh * 0.2, 0.5 * L, 0.01, hh * 0.05);
     }
-    put(G_BOX, dark, -0.06 * L, 0, top(-0.06 * L), 0.56 * L, b * 0.24, hh * 0.06);
-    hull([[-0.42 * L, b * 0.05, hh * 0.42, -hh * 1.25], [0.05 * L, b * 0.05, hh * 0.32, -hh * 1.15], [0.2 * L, b * 0.03, hh * 0.08, -hh * 0.95]], dark, 0.5);
-    mastX = -0.26 * L; mastY = tw * b * 0.55;
-    const zi = tower(mastX, mastY, 0.14 * L, b * 0.3, hh * 1.1, top(mastX));
-    put(G_BOX, metal, mastX - 0.06 * L, mastY, zi + hh * 0.3, 0.05 * L, b * 0.18, hh * 0.6);
-    mastZ = zi + hh * 0.75;
+    const t0 = top(-0.15 * L);
+    hull([[-0.4 * L, b * 0.62, hh * 0.14, t0 + hh * 0.12, 0, 0.8], [-0.34 * L, b * 0.7, hh * 0.2, t0 + hh * 0.18, 0, 0.8], [0.06 * L, b * 0.64, hh * 0.2, t0 + hh * 0.18, 0, 0.8], [0.14 * L, b * 0.36, hh * 0.1, t0 + hh * 0.1, 0, 0.8]], md.hullMat, 0.35);
+    hull([[-0.34 * L, b * 0.42, hh * 0.14, t0 + hh * 0.48, 0, 0.8], [-0.3 * L, b * 0.48, hh * 0.18, t0 + hh * 0.52, 0, 0.8], [-0.04 * L, b * 0.44, hh * 0.18, t0 + hh * 0.52, 0, 0.8], [0.02 * L, b * 0.24, hh * 0.08, t0 + hh * 0.44, 0, 0.8]], metal, 0.35);
+    hull([[-0.28 * L, b * 0.22, hh * 0.14, t0 + hh * 0.8, 0, 0.8], [-0.24 * L, b * 0.26, hh * 0.18, t0 + hh * 0.84, 0, 0.8], [-0.1 * L, b * 0.24, hh * 0.18, t0 + hh * 0.84, 0, 0.8], [-0.07 * L, b * 0.12, hh * 0.08, t0 + hh * 0.76, 0, 0.8]], md.hullMat, 0.35);
+    put(G_BOX, lit, -0.085 * L, 0, t0 + hh * 0.9, 0.01 * L, b * 0.4, hh * 0.07);
+    for (const s of [1, -1]) put(G_ROD, matFor('rail', '#c9d2de', 0.3), 0.36 * L, s * b * 0.22, -hh * 0.1, 0.18 * L, b * 0.09, b * 0.09);
+    hull([[-0.44 * L, b * 0.06, hh * 0.34, -hh * 1.12], [0.1 * L, b * 0.06, hh * 0.28, -hh * 1.08], [0.28 * L, b * 0.04, hh * 0.06, -hh * 0.92]], dark, 0.5);
+    mastX = -0.18 * L; mastZ = t0 + hh * 1.3;
   }
   // armour: flank sponsons along the hull's sides, a prow plate, a collar round the tail
   if (d.armor[1]) for (const s of [1, -1]) {
@@ -6523,7 +6594,7 @@ function buildModel(spec, into = scene) {
       put(G_BOX, md.rad, x, y + s * span * 0.1, z0 + span / 2, 0.09 * L, 0.035, span, i).rotation.x = -s * 0.2;
       return;
     }
-    const x = F.rx[0] * L + k * F.rx[1] * L, p = prof(x), span = b * 1.7;
+    const x = F.rx[0] * L + k * F.rx[1] * L, p = prof(x), span = b * F.rx[2];
     put(G_BOX, metal, x, s * (p.w + 0.12), p.z, 0.06 * L, 0.3, 0.1, i);
     put(G_BOX, md.rad, x, s * (p.w + 0.22 + span / 2), p.z + 0.05, 0.12 * L, span, 0.035, i).rotation.x = s * 0.14;
   });
@@ -6557,7 +6628,7 @@ function buildModel(spec, into = scene) {
   for (const [m, i] of hard) {
     if (spinal && i === spinal[1]) continue;
     const row = Math.floor(slot / 4), w4 = slot % 4, up = w4 < 2 ? 1 : -1, sgn = w4 % 2 ? -1 : 1; slot++;
-    const x = (F.tx[0] - (rows > 1 ? row * (F.tx[0] - F.tx[1]) / (rows - 1) : 0)) * L, p = prof(x), y = sgn * 0.58 * p.w, z = up > 0 ? p.z + p.h : p.z - p.h;
+    const x = (F.tx[0] - (rows > 1 ? row * (F.tx[0] - F.tx[1]) / (rows - 1) : 0)) * L, p = prof(x), y = sgn * 0.58 * p.w * (up > 0 ? F.tw || 1 : 1), z = up > 0 ? p.z + p.h : p.z - p.h;
     const mount = new THREE.Group(); mount.position.set(x, y, z); if (up < 0) mount.rotation.x = Math.PI; root.add(mount);
     mount.scale.setScalar(ts);
     const muzzle = new THREE.Object3D();
