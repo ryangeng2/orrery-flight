@@ -413,6 +413,18 @@ input[type=range]{width:130px;accent-color:var(--thrust);margin:0}
 .menu{position:absolute;right:8px;top:calc(100% + 6px);z-index:4;display:flex;flex-direction:column;gap:3px;padding:6px;min-width:190px;box-shadow:0 8px 30px rgba(0,0,0,.5)}
 .menu button{display:flex;justify-content:space-between;align-items:center;gap:12px;text-align:left}
 .ui.clean .left,.ui.clean .right{visibility:hidden}
+.fleet li.fd-hd{grid-template-columns:1fr auto;gap:6px;padding:6px 6px 4px;margin-top:6px;border-top:1px solid var(--edge);border-radius:0;cursor:pointer}
+.fleet li.fd-hd:first-child{margin-top:0;border-top-color:transparent}
+.fd-hd .fl-nm{font:600 10.5px var(--f-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fd-hd .fl-nm small{margin-left:7px;font:400 10px var(--f-num);letter-spacing:0;text-transform:none;color:var(--dim)}
+.fd-hd .fl-b button{padding:0 6px;min-width:20px;font:600 11px/17px var(--f-num)}
+.fd-hd .fold{padding:0 5px 0 0;border:0;background:none;font:600 11px var(--f-num);color:var(--dim)}
+.fd-hd input.fl-in{width:120px;font-size:10.5px;letter-spacing:.12em;color:var(--ink);padding:0 4px}
+.fleet li.fl-hd.in{margin-left:10px}
+.fleet li.in2{margin-left:18px}
+.fleet li.fd-hd.over,.fleet header.over{background:rgba(79,210,255,.16)}
+.fleet li.fl-hd[draggable=true]{cursor:grab}
+.sp-side .go+select,.sp-side select+select{margin-top:0}
 .fleet li .am{display:none}
 .form header .x{margin-left:auto}
 .selp{align-self:center;width:min(980px,100%);display:grid;grid-template-columns:minmax(0,1fr) 300px;max-height:44vh;overflow:hidden;flex:none}
@@ -560,7 +572,7 @@ input[type=range]{width:130px;accent-color:var(--thrust);margin:0}
   <div class="top">
     <div class="left">
       <section class="card fleet" aria-label="Fleet">
-        <header><span class="brand">Fleet</span><span class="hdr-btns"><button class="add" id="b-fleet" type="button" title="Make a fleet of the selected ships">+ Fleet</button></span></header>
+        <header><span class="brand">Fleet</span><span class="hdr-btns"><button class="add" id="b-folder" type="button" title="Make a folder to file fleets in">+ Folder</button><button class="add" id="b-fleet" type="button" title="Group the selected ships into a fleet (N)">+ Fleet</button></span></header>
         <ol id="fleet-list"></ol>
       </section>
       <section class="card fleet contacts" id="contacts" hidden aria-label="Contacts">
@@ -579,7 +591,8 @@ input[type=range]{width:130px;accent-color:var(--thrust);margin:0}
         <li>Defend the six colonies (Mercury, Venus, the Moon, Mars, Ceres, Ganymede): they produce resources, and if all of them fall the war is lost.</li></ul></details>
       <details open><summary>Select &amp; fleets</summary><ul>
         <li><b>Click</b> a ship or row · <span class="k">Shift</span>-click adds · <b>drag</b> a box · <span class="k">Ctrl</span><span class="k">A</span> all. The panel at the foot shows what is selected and its orders</li>
-        <li><b>+ Fleet</b> makes a fleet of the selection (and saves it as the next free group: <span class="k">1</span>–<span class="k">9</span> recalls it, <span class="k">Shift</span>+<span class="k">1</span>–<span class="k">9</span> saves one)</li>
+        <li>Select ships in space and press <span class="k">N</span> (or <b>Group into fleet</b>) to make a fleet and name it; it is also saved as the next free group (<span class="k">1</span>–<span class="k">9</span> recalls it). <b>Add to fleet</b> in the panel adds the selection to one</li>
+        <li>Ships in no fleet wait under <b>Unassigned ships</b>, folded away. <b>+ Folder</b> files fleets: drag a fleet's header onto a folder (onto the Fleet title to take it out), or pick its folder in the panel</li>
         <li>A fleet's header: click selects, <b>▾</b> folds, <b>+</b> adds, <b>−</b> removes, <b>✕</b> disbands; double-click its name to rename it</li></ul></details>
       <details open><summary>Orders &amp; stances</summary><ul>
         <li><b>Right-click</b> a planet or moon: orbit it · empty space or <span class="k">M</span>: move there (<span class="k">Shift</span> + mouse sets height) · one of your ships: escort it</li>
@@ -1009,6 +1022,9 @@ function flightTime(d, uc, us, A) {
 // its pull nears what the engine can fight), aim instead past its side. Leaves the aim (from the ship) in WP
 // and returns the length of the path through it.
 const keepOut = j => j === 0 ? 0.15 * AU : Math.max(1.3 * RAD[j], 0.8 * wellFloor(j));
+// the lowest a formation or tracking square may sit round body j: where its pull is 1.2 m/s² (well inside what any
+// warship can fight), and clear of the surface
+const slotFloor = j => j === 0 ? 0 : Math.max(1.3 * RAD[j], Math.sqrt(GM[j] / 0.0012));
 const WP = [0, 0, 0], AVO = [0, 0, 0];
 function steerAround(p, st, t, rx, ry, rz) {
   WP[0] = rx; WP[1] = ry; WP[2] = rz;
@@ -1064,7 +1080,7 @@ function guide(g, st, p, t, out) {
   }
   // falling toward the surface faster than the engine could stop in time: brake the fall first
   let floor = false;
-  if (p > 0 && r < 4 * RAD[p]) {
+  if (p > 0 && r < Math.max(4 * RAD[p], 2 * slotFloor(p))) {
     const vr = (st[0] * st[3] + st[1] * st[4] + st[2] * st[5]) / r, gN = GM[p] / (r * r), h = Math.max(1, r - 1.15 * RAD[p]);
     if (vr < 0 && vr * vr > Math.max(amax - gN, 0.1 * amax) * h) {
       const need = vr * vr / (2 * h) + gN, ar = (ax * st[0] + ay * st[1] + az * st[2]) / r;
@@ -1432,6 +1448,9 @@ function offsetState(L, st, a, c, orbit, out) {
     out[k] = w * FK[k] + (1 - w) * (st[k] + a * L.formDir[k] + c * L.formRight[k]);
     out[3 + k] = w * FK[3 + k] + (1 - w) * st[3 + k];
   }
+  // never below the floor of the well (a leader or target swinging low takes its squares no lower)
+  const fl = slotFloor(L.prim), ro = Math.hypot(out[0], out[1], out[2]);
+  if (ro > 0 && ro < fl) { const q = fl / ro; out[0] *= q; out[1] *= q; out[2] *= q; }
 }
 // place wingman f in its cell of leader L's formation (state relative to L's body)
 function placeFollower(f, L, sp, orbit = inOrbit(L.prim, L.S)) {
@@ -3056,6 +3075,29 @@ function makeStation(side, kind, name) {
   sh.stock = noStock(); sh.queue = []; sh.deployed = false;
   return sh;
 }
+// a new ship of yours: where it will park once fitted out (its anchor until then)
+function parkSpot(sh, Y) {
+  sh.builtT = worldT;
+  if (Y.prim === 0) return;
+  const j = Y.prim, r0 = Math.hypot(Y.S[0], Y.S[1], Y.S[2]), spot = s => s.parkAt || s.anchor;
+  const taken = r => ships.some(s => s !== sh && s.side === 'us' && alive(s) && !s.station && spot(s) && spot(s).type === 'body' && spot(s).j === j && Math.abs((spot(s).rp || 0) - r) < 0.03 * r0);
+  for (let k = 0; k < 16; k++) {
+    const r = Math.min(0.6 * SOI[j], r0 * (1.1 + 0.07 * k));
+    if (!taken(r)) { sh.parkAt = sh.anchor = { type: 'body', j, rp: r }; return; }
+  }
+}
+// ...and once fitted out (or after a day), it goes there; an order of yours first cancels that
+function parkFrame() {
+  for (const s of ships) {
+    const P = s.parkAt; if (!P) continue;
+    if (!alive(s) || s.anchor !== P || s.leader || s.station) { s.parkAt = null; continue; }
+    if (s.engaged || s.rearming || s.withdrawing || s.track || s.pending || (s.ap.goal && !s.ap.hold)) continue;
+    if (s.prim === P.j && Math.abs(Math.hypot(s.S[0], s.S[1], s.S[2]) - P.rp) < 0.02 * P.rp) { s.parkAt = null; continue; }
+    if (supplyLevel(s) < 0.98 && worldT - (s.builtT ?? -Infinity) < DAY) continue;
+    s.parkAt = null;
+    commandFleet(P, 'orbit', null, [s], true);
+  }
+}
 // a finished job: a ship (tanks and magazines empty: it fits out from the depot) or a station beside the yard
 let buildSeq = 0;
 function completeJob(Y, job) {
@@ -3072,9 +3114,10 @@ function completeJob(Y, job) {
     sh.fuel = 0; sh.ammo = { torps: 0, slugs: 0, rounds: 0 };
   }
   placeBeside(sh, Y, 400 + 300 * Math.random());
+  if (Y.side === 'us' && !infra) parkSpot(sh, Y);
   if (Y.side === 'us') sh.owner = Y.owner;           // a yard builds for whoever owns it
   if (Y.side === 'them') { alienFit(sh, d); sh.vis = false; }
-  if (Y.side === 'us') showToast(`${Y.name} finished ${sh.name} (${d.name})${infra ? ': take it in tow to place it' : ': fitting out'}`, 6000);
+  if (Y.side === 'us') showToast(`${Y.name} finished ${sh.name} (${d.name})${infra ? ': take it in tow to place it' : sh.parkAt ? `: fitting out, then parking ${fmtDist(sh.parkAt.rp - RAD[sh.parkAt.j])} up` : ': fitting out'}`, 6000);
   fleetDirty = econDirty = true;
 }
 function buildFrame(dt) {
@@ -3852,7 +3895,7 @@ let hvTick = -Infinity, aiTick = -Infinity;
 function economyFrame(dt) {
   towFrame();
   if (dt > 0) { mineFrame(dt); buildFrame(dt); resupply(dt); colonyFrame(dt); }
-  withdrawFrame(); rearmFrame(); autoEngage();
+  withdrawFrame(); rearmFrame(); parkFrame(); autoEngage();
   if (worldT - hvTick > 900) { hvTick = worldT; for (const s of ships) if (s.hv) harvestThink(s); }
   for (const [fleet, next] of retrack.splice(0)) { const list = fleet.filter(alive); if (list.length && alive(next)) orderTrack(next, list, { range: standoff(list) / 1.2, preset: 'envelop', quiet: true, pursuit: true }); }
   if (worldT - aiTick > 1800) { aiTick = worldT; aiThink(); }
@@ -4090,7 +4133,7 @@ function applyState(js) {
     const el = $('endgame'); el.querySelector('h2').textContent = st.over; el.querySelector('p').textContent = st.endTxt; el.hidden = false;
   }
   if (!st.over && game.over) { game.over = false; $('endgame').hidden = true; }
-  if (!NET.gotSnap) { NET.gotSnap = true; renderMP(); const L = ships.find(s => ownShip(s) && alive(s) && !s.station); if (L) { selectOnly([L]); setFocus(-1); } }
+  if (!NET.gotSnap) { NET.gotSnap = true; renderMP(); { const mine = ships.filter(s => ownShip(s) && alive(s) && !s.station && !s.hv); if (mine.length && !fleets.length) makeFleet(mine, 'Mars Fleet'); } const L = ships.find(s => ownShip(s) && alive(s) && !s.station); if (L) { selectOnly([L]); setFocus(-1); } }
   fleetDirty = econDirty = navDirty = formDirty = needDraw = true;
 }
 
@@ -4400,7 +4443,7 @@ function removeAllShips() {
     scene.remove(sh.trail); for (const l of sh.lines) scene.remove(l);
     sh.label.remove(); sh.row.remove(); if (sh.ghostLbl) sh.ghostLbl.remove(); if (sh.model) dropModel(sh.model);
   }
-  ships.length = 0; shots.length = 0; beams.length = 0; fx.length = 0; fleets.length = 0; fleetSeq = 0; fleetSig = '';
+  ships.length = 0; shots.length = 0; beams.length = 0; fx.length = 0; fleets.length = 0; fleetSeq = 0; fleetSig = ''; folders.length = 0; folderSeq = 0;
 }
 function launchShip(design = designs[yardIdx]) {
   const ours = ships.filter(s => s.side === 'us' && alive(s));
@@ -4441,18 +4484,26 @@ function flagOf(F) {
   F.flag = m.sort((a, b) => led(b) - led(a))[0] || null;
   return F.flag;
 }
-function newFleet() {
-  for (const s of ships) if (s.sel && s.station) s.sel = false;          // fleets are of ships
-  const list = selectedShips();
-  if (!list.length) { showToast('Select ships first, then + Fleet'); return; }
-  const F = { id: fleetSeq, name: `${ordinal(++fleetSeq)} Fleet`, flag: list[0], hd: null };
+// a fleet of these ships (out of any they were in), saved as the next free number group (1-9)
+function makeFleet(list, name) {
+  const F = { id: fleetSeq, name: name || `${ordinal(++fleetSeq)} Fleet`, flag: list[0], hd: null, folder: null };
+  if (name) fleetSeq++;
   for (const s of list) s.fleet = F;
   fleets.push(F);
-  if (list.length > 1) formUp();
   const g = [1, 2, 3, 4, 5, 6, 7, 8, 9].find(k => !ships.some(s => s.group === k && alive(s) && !list.includes(s)));
   if (g) for (const s of list) s.group = g;
-  fleetDirty = formDirty = true;
-  showToast(`${F.name}: ${list.length} ship${list.length === 1 ? '' : 's'}, flagship ${list[0].name}${g ? ` · press ${g} to select it` : ''}`);
+  fleetSig = ''; fleetDirty = formDirty = true;
+  return { F, g };
+}
+// the ships selected (in space, with a click or a box) become a fleet, formed up behind the first; then name it
+function newFleet() {
+  for (const s of ships) if (s.sel && s.station) s.sel = false;          // fleets are of ships
+  const list = selectedShips().filter(ownShip);
+  if (!list.length) { showToast('Select ships first (click them, or drag a box round them in space), then group them (N)'); return; }
+  const { F, g } = makeFleet(list);
+  if (list.length > 1) formUp();
+  showToast(`${F.name}: ${list.length} ship${list.length === 1 ? '' : 's'}, flagship ${list[0].name}${g ? ` · press ${g} to select it` : ''} · type a name, Enter keeps it`);
+  nameFleet(F);
 }
 // the selected ships join a fleet, flying to their places in its formation
 function addToFleet(F) {
@@ -4491,24 +4542,33 @@ function selectFleet(F) {
   formDirty = true;
 }
 // a fleet's name, edited in place in its header (Enter keeps it, Esc cancels)
-function renameFleet(F, el) {
+function renameFleet(F, el, what = 'Fleet') {
   const tx = el.querySelector('.fl-tx'); if (!tx) return;
-  const inp = document.createElement('input'); inp.className = 'rename fl-in'; inp.value = F.name; inp.maxLength = 24; inp.spellcheck = false; inp.setAttribute('aria-label', 'Fleet name');
+  const inp = document.createElement('input'); inp.className = 'rename fl-in'; inp.value = F.name; inp.maxLength = 24; inp.spellcheck = false; inp.setAttribute('aria-label', what + ' name');
   tx.hidden = true; tx.after(inp); inp.focus(); inp.select();
   const done = ok => {
     if (!inp.isConnected) return;
     const name = cleanName(inp.value).slice(0, 24);
-    if (ok && name && name !== F.name) { F.name = name; tx.textContent = name; showToast(`Fleet renamed: ${name}`); }
-    inp.remove(); tx.hidden = false; fleetDirty = formDirty = true;
+    if (ok && name && name !== F.name) { F.name = name; tx.textContent = name; showToast(`${what} renamed: ${name}`); }
+    inp.remove(); tx.hidden = false; fleetSig = ''; fleetDirty = formDirty = true;
   };
   inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') done(true); else if (e.key === 'Escape') done(false); });
   inp.addEventListener('click', e => e.stopPropagation());
+  inp.addEventListener('pointerdown', e => e.stopPropagation());
   inp.addEventListener('blur', () => done(true));
 }
+// name a fleet (as it is made, or from the selection panel): its header comes into view and takes the name
+function nameFleet(F) {
+  if (!barOn) setBar(true);
+  if (F.folder) F.folder.folded = false;
+  fleetSig = ''; syncFleetList();
+  if (F.hd && F.hd.isConnected) { F.hd.scrollIntoView({ block: 'nearest' }); renameFleet(F, F.hd); }
+}
+let dragFleet = null;
 function fleetHeader(F) {
   const el = document.createElement('li');
-  el.className = 'fl-hd';
-  el.innerHTML = `<span class="fl-nm"><button type="button" class="fold" data-a="fold" aria-label="Fold or unfold ${F.name}">▾</button><span class="fl-tx" title="Double-click to rename">${F.name}</span><small></small></span><span class="fl-b"><button type="button" data-a="add" title="Add the selected ships to ${F.name}">+</button><button type="button" data-a="rem" title="Take the selected ships out of ${F.name}">−</button><button type="button" data-a="del" title="Disband ${F.name}">✕</button></span>`;
+  el.className = 'fl-hd'; el.draggable = true;
+  el.innerHTML = `<span class="fl-nm"><button type="button" class="fold" data-a="fold" aria-label="Fold or unfold ${F.name}">▾</button><span class="fl-tx" title="Double-click to rename · drag onto a folder to file it">${F.name}</span><small></small></span><span class="fl-b"><button type="button" data-a="add" title="Add the selected ships to ${F.name}">+</button><button type="button" data-a="rem" title="Take the selected ships out of ${F.name}">−</button><button type="button" data-a="del" title="Disband ${F.name}">✕</button></span>`;
   el.addEventListener('click', e => {
     const a = e.target.closest('button'); e.stopPropagation();
     if (!a) selectFleet(F); else if (a.dataset.a === 'fold') { F.folded = !F.folded; fleetSig = ''; syncFleetList(); } else if (a.dataset.a === 'add') addToFleet(F); else if (a.dataset.a === 'rem') leaveFleet(F); else disbandFleet(F);
@@ -4518,42 +4578,89 @@ function fleetHeader(F) {
     if (e.target.closest('.fl-tx')) { renameFleet(F, el); return; }           // the name: rename the fleet
     const f = flagOf(F); if (f) { lead = f; bindLead(); setFocus(-1); }
   });
+  el.addEventListener('dragstart', e => { dragFleet = F; e.dataTransfer.setData('text/plain', F.name); e.dataTransfer.effectAllowed = 'move'; });
+  el.addEventListener('dragend', () => { dragFleet = null; });
   el.addEventListener('contextmenu', e => e.preventDefault());
   return el;
 }
-// section headers fold too (click them)
-const fold = { infra: false, loose: false, ally: true };
+// ---- Folders: named groups of fleets in the fleet list. + Folder makes one (so does the panel's Folder list);
+// drag a fleet's header onto a folder to file it there (onto the Fleet title to take it out); double-click a
+// folder's name to rename it; ▾ folds it; ✕ removes it (its fleets stay, at the top level).
+const folders = []; let folderSeq = 0;
+function newFolder(name) { const D = { id: folderSeq++, name: name || `Folder ${folderSeq}`, folded: false, hd: null }; folders.push(D); fleetSig = ''; fleetDirty = true; return D; }
+function fileFleet(F, D) {
+  if ((F.folder || null) === (D || null)) return;
+  F.folder = D || null; fleetSig = ''; fleetDirty = true;
+  showToast(D ? `${F.name} filed in ${D.name}` : `${F.name} taken out of its folder`);
+}
+function folderHeader(D) {
+  const el = document.createElement('li'); el.className = 'fd-hd';
+  el.innerHTML = `<span class="fl-nm"><button type="button" class="fold" data-a="fold" aria-label="Fold or unfold the folder">▾</button><span class="fl-tx" title="Double-click to rename">${esc(D.name)}</span><small></small></span><span class="fl-b"><button type="button" data-a="del" title="Remove the folder (its fleets stay)">✕</button></span>`;
+  el.addEventListener('click', e => {
+    const a = e.target.closest('button'); e.stopPropagation();
+    if (e.target.closest('input')) return;
+    if (a && a.dataset.a === 'del') { for (const F of fleets) if (F.folder === D) F.folder = null; folders.splice(folders.indexOf(D), 1); showToast(`Folder ${D.name} removed: its fleets stay`); }
+    else D.folded = !D.folded;
+    fleetSig = ''; syncFleetList();
+  });
+  el.addEventListener('dblclick', e => { if (e.target.closest('.fl-tx')) renameFleet(D, el, 'Folder'); });
+  el.addEventListener('dragover', e => { if (dragFleet) { e.preventDefault(); el.classList.add('over'); } });
+  el.addEventListener('dragleave', () => el.classList.remove('over'));
+  el.addEventListener('drop', e => { e.preventDefault(); el.classList.remove('over'); if (dragFleet) { D.folded = false; fileFleet(dragFleet, D); syncFleetList(); } dragFleet = null; });
+  el.addEventListener('contextmenu', e => e.preventDefault());
+  return el;
+}
+// section headers fold too (click them); ships in no fleet start folded away: select ships in space and group them
+const fold = { infra: false, loose: true, ally: true };
 function sectionHd(key) {
   const el = document.createElement('li'); el.className = 'fl-sub';
   el.addEventListener('click', () => { fold[key] = !fold[key]; fleetSig = ''; syncFleetList(); });
   return el;
 }
 const looseHd = sectionHd('loose'), infraHd = sectionHd('infra'), allyHd = sectionHd('ally');
-// lay the list out by fleet (flagship first), then the ships in none; only when that changes
+// lay the list out: folders with their fleets, the other fleets (flagship first), infrastructure, then the ships
+// in no fleet; only when that changes
 function syncFleetList() {
   for (let i = fleets.length - 1; i >= 0; i--) if (!membersOf(fleets[i]).length) { for (const sh of ships) if (sh.fleet === fleets[i]) sh.fleet = null; fleets.splice(i, 1); }
   const groups = fleets.map(F => { const f = flagOf(F); return [F, [f, ...membersOf(F).filter(s => s !== f)]]; });
   const loose = ships.filter(s => s.side === 'us' && alive(s) && !s.fleet && ownShip(s)), allyL = ships.filter(s => s.side === 'us' && alive(s) && !ownShip(s));
   const infraL = loose.filter(s => s.station && !s.leader), shipsL = loose.filter(s => !infraL.includes(s));
-  const sig = groups.map(([F, m]) => F.id + (F.folded ? 'f' : '') + ':' + m.map(s => s.id)).join('|') + '/' + fold.infra + infraL.map(s => s.id) + '/' + fold.loose + shipsL.map(s => s.id) + '/' + fold.ally + allyL.map(s => s.id);
+  const sig = folders.map(D => D.id + (D.folded ? 'f' : '') + D.name).join(',') + '/' + groups.map(([F, m]) => F.id + (F.folder ? '@' + F.folder.id : '') + (F.folded ? 'f' : '') + ':' + m.map(s => s.id)).join('|')
+    + '/' + fold.infra + infraL.map(s => s.id) + '/' + fold.loose + shipsL.map(s => s.id) + '/' + fold.ally + allyL.map(s => s.id);
   if (sig === fleetSig) return;
   fleetSig = sig;
   const out = [];
-  for (const [F, m] of groups) {
+  const put = (F, m, deep) => {
     if (!F.hd) F.hd = fleetHeader(F);
-    F.hd.querySelector('.fold').textContent = F.folded ? '▸' : '▾'; F.hd.classList.toggle('folded', !!F.folded);
+    F.hd.querySelector('.fold').textContent = F.folded ? '▸' : '▾'; F.hd.classList.toggle('folded', !!F.folded); F.hd.classList.toggle('in', deep);
     out.push(F.hd);
-    if (!F.folded) for (const sh of m) { sh.row.classList.add('in'); out.push(sh.row); }
+    if (!F.folded) for (const sh of m) { sh.row.classList.add('in'); sh.row.classList.toggle('in2', deep); out.push(sh.row); }
+  };
+  for (const D of folders) {
+    if (!D.hd) D.hd = folderHeader(D);
+    const mine = groups.filter(([F]) => F.folder === D), n = mine.reduce((a, [, m]) => a + m.length, 0);
+    D.hd.querySelector('.fold').textContent = D.folded ? '▸' : '▾';
+    D.hd.querySelector('small').textContent = `${mine.length} fleet${mine.length === 1 ? '' : 's'} · ${n} ship${n === 1 ? '' : 's'}`;
+    out.push(D.hd);
+    if (!D.folded) for (const [F, m] of mine) put(F, m, true);
   }
+  for (const [F, m] of groups) if (!F.folder) put(F, m, false);
   infraHd.textContent = `${fold.infra ? '▸' : '▾'} Infrastructure · ${infraL.length}`;
-  looseHd.textContent = `${fold.loose ? '▸' : '▾'} No fleet · ${shipsL.length}`;
-  if (infraL.length) { out.push(infraHd); if (!fold.infra) for (const sh of infraL) { sh.row.classList.remove('in'); out.push(sh.row); } }
-  if ((groups.length || infraL.length) && shipsL.length) out.push(looseHd);
-  if (!fold.loose || !(groups.length || infraL.length)) for (const sh of shipsL) { sh.row.classList.remove('in'); out.push(sh.row); }
+  if (infraL.length) { out.push(infraHd); if (!fold.infra) for (const sh of infraL) { sh.row.classList.remove('in', 'in2'); out.push(sh.row); } }
+  looseHd.textContent = `${fold.loose ? '▸' : '▾'} Unassigned ships · ${shipsL.length}`;
+  looseHd.title = 'Ships in no fleet: select ships in space and press N (or Group into fleet) to make one';
+  if (shipsL.length) { out.push(looseHd); if (!fold.loose) for (const sh of shipsL) { sh.row.classList.remove('in', 'in2'); out.push(sh.row); } }
   // your ally's ships and stations (to look at: click one to see it)
   allyHd.textContent = `${fold.ally ? '▸' : '▾'} Ally · ${allyL.length}`;
-  if (allyL.length) { out.push(allyHd); if (!fold.ally) for (const sh of allyL) { sh.row.classList.add('ally'); out.push(sh.row); } }
+  if (allyL.length) { out.push(allyHd); if (!fold.ally) for (const sh of allyL) { sh.row.classList.add('ally'); sh.row.classList.remove('in', 'in2'); out.push(sh.row); } }
   fleetList.replaceChildren(...out);
+}
+// the Fleet card's title takes a fleet dragged out of its folder
+{
+  const hd = fleetList.previousElementSibling;
+  hd.addEventListener('dragover', e => { if (dragFleet) { e.preventDefault(); hd.classList.add('over'); } });
+  hd.addEventListener('dragleave', () => hd.classList.remove('over'));
+  hd.addEventListener('drop', e => { e.preventDefault(); hd.classList.remove('over'); if (dragFleet) { fileFleet(dragFleet, null); syncFleetList(); } dragFleet = null; });
 }
 function pickLead() {
   if (lead && alive(lead) && (lead.sel || !selectedShips().length)) return;
@@ -4872,6 +4979,7 @@ function resetFleet(coop = false) {
   makeShip(SHIP_NAMES[3], 40000, 4.6, 0, pk);
   lead = ships[0]; selectOnly(ships.slice()); setWarp(3);
   newGame(coop);
+  { const home = ships.filter(s => s.side === 'us' && alive(s) && !s.station && !s.hv && s.owner === 'p1'); if (home.length) makeFleet(home, 'Home Fleet'); }
   nav.open = false; nav.sel = null; sensors = null; setFocus(0);
   absPos(3, worldT, W1); cam.az = Math.atan2(W1[1], W1[0]); cam.el = 0.95;
 }
@@ -4908,6 +5016,7 @@ ngEl.addEventListener('click', e => {
 $('b-sensors').onclick = toggleSensors;
 $('b-auto').onclick = () => setAutoWarp(!autoWarp);
 $('b-fleet').onclick = newFleet;
+$('b-folder').onclick = () => { const D = newFolder(); if (!barOn) setBar(true); syncFleetList(); renameFleet(D, D.hd, 'Folder'); };
 $('nav-close').onclick = () => { nav.open = false; navDirty = true; updateNav(); };
 $('nav-go').onclick = () => commandFleet(nav.sel, 'orbit', null);
 $('nav-abort').onclick = () => { const n = standDown(); showToast(`Autopilot off for ${n} ship${n === 1 ? '' : 's'}`); updateNav(); };
@@ -4961,6 +5070,7 @@ window.addEventListener('keydown', e => {
   else if (e.code === 'KeyF') setFocus(-1);
   else if (e.code === 'KeyY') openYard();
   else if (e.code === 'KeyB') rearm();
+  else if (e.code === 'KeyN') newFleet();
   else if (e.code === 'KeyG') setWeaponsMode(weaponsMode === 'auto' ? 'manual' : 'auto');
   else if (e.code === 'KeyE') setEvasive();
   else if (e.code === 'KeyQ') setSilent();
@@ -5111,7 +5221,11 @@ function shipsSide(list) {
   const F = own[0].fleet && own.every(s => s.fleet === own[0].fleet) ? own[0].fleet : null, L = fleetLeader(own[0]);
   h += `<div class="sp-row"><button type="button" data-act="stop" title="Cancel orders and keep station here (Esc)">Stop</button>`
     + (own.length > 1 || L.track || followersOf(L).length ? `<button type="button" data-act="form" aria-pressed="${formOpen}" title="Arrange the formation">Formation</button>` : '')
-    + (F ? `<button type="button" data-act="unfleet" title="Take them out of ${esc(F.name)}">Leave fleet</button>` : '<button type="button" data-act="fleet" title="Make a fleet of the selection">+ Fleet</button>') + '</div>';
+    + (F ? `<button type="button" data-act="rnfleet" title="Rename ${esc(F.name)}">Rename</button><button type="button" data-act="unfleet" title="Take them out of ${esc(F.name)}">Leave fleet</button>` : '') + '</div>';
+  if (!F) h += `<button type="button" class="go" data-act="fleet" title="Group the selected ships into a new fleet and name it (N)">Group into fleet${own.length > 1 ? ` (${own.length})` : ''}</button>`;
+  const others = fleets.filter(x => x !== F && membersOf(x).length);
+  if (others.length) h += `<select data-act="addfleet" aria-label="Add to a fleet"><option value="">Add to fleet…</option>${others.map(x => `<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select>`;
+  if (F) h += `<select data-act="folder" aria-label="Folder">${[['none', 'Folder: none'], ...folders.map(D => [D.id, 'Folder: ' + D.name]), ['new', 'New folder…']].map(([v, t]) => `<option value="${v}"${(F.folder ? F.folder.id : 'none') === v ? ' selected' : ''}>${esc(t)}</option>`).join('')}</select>`;
   // a refit, for ships within reach of a yard of yours
   if (war.length) {
     const p = posNow(war[0]).slice(), Y = stationsOf('us').find(y => isYard(y) && ownShip(y) && dist3(posNow(y), p) < SUPPLY_R);
@@ -5202,6 +5316,7 @@ spSide.addEventListener('click', e => {
   else if (d.act === 'stop') stopOrders(own);
   else if (d.act === 'form') { formOpen = !formOpen; formDirty = true; }
   else if (d.act === 'fleet') newFleet();
+  else if (d.act === 'rnfleet') { if (own[0] && own[0].fleet) nameFleet(own[0].fleet); }
   else if (d.act === 'unfleet') { if (own[0] && own[0].fleet) leaveFleet(own[0].fleet); }
   else if (d.act === 'yard') openYard();
   else if (d.fire) fireNow(d.fire);
@@ -5217,7 +5332,14 @@ spSide.addEventListener('click', e => {
   fleetDirty = true; spSide._h = ''; renderSel();
 });
 spSide.addEventListener('change', e => {
-  const t = e.target; if (t.dataset.act !== 'refit' || t.value === '') return;
+  const t = e.target, F = selectedShips().find(s => s.fleet) ? selectedShips().find(s => s.fleet).fleet : null;
+  if (t.dataset.act === 'addfleet' && t.value !== '') { const X = fleets.find(x => x.id === +t.value); if (X) addToFleet(X); spSide._h = ''; renderSel(); return; }
+  if (t.dataset.act === 'folder' && F) {
+    if (t.value === 'new') { const D = newFolder(); fileFleet(F, D); syncFleetList(); renameFleet(D, D.hd, 'Folder'); }
+    else { fileFleet(F, t.value === 'none' ? null : folders.find(D => D.id === +t.value)); syncFleetList(); }
+    spSide._h = ''; renderSel(); return;
+  }
+  if (t.dataset.act !== 'refit' || t.value === '') return;
   refitList(designs[+t.value], selectedShips().filter(s => !s.station && ownShip(s)));
   spSide._h = ''; renderSel();
 });
