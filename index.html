@@ -43,13 +43,9 @@ body{background:var(--void);color:var(--ink);font-family:var(--f-ui);overflow:hi
 .lbl.big .dot{display:none}
 .lbl.ship{flex-direction:row-reverse;--c:var(--thrust)}
 .lbl.ship .dot{position:relative;border-radius:2px;width:var(--s);height:var(--s);background:none;box-shadow:none;opacity:.85}
-.lbl.ship .dot::before,.fleet li .mk::before,.form-grid .ic::before{content:'';position:absolute;inset:0;background:var(--c);clip-path:var(--shape)}
-:where(.lbl.ship,.fleet li){--s:8px;--shape:polygon(50% 0,100% 50%,50% 100%,0 50%)}
-[data-cls=corvette]{--s:7px;--shape:polygon(50% 0,100% 100%,50% 70%,0 100%)}
-[data-cls=frigate]{--s:9px;--shape:polygon(50% 0,100% 50%,50% 100%,0 50%)}
-[data-cls=destroyer]{--s:11px;--shape:polygon(50% 0,88% 100%,50% 84%,12% 100%)}
-[data-cls=cruiser]{--s:11px;--shape:polygon(28% 0,72% 0,100% 50%,72% 100%,28% 100%,0 50%)}
-[data-cls=titan]{--s:14px;--shape:polygon(50% 0,100% 26%,100% 100%,62% 100%,50% 82%,38% 100%,0 100%,0 26%)}
+.lbl.ship .dot::before,.fleet li .mk::before,.form-grid .ic::before{content:'';position:absolute;inset:0;background:var(--c);-webkit-mask:var(--ico) center/contain no-repeat;mask:var(--ico) center/contain no-repeat}
+:where(.lbl.ship,.fleet li){--s:11px}
+.lbl.ship .dot::before{-webkit-mask-image:var(--icoS,var(--ico));mask-image:var(--icoS,var(--ico));transform:rotate(var(--rot,0deg))}
 .lbl.ship .nm{color:var(--thrust);opacity:.7;font-size:10px}
 .lbl.ship.sel .dot{opacity:1;box-shadow:0 0 0 2.5px var(--void),0 0 0 4px var(--thrust)}
 .lbl.ship.sel .nm{opacity:1}
@@ -135,13 +131,6 @@ body{background:var(--void);color:var(--ink);font-family:var(--f-ui);overflow:hi
 #h-name{cursor:text}
 .fleet .fl-hd input.fl-in{width:120px;font-size:10.5px;letter-spacing:.12em;color:var(--path);padding:0 4px}
 .hud-head input.rename{font:600 12px var(--f-ui);letter-spacing:.16em;text-transform:uppercase;color:var(--thrust);background:rgba(160,185,230,.08);border:1px solid var(--edge);border-radius:4px;padding:1px 5px;width:150px}
-[data-cls=colony]{--s:14px;--shape:polygon(35% 0,65% 0,65% 35%,100% 35%,100% 65%,65% 65%,65% 100%,35% 100%,35% 65%,0 65%,0 35%,35% 35%)}
-[data-cls=stalker]{--s:12px;--shape:polygon(50% 0,78% 45%,100% 100%,50% 76%,0 100%,22% 45%)}
-[data-cls=ravager]{--s:14px;--shape:polygon(50% 0,74% 30%,100% 32%,84% 70%,100% 100%,50% 80%,0 100%,16% 70%,0 32%,26% 30%)}
-[data-cls=leviathan]{--s:17px;--shape:polygon(50% 0,70% 20%,100% 24%,86% 56%,100% 100%,60% 86%,50% 100%,40% 86%,0 100%,14% 56%,0 24%,30% 20%)}
-[data-cls=drone]{--s:8px;--shape:polygon(50% 0,100% 80%,50% 100%,0 80%)}
-[data-cls=shipyard]{--s:13px;--shape:polygon(0 0,100% 0,100% 100%,72% 100%,72% 38%,28% 38%,28% 100%,0 100%)}
-[data-cls=depot]{--s:12px;--shape:circle(50% at 50% 50%)}
 .top{position:relative}
 .resbar{align-self:center;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;align-items:center;padding:5px 12px;font:400 11px var(--f-num);color:var(--dim);white-space:nowrap;margin-bottom:-6px}
 .resbar .rb{display:flex;align-items:center;gap:6px}
@@ -173,7 +162,7 @@ body{background:var(--void);color:var(--ink);font-family:var(--f-ui);overflow:hi
 .stn-b{display:grid;grid-template-columns:1fr 1fr;gap:4px;max-height:190px;overflow:auto}
 .stn-b button{display:grid;grid-template-columns:16px 1fr;gap:1px 6px;align-items:center;text-align:left;padding:5px 6px;text-transform:none;letter-spacing:.02em;font:600 10.5px var(--f-ui)}
 .stn-b .ic{position:relative;display:block;grid-row:1/3;width:var(--s);height:var(--s);--c:var(--thrust)}
-.stn-b .ic::before{content:'';position:absolute;inset:0;background:var(--c);clip-path:var(--shape)}
+.stn-b .ic::before{content:'';position:absolute;inset:0;background:var(--c);-webkit-mask:var(--ico) center/contain no-repeat;mask:var(--ico) center/contain no-repeat}
 .stn-b small{font:400 9.5px var(--f-num);color:var(--dim)}
 .stn .seg{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-bottom:6px}
 .stn .seg button{padding:6px 0;font-size:10px}
@@ -432,7 +421,7 @@ input[type=range]{width:130px;accent-color:var(--thrust);margin:0}
 .sp-side{min-width:0;padding:9px 12px 10px;border-left:1px solid var(--edge);overflow:auto;display:flex;flex-direction:column;gap:6px;scrollbar-width:thin}
 .sp-hd{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px}
 .sp-hd .mk{position:relative;flex:none;width:var(--s);height:var(--s);--c:var(--thrust)}
-.sp-hd .mk::before,.chipb .mk::before{content:'';position:absolute;inset:0;background:var(--c);clip-path:var(--shape)}
+.sp-hd .mk::before,.chipb .mk::before{content:'';position:absolute;inset:0;background:var(--c);-webkit-mask:var(--ico) center/contain no-repeat;mask:var(--ico) center/contain no-repeat}
 .sp-nm{font:600 13px var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--thrust)}
 .sp-nm[data-act]{cursor:text}
 .sp-nm[data-act]:hover{text-decoration:underline dotted}
@@ -507,7 +496,7 @@ input[type=range]{width:130px;accent-color:var(--thrust);margin:0}
 .yd-list li:hover{background:rgba(160,185,230,.07)}
 .yd-list li.sel{background:rgba(79,210,255,.1);border-color:rgba(79,210,255,.45)}
 .yd-list .ic{position:relative;display:block;grid-row:1/3;width:var(--s);height:var(--s);--c:var(--thrust)}
-.yd-list .ic::before{content:'';position:absolute;inset:0;background:var(--c);clip-path:var(--shape)}
+.yd-list .ic::before{content:'';position:absolute;inset:0;background:var(--c);-webkit-mask:var(--ico) center/contain no-repeat;mask:var(--ico) center/contain no-repeat}
 .yd-list b{font:600 11px var(--f-ui);letter-spacing:.06em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .yd-list small{grid-column:2;font:400 9.5px/1.35 var(--f-num);color:var(--dim)}
 .yd-list li.bad small{color:var(--warn)}
@@ -2647,6 +2636,7 @@ const foesNear = (p, R) => ships.filter(o => o.side !== 'us' && alive(o) && o.vi
 const powerOf = list => list.reduce((a, s) => a + combatPower(s), 0);
 // which enemy first: the nearly dead, the dangerous, those near a station of yours, the one you ordered attacked
 function foePriority(o, p, stations, focus) {
+  if (!o.cp) return 0;
   const atStation = stations.some(st => st.cp && dist3(st.cp, o.cp) < 3e5) ? 2 : 1;
   return (o === focus ? 3 : 1) * atStation * (1.6 - hullFrac(o)) * (1 + combatPower(o) / 30) * (o.station ? 0.5 : 1) / (1 + dist3(o.cp, p) / 1e5);
 }
@@ -5997,11 +5987,49 @@ menuEl.addEventListener('click', e => {
 });
 window.addEventListener('pointerdown', e => { if (!menuEl.hidden && !menuEl.contains(e.target) && e.target !== bMenu) setMenu(false); }, true);
 
+// ---- ship outlines for the icons: each class's planform seen from above, nose up, in a 24-unit box (h: the
+// right half from the nose to the stern, mirrored; cut: holes, mirrored too; rings: circles), drawn as an outline
+// over a faint fill and used as a CSS mask. px: the icon's size in lists and in space. In space it turns with the
+// ship's heading.
+const SIL = {
+  default: { px: [11, 14], h: [[12, 2], [20, 12], [12, 22]] },
+  corvette: { px: [11, 14], h: [[12, 1], [13, 6], [13.6, 10], [17.6, 8.6], [18.2, 4.5], [19.8, 4.5], [20, 14], [18.6, 15], [14.6, 18.5], [14.8, 22.5], [13.6, 23.2], [12.8, 21.5], [12, 21.5]] },
+  frigate: { px: [12, 16], h: [[12, 1], [14.5, 1.2], [16.6, 2.2], [16.6, 5.4], [13.7, 6], [13.7, 11.5], [15.8, 13], [16, 15.5], [18.5, 15.5], [18.5, 13.8], [19.4, 13], [20.3, 13.8], [20.3, 23], [18.5, 23], [18.5, 18.2], [16, 18.2], [16, 23], [13.5, 23.5], [12, 23.5]] },
+  destroyer: { px: [13, 18], h: [[12, 7], [13, 6.5], [13.4, 1.5], [14, 1], [15.2, 3.5], [15.8, 8], [16.6, 10.5], [16.6, 14], [20.6, 20], [20.6, 21.4], [16.2, 19.6], [15.2, 23], [12, 23]] },
+  cruiser: { px: [14, 20], h: [[12, 1], [13.4, 5], [14.5, 9], [16.2, 9], [16.2, 4.8], [17.7, 3.2], [19.2, 4.8], [19.2, 22.5], [18.4, 23.5], [17, 23.5], [16.2, 22.5], [16.2, 17.5], [14.5, 17.5], [14.3, 22], [13, 23], [12, 23]], cut: [[[14.5, 11], [16.2, 11], [16.2, 15.5], [14.5, 15.5]]] },
+  titan: { px: [15, 24], h: [[12, 0.5], [12.7, 4], [13.6, 8.5], [15, 12], [15.3, 12.5], [19.6, 19], [20.2, 18.5], [21, 19.5], [21, 23.5], [19.2, 23.5], [19, 22.5], [15.5, 22], [15.3, 23.5], [12, 23.5]] },
+  drone: { px: [11, 15], h: [[12, 2], [15, 5], [16.6, 11], [16, 17], [13.6, 22], [12, 23]] },
+  stalker: { px: [14, 22], h: [[12, 3], [12.8, 0.8], [14, 2.6], [15, 6.5], [15.3, 10], [19.6, 16.5], [15.2, 14.2], [14.2, 18], [12.8, 22], [12, 24]] },
+  ravager: { px: [15, 26], h: [[12, 3.2], [12.9, 0.6], [13.9, 2.2], [15.2, 0.8], [16.2, 3.6], [16.6, 8], [16.6, 11], [21, 17.5], [16.2, 15.4], [15.2, 19], [13.2, 22.5], [12, 24]] },
+  leviathan: { px: [17, 30], h: [[12, 2.2], [12.8, 0.5], [14, 2.6], [15.5, 0.8], [16.6, 4], [17.6, 8], [17.6, 12], [22.6, 18], [17, 16], [16, 20], [13.6, 23], [12, 24]] },
+  shipyard: { px: [14, 22], h: [[12, 1], [17, 1], [17, 6], [20, 6], [20, 23], [16.5, 23], [16.5, 9.5], [12, 9.5]] },
+  depot: { px: [13, 18], h: [[12, 1], [14, 1], [14, 6], [20, 6.5], [20, 9.5], [14, 10], [14, 13], [20, 13.5], [20, 16.5], [14, 17], [14, 23], [12, 23]] },
+  colony: { px: [15, 24], rings: [11, 7.2, 3] },
+};
+const LBLD = new THREE.Vector3();
+{
+  const poly = pts => 'M' + pts.map(([x, y]) => `${+x.toFixed(2)} ${+y.toFixed(2)}`).join('L') + 'Z';
+  const mir = pts => pts.map(([x, y]) => [24 - x, y]);
+  const pathOf = v => {
+    if (v.rings) return v.rings.map(r => poly(Array.from({ length: 32 }, (_, k) => [12 + r * Math.sin(k / 32 * TAU), 12 - r * Math.cos(k / 32 * TAU)]))).join('');
+    const side = mir(v.h).reverse().filter(([x]) => x !== 12);
+    return poly([...v.h, ...side]) + (v.cut || []).map(c => poly(c) + poly(mir(c))).join('');
+  };
+  const url = (d, sw, fo) => `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='-1.5 -1.5 27 27'><path d='${d}' fill='#fff' fill-opacity='${fo}' fill-rule='evenodd' stroke='#fff' stroke-width='${sw.toFixed(2)}' stroke-linejoin='round'/></svg>`)}")`;
+  let css = '';
+  for (const [k, v] of Object.entries(SIL)) {
+    const d = pathOf(v), on = k === 'default' ? ':root' : `[data-cls=${k}]`;
+    css += `${on}{${k === 'default' ? '' : `--s:${v.px[0]}px;`}--ico:${url(d, 1.15 * 27 / v.px[0], 0.34)};--icoS:${url(d, 1.4 * 27 / v.px[1], 0.24)}}`;
+    if (k !== 'default') css += `.lbl.ship[data-cls=${k}]{--s:${v.px[1]}px}`;
+  }
+  const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+}
+
 // ---- Ship models, built from each ship's design. A faceted hull is lofted through tapered octagonal sections:
-// a broad engine block aft, full midships and a wedge bow, with a dorsal superstructure and bridge, a ventral keel
-// and (with armour) flank sponsons, a prow plate and a tail collar. It is plated by a generated texture in the
-// side's livery (blue-grey with white bands for yours, charcoal with red slashes for theirs) and carries a hull
-// number and lit ports. Weapons ride turrets on the dorsal and ventral decks (the first railgun runs down the keel
+// each class has its own silhouette (see buildModel), with (with armour) flank sponsons, a prow plate and a tail
+// collar. It is plated by a generated texture in the side's livery (light grey with a dark band and an accent
+// colour that differs by design for yours, charcoal with red slashes for theirs) and carries a hull number and
+// lit ports. Weapons ride turrets on the dorsal and ventral decks (the first railgun runs down the keel
 // as a spinal mount, torpedoes sit in launch cells), radiators spread as wings, sensors stand as masts or a
 // radome, and the engines form a cluster of bells with blue (yours) or orange (theirs) exhaust. A hull unit is
 // 10 m. Models are drawn (after Sins of a Solar Empire, far beyond true scale) whenever the view is no wider than
@@ -6063,14 +6091,14 @@ function loft(sections, chamfer = 0.34) {
 }
 // plating: panels and seams, the livery bands and the hull number; the glow map adds lit ports and a dim copy
 // of the plating so the night side still reads
-const texCache = new Map();
+const texCache = new Map(), ACCENT = ['#ffae42', '#3fc8d4', '#f2d24b', '#e5603d', '#6fa8ff', '#9fdc5c', '#d77bff'];
 function hullTextures(side, seed, label) {
   const key = side + seed + label;
   if (texCache.has(key)) return texCache.get(key);
   const R = rng(seed), W = 512, Hh = 256;
   const mk = () => { const c = document.createElement('canvas'); c.width = W; c.height = Hh; return c; };
   const cv = mk(), g = cv.getContext('2d'), us = side === 'us';
-  const base = us ? '#5c6a7d' : '#2b2f35', dark = us ? '#3f4a58' : '#181a1e', light = us ? '#7a889b' : '#3b4048';
+  const base = us ? '#a9b1ba' : '#2b2f35', dark = us ? '#6f7985' : '#181a1e', light = us ? '#ccd2d9' : '#3b4048';
   g.fillStyle = base; g.fillRect(0, 0, W, Hh);
   for (let i = 0; i < 190; i++) {
     g.fillStyle = R() < 0.55 ? dark : light; g.globalAlpha = 0.14 + 0.24 * R();
@@ -6080,8 +6108,9 @@ function hullTextures(side, seed, label) {
   for (let x = 6; x < W; x += 14 + Math.floor(R() * 30)) { g.beginPath(); g.moveTo(x + 0.5, 0); g.lineTo(x + 0.5, Hh); g.stroke(); }
   for (let y = 4; y < Hh; y += 9 + Math.floor(R() * 22)) { g.beginPath(); g.moveTo(0, y + 0.5); g.lineTo(W, y + 0.5); g.stroke(); }
   if (us) {
-    g.fillStyle = '#e3e7ed'; g.fillRect(286, 0, 18, Hh); g.fillRect(310, 0, 6, Hh);
-    g.fillStyle = '#ffae42'; g.fillRect(132, 0, 4, Hh);
+    // a dark band and the design's accent colour
+    g.fillStyle = '#2a3038'; g.fillRect(286, 0, 18, Hh); g.fillRect(310, 0, 4, Hh);
+    g.fillStyle = ACCENT[seed % ACCENT.length]; g.fillRect(318, 0, 9, Hh); g.fillRect(132, 0, 5, Hh);
   } else {
     g.fillStyle = '#c4383a';
     for (let k = 0; k < 5; k++) { g.save(); g.translate(330 + k * 13, 0); g.transform(1, 0, -0.7, 1, 0, 0); g.fillRect(0, 20, 6, 70); g.fillRect(0, 150, 6, 70); g.restore(); }
@@ -6110,8 +6139,19 @@ function radiatorTexture() {
   g.strokeStyle = 'rgba(20,30,34,.9)'; g.lineWidth = 3; g.strokeRect(1.5, 1.5, 125, 61);
   return (radTex = new THREE.CanvasTexture(c));
 }
-// each class's section shape: height to width, and how hard the edges are cut
-const HULL_FORM = { corvette: { hh: 0.55, chamfer: 0.42 }, frigate: { hh: 1.0, chamfer: 0.3 }, destroyer: { hh: 0.42, chamfer: 0.36 }, cruiser: { hh: 0.72, chamfer: 0.22 }, titan: { hh: 0.6, chamfer: 0.4 } };
+// each class's model: section height to width (hh), how hard the edges are cut, the beam drawn (bw, times the
+// hull's), where the turret rows run (tx: front and back, fractions of the length), where the hull number goes
+// (nx), the spinal mount's height (sz, half-heights), a radome's place (dome), engine pods ([across in beams, up in
+// half-heights], mirrored; they take the first pair of engines, a corvette's all of them), and radiators: wings
+// out from the flanks from rx = [start, step], or vanes standing up (up = [start, step, across in beams (0: on the
+// deck), base in half-heights (null: the deck)])
+const HULL_FORM = {
+  corvette: { hh: 0.55, chamfer: 0.45, bw: 1, tx: [0.12, -0.2], nx: 0.12, sz: -0.6, dome: -0.05, pod: [0.55, 0], all: true, up: [-0.4, 0.1, 0, null] },
+  frigate: { hh: 0.8, chamfer: 0.3, bw: 0.95, tx: [0.38, -0.32], nx: -0.25, sz: -0.62, dome: 0.4, pod: [1.55, -0.05], rx: [0.03, 0.1] },
+  destroyer: { hh: 0.4, chamfer: 0.45, bw: 1.15, tx: [0.06, -0.38], nx: -0.02, sz: 0, dome: 0.02, rx: [-0.3, 0.15] },
+  cruiser: { hh: 0.75, chamfer: 0.25, bw: 0.9, tx: [0.3, -0.34], nx: 0.24, sz: -0.6, dome: 0.14, pod: [1.6, -0.1], up: [-0.42, 0.1, 1.6, 0.42] },
+  titan: { hh: 0.5, chamfer: 0.35, bw: 1.05, tx: [0.18, -0.08], nx: 0.06, sz: -0.6, dome: 0.26, pod: [2.15, -0.15], up: [-0.44, 0.07, 1.55, 0.1] },
+};
 const NOZZLES = { 1: [[0, 0]], 2: [[-0.5, 0], [0.5, 0]], 3: [[-0.55, -0.32], [0.55, -0.32], [0, 0.42]], 4: [[-0.5, -0.42], [0.5, -0.42], [-0.5, 0.42], [0.5, 0.42]],
   5: [[-0.62, -0.42], [0, -0.42], [0.62, -0.42], [-0.32, 0.42], [0.32, 0.42]], 6: [[-0.62, -0.42], [0, -0.42], [0.62, -0.42], [-0.62, 0.42], [0, 0.42], [0.62, 0.42]] };
 // spec: { d (the design), mods (the module list, as modsOf gives it), side, label, seed }
@@ -6313,7 +6353,7 @@ function buildModel(spec, into = scene) {
   if (HULLS[spec.d.hull].station) return buildStationModel(spec, into);
   const { d, mods, side } = spec, H = HULLS[d.hull], R = rng(spec.seed), ci = HULL_KEYS.indexOf(d.hull), us = side === 'us';
   const root = new THREE.Group(), md = { root, built: mods, parts: [], tur: new Map(), plumes: [], lights: [], set: false, len: H.len };
-  const L = H.len, b = H.beam / 2 * (1 + 0.035 * d.armor[1]), hh = b * HULL_FORM[d.hull].hh;
+  const F = HULL_FORM[d.hull], L = H.len, b = H.beam / 2 * (1 + 0.035 * d.armor[1]) * F.bw, hh = b * F.hh;
   const [map, emap] = hullTextures(side, spec.seed, spec.label);
   md.hullMat = new THREE.MeshStandardMaterial({ map, emissiveMap: emap, emissive: 0xffffff, emissiveIntensity: 0.9, roughness: 0.48, metalness: 0.6, flatShading: true });
   const metal = matFor(us ? 'metal' : 'metal-t', us ? '#4f5967' : '#24272c', 0.25), trim = matFor(us ? 'trim' : 'trim-t', us ? '#d9dee5' : '#b33436', 0.3);
@@ -6323,117 +6363,144 @@ function buildModel(spec, into = scene) {
     if (mi >= 0) md.parts.push({ mi, mesh: m, mat });
     return m;
   };
-  // the hull: each class has its own lines
-  //   corvette  — a compact fighter-like dart with swept wings and chin guns (Homeworld's interceptor)
-  //   frigate   — a tall, segmented gunship with collar rings and a keel spine (the Expanse's Rocinante)
-  //   destroyer — a long flat wedge with a launch deck aft, a bridge tower and forward prongs (Homeworld)
-  //   cruiser   — a bulky core flanked by two long pods, with a dorsal module (the Expanse's UNMC ships)
-  //   titan     — a dreadnought: decks stepping up aft to a command citadel, a keel fin, swept sponsons, bow tines
-  const nose = 1 + 0.12 * Math.min(d.armor[0], 8);
+  // the hull: each class its own silhouette (after Homeworld 3's fleets), so they read apart at a glance
+  //   corvette  — an interceptor: a dart with forward-swept wings out to gun pods, and twin engine nacelles
+  //   frigate   — a hammerhead: a broad gun and sensor block on a slim neck, an aft block with a conning tower and
+  //               outrigger engine pods on pylons
+  //   destroyer — a fork: a flat wedge whose bow splits in two prongs round the spinal mount, swept shoulder wings,
+  //               a launch deck, and a bridge tower off to one side
+  //   cruiser   — a trimaran: a heavy centre hull with a citadel, and two long gun pods on pylons
+  //   titan     — a dreadnought: a spear-nosed hull on a broad delta, engine nacelles at the wingtips, a trench down
+  //               the spine and a command island off to one side
+  const nose = 1 + 0.12 * Math.min(d.armor[0], 8), tw = R() < 0.5 ? 1 : -1;
   const SHAPES = {
-    corvette: [[-L / 2, b * 0.72, hh * 0.78, 0], [-0.32 * L, b * 0.96, hh, 0], [0.08 * L, b * 0.82, hh * 0.88, 0.03 * hh], [0.34 * L, b * 0.46, hh * 0.58, -0.04 * hh], [0.5 * L, b * 0.16 * nose, hh * 0.3, -0.12 * hh]],
-    frigate: [[-L / 2, b * 0.84, hh * 0.84, 0], [-0.3 * L, b, hh, 0], [0.14 * L, b * 0.9, hh * 0.9, 0], [0.32 * L, b * 0.62, hh * 0.68, -0.04 * hh], [0.5 * L, b * 0.2 * nose, hh * 0.3, -0.14 * hh]],
-    destroyer: [[-L / 2, b * 0.86, hh * 0.86, 0], [-0.38 * L, b, hh, 0], [0.05 * L, b * 0.95, hh * 0.96, 0], [0.3 * L, b * 0.7, hh * 0.76, -0.05 * hh], [0.46 * L, b * 0.32, hh * 0.44, -0.1 * hh], [0.5 * L, b * 0.2 * nose, hh * 0.3, -0.12 * hh]],
-    cruiser: [[-L / 2, b * 0.76, hh * 0.76, 0], [-0.4 * L, b * 0.82, hh * 0.86, 0], [0.24 * L, b * 0.78, hh * 0.82, 0], [0.42 * L, b * 0.52, hh * 0.6, -0.03 * hh], [0.5 * L, b * 0.3 * nose, hh * 0.4, -0.06 * hh]],
-    titan: [[-L / 2, b * 0.7, hh * 0.8, 0], [-0.34 * L, b, hh, 0], [0.0, b * 0.84, hh * 0.92, 0.04 * hh], [0.3 * L, b * 0.48, hh * 0.6, 0], [0.5 * L, b * 0.13 * nose, hh * 0.26, -0.05 * hh]],
+    corvette: [[-L / 2, b * 0.55, hh * 0.7, 0], [-0.32 * L, b * 0.85, hh, 0], [0.0, b * 0.7, hh * 0.9, 0.04 * hh], [0.3 * L, b * 0.36, hh * 0.55, -0.02 * hh], [0.5 * L, b * 0.08 * nose, hh * 0.14, -0.1 * hh]],
+    frigate: [[-L / 2, b * 0.82, hh * 0.85, 0], [-0.4 * L, b, hh, 0], [-0.1 * L, b * 0.95, hh * 0.95, 0], [0.0, b * 0.42, hh * 0.55, 0.05 * hh], [0.27 * L, b * 0.38, hh * 0.5, 0.05 * hh], [0.3 * L, b * 1.1, hh * 0.78, 0], [0.45 * L, b * 1.05, hh * 0.72, 0], [0.5 * L, b * 0.6 * Math.sqrt(nose), hh * 0.4, -0.04 * hh]],
+    destroyer: [[-L / 2, b * 0.65, hh * 0.8, 0], [-0.42 * L, b * 0.95, hh, 0], [-0.12 * L, b, hh, 0], [0.1 * L, b * 0.6, hh * 0.95, 0], [0.24 * L, b * 0.3, hh * 0.75, 0], [0.27 * L, b * 0.1, hh * 0.3, 0]],
+    cruiser: [[-L / 2, b * 0.55, hh * 0.65, 0], [-0.42 * L, b * 0.72, hh * 0.9, 0], [0.12 * L, b * 0.7, hh, 0], [0.36 * L, b * 0.48, hh * 0.72, -0.03 * hh], [0.5 * L, b * 0.2 * nose, hh * 0.3, -0.08 * hh]],
+    titan: [[-L / 2, b * 0.72, hh * 0.8, 0], [-0.4 * L, b, hh, 0], [-0.02 * L, b * 0.9, hh, 0.02 * hh], [0.2 * L, b * 0.5, hh * 0.75, 0], [0.32 * L, b * 0.28, hh * 0.55, -0.03 * hh], [0.5 * L, b * 0.1 * nose, hh * 0.22, -0.08 * hh]],
   };
   const S = SHAPES[d.hull];
-  root.add(new THREE.Mesh(loft(S, HULL_FORM[d.hull].chamfer), md.hullMat));
+  root.add(new THREE.Mesh(loft(S, F.chamfer), md.hullMat));
   const prof = x => {
     let i = 0; while (i < S.length - 2 && x > S[i + 1][0]) i++;
     const a = S[i], c = S[i + 1], f = Math.max(0, Math.min(1, (x - a[0]) / (c[0] - a[0])));
     return { w: a[1] + (c[1] - a[1]) * f, h: a[2] + (c[2] - a[2]) * f, z: a[3] + (c[3] - a[3]) * f };
   };
   const top = x => { const p = prof(x); return p.z + p.h; };
-  const lit = glowMat('win', 0xbfe3ff);
-  let mastZ = hh * 1.6;
+  const lit = glowMat('win', 0xbfe3ff), acc = glowMat(us ? 'pod' : 'pod-t', us ? 0x7fc8ff : 0xffb040);
+  const hull = (secs, mat = md.hullMat, ch = 0.4) => { const m = new THREE.Mesh(loft(secs, ch), mat); root.add(m); return m; };
+  // a tower standing on the deck at (x, y) from z0, h high, with a wider bridge on top, its windows lit forward;
+  // it gives the height of its roof
+  const tower = (x, y, lx, w, h, z0) => {
+    put(G_BOX, metal, x, y, z0 + h / 2, lx, w, h);
+    put(G_BOX, md.hullMat, x + 0.1 * lx, y, z0 + h + hh * 0.14, lx * 1.3, w * 1.25, hh * 0.28);
+    put(G_BOX, lit, x + 0.75 * lx, y, z0 + h + hh * 0.16, 0.012 * L, w * 1.1, hh * 0.08);
+    return z0 + h + hh * 0.28;
+  };
+  let mastX = -0.2 * L, mastY = 0, mastZ = hh * 1.6;
   if (d.hull === 'corvette') {
-    // canopy, swept wings with wingtip pods, twin chin guns
-    root.add(new THREE.Mesh(loft([[-0.12 * L, b * 0.2, hh * 0.1, top(-0.12 * L)], [0.04 * L, b * 0.34, hh * 0.3, top(0.04 * L) + hh * 0.08], [0.2 * L, b * 0.12, hh * 0.08, top(0.2 * L)]], 0.5), dark));
+    // a canopy; forward-swept wings out to gun pods; twin engine nacelles
+    hull([[-0.12 * L, b * 0.2, hh * 0.1, top(-0.12 * L)], [0.04 * L, b * 0.34, hh * 0.3, top(0.04 * L) + hh * 0.08], [0.2 * L, b * 0.12, hh * 0.08, top(0.2 * L)]], dark, 0.5);
     put(G_BOX, lit, 0.1 * L, 0, top(0.1 * L) + hh * 0.2, 0.06 * L, b * 0.3, 0.02);
     for (const s of [1, -1]) {
-      const w = put(G_BOX, md.hullMat, -0.14 * L, s * b * 1.55, -0.05 * hh, 0.3 * L, b * 1.5, hh * 0.12);
-      w.rotation.z = s * 0.5; w.rotation.x = -s * 0.14;
-      put(G_BOX, metal, -0.24 * L, s * b * 2.25, -0.16 * hh, 0.22 * L, b * 0.16, hh * 0.22);
-      put(G_ROD, metal, 0.36 * L, s * b * 0.26, -0.55 * hh, 0.3 * L, 0.09, 0.09);
+      const x0 = -0.3 * L, y0 = s * b * 0.7, x1 = 0.02 * L, y1 = s * b * 2.2, a = Math.atan2(y1 - y0, x1 - x0), span = Math.hypot(x1 - x0, y1 - y0);
+      put(G_BOX, md.hullMat, (x0 + x1) / 2, (y0 + y1) / 2, -0.05 * hh, span, b * 0.5, hh * 0.14).rotation.z = a;
+      put(G_BOX, acc, (x0 + x1) / 2 + 0.02 * L, (y0 + y1) / 2, 0.03 * hh, span * 0.7, b * 0.08, hh * 0.04).rotation.z = a;
+      hull([[-0.14 * L, b * 0.18, hh * 0.32, -0.05 * hh, y1], [-0.06 * L, b * 0.24, hh * 0.38, -0.05 * hh, y1], [0.16 * L, b * 0.2, hh * 0.32, -0.05 * hh, y1], [0.24 * L, b * 0.08, hh * 0.14, -0.05 * hh, y1]], metal);
+      put(G_ROD, matFor('rail', '#c9d2de', 0.3), 0.22 * L, y1, -0.05 * hh, 0.22 * L, b * 0.07, b * 0.07);
+      hull([[-0.53 * L, b * 0.24, hh * 0.45, 0, s * b * 0.55], [-0.44 * L, b * 0.28, hh * 0.5, 0, s * b * 0.6], [-0.18 * L, b * 0.2, hh * 0.4, 0, s * b * 0.55], [-0.08 * L, b * 0.06, hh * 0.12, 0, s * b * 0.45]], metal);
     }
-    mastZ = top(-0.1 * L) + hh * 0.5;
+    mastX = -0.1 * L; mastZ = top(-0.1 * L) + hh * 0.5;
   } else if (d.hull === 'frigate') {
-    // collar rings between the hull's segments, a dorsal spine and a keel, side sponsons, a conning tower
-    for (const x of [-0.3 * L, -0.06 * L, 0.14 * L]) { const p = prof(x); root.add(new THREE.Mesh(loft([[x - 0.025 * L, p.w * 1.07, p.h * 1.07, p.z], [x + 0.025 * L, p.w * 1.07, p.h * 1.07, p.z]], 0.3), metal)); }
-    put(G_BOX, metal, -0.06 * L, 0, top(-0.06 * L) + hh * 0.06, 0.62 * L, b * 0.16, hh * 0.12);
-    put(G_BOX, metal, -0.04 * L, 0, -hh * 1.02, 0.6 * L, b * 0.2, hh * 0.14);
-    for (const s of [1, -1]) put(G_BOX, md.hullMat, 0.02 * L, s * b * 1.02, 0, 0.18 * L, b * 0.24, hh * 0.5);
-    put(G_BOX, metal, -0.2 * L, 0, top(-0.2 * L) + hh * 0.2, 0.08 * L, b * 0.4, hh * 0.3);
-    put(G_BOX, lit, -0.2 * L + 0.041 * L, 0, top(-0.2 * L) + hh * 0.26, 0.004 * L, b * 0.32, hh * 0.06);
-    mastZ = top(-0.2 * L) + hh * 0.5;
+    // the head: a deck plate, armoured cheeks and a lit sensor slit across its face; conduits down the neck; the
+    // aft block with a conning tower and a dorsal fin; outrigger engine pods on pylons
+    put(G_BOX, metal, 0.375 * L, 0, top(0.375 * L) + hh * 0.04, 0.13 * L, b * 1.6, hh * 0.1);
+    for (const s of [1, -1]) put(G_BOX, md.hullMat, 0.39 * L, s * b * 1.12, 0, 0.16 * L, b * 0.14, hh * 1.2).rotation.z = -s * 0.12;
+    put(G_BOX, lit, 0.48 * L, 0, hh * 0.1, 0.02 * L, b * 0.9, hh * 0.1);
+    put(G_BOX, metal, 0.13 * L, 0, top(0.13 * L) + hh * 0.05, 0.28 * L, b * 0.2, hh * 0.12);
+    put(G_BOX, metal, 0.13 * L, 0, -hh * 0.5, 0.28 * L, b * 0.2, hh * 0.12);
+    mastX = -0.3 * L; mastZ = tower(-0.3 * L, 0, 0.1 * L, b * 0.45, hh * 0.35, top(-0.3 * L)) + hh * 0.3;
+    put(G_BOX, dark, -0.45 * L, 0, top(-0.45 * L) + hh * 0.5, 0.1 * L, b * 0.06, hh);
+    put(G_BOX, acc, -0.43 * L, 0, top(-0.45 * L) + hh * 0.85, 0.06 * L, b * 0.08, hh * 0.12);
+    for (const s of [1, -1]) {
+      const y = s * b * 1.55;
+      hull([[-0.52 * L, b * 0.22, hh * 0.3, -0.05 * hh, y], [-0.44 * L, b * 0.3, hh * 0.38, -0.05 * hh, y], [-0.18 * L, b * 0.3, hh * 0.38, -0.05 * hh, y], [-0.08 * L, b * 0.1, hh * 0.16, -0.05 * hh, y]], metal);
+      put(G_BOX, md.hullMat, -0.3 * L, s * b * 1.2, -0.05 * hh, 0.12 * L, b * 0.6, hh * 0.18);
+      put(G_BOX, acc, -0.3 * L, y + s * b * 0.302, -0.05 * hh, 0.18 * L, 0.01, hh * 0.08);
+    }
   } else if (d.hull === 'destroyer') {
-    // a dark launch deck aft, a stepped bridge tower, side strakes, and two prongs reaching ahead of the bow
-    put(G_BOX, dark, -0.22 * L, 0, top(-0.22 * L) + hh * 0.06, 0.28 * L, b * 1.1, hh * 0.12);
-    for (let i = 0; i < 6; i++) for (let j = 0; j < 3; j++) put(G_BOX, matFor('vls', '#2c3138', 0.2), -0.34 * L + i * 0.045 * L, (j - 1) * b * 0.34, top(-0.22 * L) + hh * 0.13, 0.03 * L, b * 0.26, 0.02);
-    put(G_BOX, metal, -0.06 * L, 0, top(-0.06 * L) + hh * 0.3, 0.1 * L, b * 0.5, hh * 0.6);
-    put(G_BOX, metal, -0.07 * L, 0, top(-0.06 * L) + hh * 0.74, 0.07 * L, b * 0.34, hh * 0.32);
-    put(G_BOX, lit, -0.07 * L + 0.036 * L, 0, top(-0.06 * L) + hh * 0.8, 0.003 * L, b * 0.28, hh * 0.08);
+    // two prongs ahead with the spinal mount's throat between, swept shoulder wings with lit tips, side strakes,
+    // a launch deck of cells on one side aft and the bridge tower on the other
     for (const s of [1, -1]) {
-      put(G_BOX, metal, -0.05 * L, s * b * 0.99, -0.2 * hh, 0.7 * L, b * 0.06, hh * 0.22);
-      const pr = put(G_BOX, md.hullMat, 0.5 * L, s * b * 0.42, -0.25 * hh, 0.26 * L, b * 0.16, hh * 0.22); pr.rotation.z = -s * 0.08;
+      hull([[0.0, b * 0.24, hh * 0.8, 0, s * b * 0.42], [0.36 * L, b * 0.2, hh * 0.65, -0.05 * hh, s * b * 0.4], [0.5 * L, b * 0.05 * nose, hh * 0.25, -0.12 * hh, s * b * 0.36]], md.hullMat, 0.45);
+      put(G_BOX, acc, 0.28 * L, s * b * 0.625, 0, 0.14 * L, 0.01, hh * 0.12);
+      hull([[-0.44 * L, b * 0.45, hh * 0.18, -0.2 * hh, s * b * 1.4], [-0.32 * L, b * 0.5, hh * 0.2, -0.2 * hh, s * b * 1.32], [-0.06 * L, b * 0.08, hh * 0.12, -0.15 * hh, s * b * 0.95]], md.hullMat, 0.5);
+      put(G_BOX, trim, -0.38 * L, s * b * 1.86, -0.2 * hh, 0.12 * L, b * 0.06, hh * 0.3);
+      put(G_BOX, metal, -0.05 * L, s * b * 0.99, -0.2 * hh, 0.6 * L, b * 0.06, hh * 0.22);
     }
-    mastZ = top(-0.06 * L) + hh * 1.2;
+    put(G_BOX, dark, 0.27 * L, 0, 0, 0.08 * L, b * 0.34, hh * 0.5);
+    for (let i = 0; i < 6; i++) for (let j = 0; j < 2; j++) put(G_BOX, matFor('vls', '#2c3138', 0.2), -0.4 * L + i * 0.05 * L, -tw * b * (0.22 + j * 0.3), hh + 0.02, 0.035 * L, b * 0.24, 0.04);
+    mastX = -0.24 * L; mastY = tw * b * 0.48; mastZ = tower(mastX, mastY, 0.1 * L, b * 0.34, hh, top(mastX)) + hh * 0.4;
   } else if (d.hull === 'cruiser') {
-    // two long side pods (ringed), a dorsal module, antenna masts, and rows of lit bays
+    // two long gun pods on pylons, ringed, with twin barrels ahead, lit bays and an accent stripe; a citadel with
+    // bridge wings amidships, and a dorsal fin aft
     for (const s of [1, -1]) {
-      const y = s * b * 1.14, pw = b * 0.4, ph = hh * 0.62;
-      root.add(new THREE.Mesh(loft([[-0.46 * L, pw * 0.85, ph * 0.85, -hh * 0.1, y], [-0.4 * L, pw, ph, -hh * 0.1, y], [0.16 * L, pw, ph, -hh * 0.1, y], [0.26 * L, pw * 0.5, ph * 0.55, -hh * 0.12, y]], 0.3), md.hullMat));
-      for (const x of [-0.3 * L, -0.08 * L, 0.1 * L]) root.add(new THREE.Mesh(loft([[x - 0.02 * L, pw * 1.12, ph * 1.12, -hh * 0.1, y], [x + 0.02 * L, pw * 1.12, ph * 1.12, -hh * 0.1, y]], 0.3), metal));
-      put(G_BOX, metal, -0.1 * L, s * b * 0.86, -hh * 0.1, 0.4 * L, b * 0.2, hh * 0.24);
-      for (let i = 0; i < 5; i++) put(G_BOX, lit, -0.34 * L + i * 0.1 * L, y + s * pw * 1.01, -hh * 0.1, 0.03 * L, 0.01, ph * 0.12);
+      const y = s * b * 1.6, z = -0.1 * hh;
+      hull([[-0.5 * L, b * 0.3, hh * 0.42, z, y], [-0.42 * L, b * 0.42, hh * 0.55, z, y], [0.26 * L, b * 0.42, hh * 0.55, z, y], [0.36 * L, b * 0.26, hh * 0.36, z, y]], md.hullMat, 0.3);
+      for (const x of [-0.3 * L, -0.05 * L, 0.18 * L]) hull([[x - 0.02 * L, b * 0.47, hh * 0.6, z, y], [x + 0.02 * L, b * 0.47, hh * 0.6, z, y]], metal, 0.3);
+      for (const o of [-0.12, 0.12]) put(G_ROD, matFor('rail', '#c9d2de', 0.3), 0.34 * L, y + o * b, z, 0.16 * L, b * 0.1, b * 0.1);
+      for (const x of [-0.28 * L, 0.06 * L]) put(G_BOX, metal, x, s * b * 1.12, z, 0.1 * L, b * 0.9, hh * 0.24);
+      for (let i = 0; i < 6; i++) put(G_BOX, lit, -0.36 * L + i * 0.1 * L, y + s * b * 0.425, z, 0.03 * L, 0.01, hh * 0.1);
+      put(G_BOX, acc, -0.1 * L, y, z + hh * 0.555, 0.5 * L, b * 0.1, 0.01);
     }
-    root.add(new THREE.Mesh(loft([[-0.3 * L, b * 0.44, hh * 0.22, top(-0.3 * L) + hh * 0.18], [-0.24 * L, b * 0.5, hh * 0.3, top(-0.24 * L) + hh * 0.22], [0.08 * L, b * 0.46, hh * 0.28, top(0.08 * L) + hh * 0.2], [0.14 * L, b * 0.24, hh * 0.14, top(0.14 * L) + hh * 0.1]], 0.3), md.hullMat));
-    put(G_BOX, lit, 0.11 * L, 0, top(0.08 * L) + hh * 0.3, 0.004 * L, b * 0.36, hh * 0.08);
-    for (const x of [-0.18 * L, 0.02 * L]) put(G_CYL, metal, x, b * 0.3, top(x) + hh * 0.7, 0.05, 0.05, hh * 0.9);
-    mastZ = top(-0.18 * L) + hh * 1.2;
+    const zc = tower(-0.2 * L, 0, 0.14 * L, b * 0.5, hh * 0.5, top(-0.2 * L));
+    for (const s of [1, -1]) put(G_BOX, metal, -0.18 * L, s * b * 0.48, zc - hh * 0.14, 0.06 * L, b * 0.3, hh * 0.12);
+    put(G_BOX, dark, -0.42 * L, 0, top(-0.42 * L) + hh * 0.45, 0.12 * L, b * 0.06, hh * 0.9);
+    mastZ = zc + hh * 0.3;
   } else {
-    // two decks stepping up aft, a command citadel on top, a dorsal blade behind it and a keel fin below
-    const deck = (secs, lift, mat) => root.add(new THREE.Mesh(loft(secs.map(([x, w, h]) => [x * L, b * w, hh * h, top(x * L) + lift + hh * h * 0.8]), 0.38), mat));
-    deck([[-0.47, 0.56, 0.24], [-0.4, 0.66, 0.3], [0.1, 0.54, 0.3], [0.24, 0.2, 0.1]], -hh * 0.06, md.hullMat);
-    const d1 = x => top(x) + hh * 0.48;
-    root.add(new THREE.Mesh(loft([[-0.44 * L, b * 0.36, hh * 0.2, d1(-0.44 * L) + hh * 0.16], [-0.38 * L, b * 0.44, hh * 0.28, d1(-0.38 * L) + hh * 0.22], [-0.04 * L, b * 0.38, hh * 0.26, d1(-0.04 * L) + hh * 0.2], [0.06 * L, b * 0.14, hh * 0.08, d1(0.06 * L) + hh * 0.04]], 0.38), metal));
-    const d2 = d1(-0.3 * L) + hh * 0.46;
-    put(G_BOX, md.hullMat, -0.3 * L, 0, d2 + hh * 0.3, 0.1 * L, b * 0.34, hh * 0.6);
-    put(G_BOX, metal, -0.31 * L, 0, d2 + hh * 0.72, 0.07 * L, b * 0.5, hh * 0.24);
-    put(G_BOX, lit, -0.31 * L + 0.036 * L, 0, d2 + hh * 0.74, 0.003 * L, b * 0.42, hh * 0.07);
-    for (const s of [1, -1]) put(G_BOX, lit, -0.2 * L, s * b * 0.445, d1(-0.2 * L) + hh * 0.2, 0.22 * L, 0.01, hh * 0.05);
-    put(G_BOX, dark, -0.42 * L, 0, d2 + hh * 0.36, 0.12 * L, b * 0.05, hh * 0.9);
-    root.add(new THREE.Mesh(loft([[-0.42 * L, b * 0.05, hh * 0.42, -hh * 1.3], [0.0, b * 0.05, hh * 0.36, -hh * 1.2], [0.26 * L, b * 0.03, hh * 0.1, -hh * 0.92]], 0.5), dark));
-    // swept aft sponsons, ventral engine pods, and a crown of tines at the bow
+    // a delta under the hull with nacelles at its tips and accent stripes; hangar lights down the flanks; a trench
+    // down the spine; armour slabs on the prow; a keel fin; the command island off to one side
     for (const s of [1, -1]) {
-      root.add(new THREE.Mesh(loft([[-0.48 * L, b * 0.34, hh * 0.3, -hh * 0.1, s * b * 1.25], [-0.38 * L, b * 0.4, hh * 0.36, -hh * 0.1, s * b * 1.22], [-0.12 * L, b * 0.2, hh * 0.26, -hh * 0.06, s * b * 0.95]], 0.45), md.hullMat));
-      root.add(new THREE.Mesh(loft([[-0.42 * L, b * 0.22, hh * 0.3, -hh * 1.05, s * b * 0.42], [-0.32 * L, b * 0.26, hh * 0.34, -hh * 1.05, s * b * 0.42], [-0.14 * L, b * 0.12, hh * 0.2, -hh * 0.9, s * b * 0.38]], 0.45), metal));
-      put(G_BOX, glowMat(us ? 'pod' : 'pod-t', us ? 0x7fc8ff : 0xffb040), -0.25 * L, s * b * 0.42, -hh * 1.36, 0.14 * L, b * 0.2, 0.02);
+      hull([[-0.5 * L, b * 0.5, hh * 0.3, -0.15 * hh, s * b * 1.75], [-0.36 * L, b * 0.55, hh * 0.34, -0.15 * hh, s * b * 1.6], [-0.02 * L, b * 0.12, hh * 0.2, -0.1 * hh, s * b * 0.95]], md.hullMat, 0.5);
+      hull([[-0.53 * L, b * 0.18, hh * 0.38, -0.15 * hh, s * b * 2.15], [-0.44 * L, b * 0.22, hh * 0.42, -0.15 * hh, s * b * 2.15], [-0.26 * L, b * 0.2, hh * 0.38, -0.15 * hh, s * b * 2.12], [-0.16 * L, b * 0.06, hh * 0.12, -0.15 * hh, s * b * 2.05]], metal);
+      put(G_BOX, acc, -0.3 * L, s * b * 1.62, hh * 0.2, 0.3 * L, b * 0.08, 0.01);
+      put(G_BOX, lit, -0.12 * L, s * (prof(-0.12 * L).w + 0.012), 0, 0.36 * L, 0.01, hh * 0.1);
+      put(G_BOX, metal, 0.24 * L, s * b * 0.3, top(0.24 * L) - hh * 0.05, 0.16 * L, b * 0.32, hh * 0.1).rotation.x = s * 0.35;
     }
-    for (let k = -2; k <= 2; k++) { const t = put(G_BOX, dark, 0.53 * L, k * b * 0.12, -0.05 * hh + Math.abs(k) * 0.05 * hh, 0.2 * L, b * 0.05, hh * 0.1); t.rotation.z = -k * 0.08; }
-    put(G_BOX, lit, -0.05 * L, 0, top(-0.05 * L) + hh * 0.06, 0.12 * L, b * 0.06, 0.02);
-    mastZ = d1(-0.2 * L) + hh * 0.56;
+    put(G_BOX, dark, -0.06 * L, 0, top(-0.06 * L), 0.56 * L, b * 0.24, hh * 0.06);
+    hull([[-0.42 * L, b * 0.05, hh * 0.42, -hh * 1.25], [0.05 * L, b * 0.05, hh * 0.32, -hh * 1.15], [0.2 * L, b * 0.03, hh * 0.08, -hh * 0.95]], dark, 0.5);
+    mastX = -0.26 * L; mastY = tw * b * 0.55;
+    const zi = tower(mastX, mastY, 0.14 * L, b * 0.3, hh * 1.1, top(mastX));
+    put(G_BOX, metal, mastX - 0.06 * L, mastY, zi + hh * 0.3, 0.05 * L, b * 0.18, hh * 0.6);
+    mastZ = zi + hh * 0.75;
   }
-  // armour: flank sponsons, a prow plate, a collar round the tail
+  // armour: flank sponsons along the hull's sides, a prow plate, a collar round the tail
   if (d.armor[1]) for (const s of [1, -1]) {
     const t = b * (0.12 + 0.025 * Math.min(d.armor[1], 8));
-    root.add(new THREE.Mesh(loft([[-0.33 * L, t * 0.6, hh * 0.45, 0, s * (b + t * 0.4)], [-0.25 * L, t, hh * 0.6, 0, s * (b + t * 0.55)], [0.08 * L, t, hh * 0.55, -0.02 * hh, s * (b * 0.93 + t * 0.55)], [0.16 * L, t * 0.4, hh * 0.35, -0.04 * hh, s * (b * 0.8 + t * 0.4)]], 0.4), md.hullMat));
+    hull([-0.33, -0.25, 0.0, 0.08].map((f, k) => { const p = prof(f * L), e = k % 3 ? 1 : 0.55; return [f * L, t * 0.8 * e, p.h * 0.55 * e, p.z, s * (p.w + t * 0.35)]; }), md.hullMat);
   }
-  if (d.armor[0]) { const p = prof(0.38 * L); root.add(new THREE.Mesh(loft([[0.36 * L, p.w * 1.08, p.h * 1.08, p.z], [0.45 * L, p.w * 0.62, p.h * 0.7, p.z - 0.05 * hh], [0.5 * L + 0.02 * d.armor[0], b * 0.08, hh * 0.14, p.z - 0.1 * hh]], 0.5), metal)); }
-  if (d.armor[2]) root.add(new THREE.Mesh(loft([[-L / 2 + 0.02, S[0][1] * 1.08, S[0][2] * 1.08], [-L / 2 + 0.06 * L, b * 1.04, hh * 1.04], [-L / 2 + 0.1 * L, b * 1.02, hh * 1.02]], 0.34), metal));
+  if (d.armor[0]) { const p = prof(0.38 * L); hull([[0.36 * L, p.w * 1.08, p.h * 1.08, p.z], [0.45 * L, p.w * 0.62, p.h * 0.7, p.z - 0.05 * hh], [0.5 * L + 0.02 * d.armor[0], b * 0.08, hh * 0.14, p.z - 0.1 * hh]], metal, 0.5); }
+  if (d.armor[2]) hull([[-L / 2 + 0.02, S[0][1] * 1.08, S[0][2] * 1.08], [-L / 2 + 0.06 * L, S[1][1] * 1.04, S[1][2] * 1.04], [-L / 2 + 0.1 * L, S[1][1] * 1.02, S[1][2] * 1.02]], metal, 0.34);
   // greebles: vents, blocks and conduits on the decks and flanks
   for (let i = 0, n = 10 + 5 * ci; i < n; i++) {
     const x = -0.4 * L + R() * 0.72 * L, p = prof(x), top = R() < 0.7, sx = b * (0.08 + 0.3 * R()), sy = b * (0.06 + 0.2 * R()), sz = hh * (0.05 + 0.12 * R());
     if (top) put(G_BOX, R() < 0.3 ? dark : metal, x, (R() - 0.5) * 1.2 * p.w, p.z + p.h + sz / 2, sx, sy, sz);
     else { const s = R() < 0.5 ? 1 : -1; put(G_BOX, metal, x, s * (p.w + sy / 2 * 0.6), p.z + (R() - 0.5) * p.h, sx, sy * 0.6, sz * 2); }
   }
-  // engines: a cluster of bells on the stern, each with a glowing throat and an exhaust flame
-  const eng = mods.map((m, i) => [m, i]).filter(([m]) => m.t === 'engine'), lay = NOZZLES[Math.min(6, Math.max(1, eng.length))] || NOZZLES[1];
-  const rn = Math.min(b, hh) * (eng.length <= 2 ? 0.42 : eng.length <= 4 ? 0.34 : 0.27), ex = -L / 2 - 0.1, fc = us ? 0x7fc8ff : 0xff8a3a;
-  put(G_BOX, metal, -L / 2 - 0.05, 0, 0, 0.2, b * 1.55, hh * 1.5);
+  // engines: bells with a glowing throat and an exhaust flame, in a cluster on the stern (a class with engine pods
+  // puts its first pair in them, a corvette all of its engines, stacked)
+  const eng = mods.map((m, i) => [m, i]).filter(([m]) => m.t === 'engine'), fc = us ? 0x7fc8ff : 0xff8a3a;
+  const nPod = F.pod ? (F.all ? eng.length : Math.min(2, eng.length)) : 0, nMid = eng.length - nPod, lay = NOZZLES[Math.min(6, Math.max(1, nMid))] || NOZZLES[1];
+  const rMid = Math.min(b, hh) * (nMid <= 2 ? 0.42 : nMid <= 4 ? 0.34 : 0.27), podRows = Math.ceil(nPod / 2);
+  if (nMid) put(G_BOX, metal, -L / 2 - 0.05, 0, 0, 0.2, b * 1.55, hh * 1.5);
   eng.forEach(([m, i], k) => {
-    const [py, pz] = lay[k % lay.length], y = py * b * 0.9, z = pz * hh * 1.05;
+    let ex = -L / 2 - 0.1, y, z, rn = rMid;
+    if (k < nPod) {
+      const row = Math.floor(k / 2);
+      rn = b * (F.all ? 0.24 / Math.sqrt(podRows) : 0.2); ex = -0.52 * L - 0.1;
+      y = (k % 2 ? -1 : 1) * F.pod[0] * b; z = F.pod[1] * hh + (row - (podRows - 1) / 2) * 2.1 * rn;
+    } else { const [py, pz] = lay[(k - nPod) % lay.length]; y = py * b * 0.9; z = pz * hh * 1.05; }
     put(G_BELL, metal, ex - rn * 0.45, y, z, rn * 0.9, rn, rn, i);
     const disc = put(G_DISC, glowMat(us ? 'throat' : 'throat-t', fc), ex - rn * 0.86, y, z, rn * 0.82, rn * 0.82, rn * 0.82);
     // exhaust: a faint wide flame, a bright narrow core, and a glow at the nozzle
@@ -6444,14 +6511,21 @@ function buildModel(spec, into = scene) {
     fl.visible = core.visible = spr.visible = false;
     md.plumes.push({ mesh: fl, core, spr, disc, mi: i, rn, hot: disc.material, cold: glowMat(us ? 'throat0' : 'throat0-t', us ? 0x1d3a55 : 0x55261a) });
   });
-  // radiators: wings out from the flanks aft of midships, glowing as they shed heat
+  // radiators, glowing as they shed heat: wings out from the flanks, or vanes standing up in pairs (from the deck,
+  // the pods or the delta)
   md.rad = new THREE.MeshStandardMaterial({ map: radiatorTexture(), roughness: 0.4, metalness: 0.3, emissive: 0x000000, side: THREE.DoubleSide, flatShading: true });
   mods.forEach((m, i) => {
     if (m.t !== 'radiator') return;
-    const k = Math.floor(m.k / 2), s = m.k % 2 ? -1 : 1, x = -0.3 * L + k * 0.15 * L, p = prof(x), span = b * 1.7;
+    const k = Math.floor(m.k / 2), s = m.k % 2 ? -1 : 1;
+    if (F.up) {
+      const [x0, dx, yb, zb] = F.up, x = x0 * L + k * dx * L, p = prof(x), y = s * (yb ? yb * b : 0.45 * p.w), z0 = zb === null ? p.z + p.h : zb * hh, span = hh * 1.2;
+      put(G_BOX, metal, x, y, z0 + 0.05, 0.07 * L, 0.14, 0.1, i);
+      put(G_BOX, md.rad, x, y + s * span * 0.1, z0 + span / 2, 0.09 * L, 0.035, span, i).rotation.x = -s * 0.2;
+      return;
+    }
+    const x = F.rx[0] * L + k * F.rx[1] * L, p = prof(x), span = b * 1.7;
     put(G_BOX, metal, x, s * (p.w + 0.12), p.z, 0.06 * L, 0.3, 0.1, i);
-    const w = put(G_BOX, md.rad, x, s * (p.w + 0.22 + span / 2), p.z + 0.05, 0.12 * L, span, 0.035, i);
-    w.rotation.x = s * 0.14;
+    put(G_BOX, md.rad, x, s * (p.w + 0.22 + span / 2), p.z + 0.05, 0.12 * L, span, 0.035, i).rotation.x = s * 0.14;
   });
   // sensors: masts with dishes, or a radome on the superstructure
   mods.forEach((m, i) => {
@@ -6461,8 +6535,9 @@ function buildModel(spec, into = scene) {
       const dish = put(G_DOME, matFor('dish', '#e2e8ef', 0.3, { side: THREE.DoubleSide }), x, y, z0 + hh * 0.72, b * 0.16, b * 0.16, b * 0.06, i);
       dish.rotation.y = -0.6;
     } else if (m.t === 'sensorL') {
-      put(G_CYL, metal, 0.02 * L, 0, hh * 1.32, b * 0.5, b * 0.5, hh * 0.12, i);
-      put(G_DOME, matFor('dome', '#e8edf3', 0.32), 0.02 * L, 0, hh * 1.36, b * 0.42, b * 0.42, b * 0.36, i);
+      const x = F.dome * L, z0 = top(x);
+      put(G_CYL, metal, x, 0, z0 + hh * 0.06, b * 0.5, b * 0.5, hh * 0.12, i);
+      put(G_DOME, matFor('dome', '#e8edf3', 0.32), x, 0, z0 + hh * 0.1, b * 0.42, b * 0.42, b * 0.36, i);
     } else if (m.t === 'ecm') {
       const x = -0.06 * L - m.k * 0.05 * L, p = prof(x), z0 = p.z + p.h;
       for (const s of [-1, 1]) put(G_BOX, matFor('ecm', '#b9c2cf', 0.45), x, s * 0.42 * p.w, z0 + hh * 0.2, 0.05 * L, 0.05, hh * 0.4, i);
@@ -6472,7 +6547,7 @@ function buildModel(spec, into = scene) {
   const hard = mods.map((m, i) => [m, i]).filter(([m]) => m.grp === 'hard'), ts = 0.75 + 0.12 * ci;
   let spinal = hard.find(([m]) => m.t === 'railgun'), slot = 0;
   if (spinal) {
-    const [, i] = spinal, z = -hh * 0.55;
+    const [, i] = spinal, z = F.sz * hh;
     put(G_BOX, metal, 0.12 * L, 0, z, 0.5 * L, b * 0.34, hh * 0.3, i);
     for (const y of [-0.08, 0.08]) put(G_BOX, matFor('rail', '#c9d2de', 0.3), 0.36 * L + 0.4, y * b * 2, z, 0.3 * L + 0.8, 0.07, 0.07, i);
     const muzzle = new THREE.Object3D(); muzzle.position.set(0.5 * L + 1.2, 0, z); root.add(muzzle);
@@ -6482,7 +6557,7 @@ function buildModel(spec, into = scene) {
   for (const [m, i] of hard) {
     if (spinal && i === spinal[1]) continue;
     const row = Math.floor(slot / 4), w4 = slot % 4, up = w4 < 2 ? 1 : -1, sgn = w4 % 2 ? -1 : 1; slot++;
-    const x = 0.26 * L - row * (0.52 * L / rows), p = prof(x), y = sgn * 0.58 * p.w, z = up > 0 ? p.z + p.h : p.z - p.h;
+    const x = (F.tx[0] - (rows > 1 ? row * (F.tx[0] - F.tx[1]) / (rows - 1) : 0)) * L, p = prof(x), y = sgn * 0.58 * p.w, z = up > 0 ? p.z + p.h : p.z - p.h;
     const mount = new THREE.Group(); mount.position.set(x, y, z); if (up < 0) mount.rotation.x = Math.PI; root.add(mount);
     mount.scale.setScalar(ts);
     const muzzle = new THREE.Object3D();
@@ -6520,14 +6595,15 @@ function buildModel(spec, into = scene) {
     md.tur.set(i, { muzzle, mount, yaw, pitch, a: 0, e: 0 });
   }
   // the hull number, painted on both flanks forward (each side reading the right way round)
-  const num = numberPlate(spec.label, us), xn = 0.27 * L, pn = prof(xn);
+  const num = numberPlate(spec.label, us), xn = F.nx * L, pn = prof(xn);
   for (const s of [-1, 1]) {
     const g = new THREE.Group(); g.position.set(xn, 0, pn.z); if (s > 0) g.rotation.z = Math.PI; root.add(g);
     const pl = new THREE.Mesh(G_PLATE, num); pl.rotation.x = Math.PI / 2; pl.position.y = -(pn.w + 0.012); pl.scale.set(pn.h * 2.4, pn.h * 0.6, 1); g.add(pl);
   }
   // navigation lights: red to port, green to starboard, white on the mast
-  for (const [y, col] of [[b * 1.02, 0xff3b30], [-b * 1.02, 0x3bff7a]]) md.lights.push(put(G_BALL, glowMat('nav' + col, col), -0.1 * L, y, 0, 0.05, 0.05, 0.05));
-  md.lights.push(put(G_BALL, glowMat('navw', 0xffffff), -0.2 * L, 0, mastZ, 0.05, 0.05, 0.05));
+  const wn = prof(-0.1 * L).w + 0.05;
+  for (const [y, col] of [[wn, 0xff3b30], [-wn, 0x3bff7a]]) md.lights.push(put(G_BALL, glowMat('nav' + col, col), -0.1 * L, y, 0, 0.05, 0.05, 0.05));
+  md.lights.push(put(G_BALL, glowMat('navw', 0xffffff), mastX, mastY, mastZ, 0.05, 0.05, 0.05));
   into.add(root);
   return md;
 }
@@ -7101,6 +7177,11 @@ function updateScene(rdt) {
     el.classList.toggle('burn', sh.thrusting && !paused);
     const sv = sh.mpx > 0 && sh.model && sh.model.root.visible ? Math.round(Math.max(16, Math.min(150, 0.85 * sh.mpx)) / 2) * 2 + 'px' : '';
     if (el._sv !== sv) { el._sv = sv; el.classList.toggle('mdl', !!sv); if (sv) el.style.setProperty('--s', sv); else el.style.removeProperty('--s'); }
+    // the outline turns with the way the ship faces, as seen on screen
+    if (!sv && faceDir(sh, FACE)) {
+      LBLD.set(FACE[0], FACE[1], FACE[2]).transformDirection(camera.matrixWorldInverse);
+      if (LBLD.x * LBLD.x + LBLD.y * LBLD.y > 0.02) { const r = Math.round(Math.atan2(LBLD.x, LBLD.y) * 60 / Math.PI) * 3; if (el._rot !== r) { el._rot = r; el.style.setProperty('--rot', r + 'deg'); } }
+    }
   }
   // ship names give way: all of them from far out, and where two would overlap the more important keeps its
   // name (the lead, the selection, targets, enemies, then the rest). Hovering a label shows its name.
