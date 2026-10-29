@@ -399,77 +399,214 @@ input[type=range]{width:130px;accent-color:var(--thrust);margin:0}
   .nav{width:auto}
 }
 @media (prefers-reduced-motion:reduce){button{transition:none}.lbl.ship.burn .dot{animation:none}}
+/* v39: top bar, selection panel, ship models' rings, catalog shipyard */
+.topbar{position:relative;flex:none;display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:5px 8px}
+.topbar button{padding:5px 9px;font-size:10.5px}
+.topbar .sq{width:26px;padding-inline:0}
+.tb-date{font:400 11px var(--f-num);color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums}
+.tb-l{font:500 10px var(--f-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.cw output{min-width:44px}
+.cw.hot .tb-l,.cw.hot output{color:var(--warn)}
+#o-rate{max-width:220px}
+.topbar .resbar{align-self:auto;margin:0;padding:0;gap:4px 12px}
+.tb-r{margin-left:auto;display:flex;gap:6px}
+.menu{position:absolute;right:8px;top:calc(100% + 6px);z-index:4;display:flex;flex-direction:column;gap:3px;padding:6px;min-width:190px;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+.menu button{display:flex;justify-content:space-between;align-items:center;gap:12px;text-align:left}
+.ui.clean .left,.ui.clean .right{visibility:hidden}
+.fleet li .am{display:none}
+.form header .x{margin-left:auto}
+.selp{align-self:center;width:min(980px,100%);display:grid;grid-template-columns:minmax(0,1fr) 300px;max-height:44vh;overflow:hidden;flex:none}
+.sp-main{min-width:0;padding:9px 12px 10px;overflow:auto;scrollbar-width:thin}
+.sp-side{min-width:0;padding:9px 12px 10px;border-left:1px solid var(--edge);overflow:auto;display:flex;flex-direction:column;gap:6px;scrollbar-width:thin}
+.sp-hd{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px}
+.sp-hd .mk{position:relative;flex:none;width:var(--s);height:var(--s);--c:var(--thrust)}
+.sp-hd .mk::before,.chipb .mk::before{content:'';position:absolute;inset:0;background:var(--c);clip-path:var(--shape)}
+.sp-nm{font:600 13px var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--thrust)}
+.sp-nm[data-act]{cursor:text}
+.sp-nm[data-act]:hover{text-decoration:underline dotted}
+.sp-hd input.rename{font:600 13px var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--thrust);background:rgba(160,185,230,.08);border:1px solid var(--edge);border-radius:4px;padding:1px 5px;width:170px}
+.sp-sub{font:400 11px var(--f-num);color:var(--dim)}
+.sp-fl{font:600 10px var(--f-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--path)}
+.sp-st{margin:4px 0 8px;font:400 11px/1.45 var(--f-num);color:var(--ink)}
+.sp-st .dim{color:var(--dim)}
+.sp-st .enc{color:var(--enc)}
+.sp-st .bad{color:var(--warn)}
+.sp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 18px}
+.mb{display:grid;grid-template-columns:52px minmax(30px,1fr) auto;gap:8px;align-items:center;font:400 10.5px var(--f-num);color:var(--dim)}
+.mb>span:first-child{font:500 10px var(--f-ui);letter-spacing:.08em;text-transform:uppercase}
+.mb b,.sp-w b{font-weight:500;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
+.mb .st-bar i,.sp-w .st-bar i{background:#8fd18f}
+.mb.lo .st-bar i,.sp-w.lo .st-bar i{background:var(--thrust)}
+.mb.out .st-bar i,.sp-w.out .st-bar i{background:var(--warn)}
+.mb.out b,.sp-w.out b{color:var(--warn)}
+.mb.fuel .st-bar i{background:#c98bff}
+.sp-h4{margin:9px 0 4px;font:600 9.5px var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.sp-arms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 18px}
+.sp-w{display:grid;grid-template-columns:18px minmax(96px,auto) minmax(30px,1fr) auto;gap:7px;align-items:center;font:400 10.5px var(--f-num);color:var(--dim)}
+.sp-w .wi svg{width:16px;height:16px;fill:none;stroke:var(--ink);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;opacity:.8;display:block}
+.sp-w .wn{font:600 10.5px var(--f-ui);letter-spacing:.06em;color:var(--ink);white-space:nowrap}
+.sp-w .wn small{margin-left:6px;font:400 10px var(--f-num);letter-spacing:0;color:var(--dim)}
+.sp-x{margin:6px 0 0;font:400 10.5px/1.5 var(--f-num);color:var(--dim)}
+.sp-x b{color:var(--ink);font-weight:500}
+.sp-tgt{display:flex;align-items:center;gap:8px;margin:8px 0 0;font:400 11px var(--f-num);color:var(--dim)}
+.sp-tgt b{color:var(--warn);font-weight:500}
+.sp-tgt button{padding:1px 7px;font-size:12px}
+.sp-chips{display:flex;flex-wrap:wrap;gap:3px;margin-top:9px}
+.chipb{position:relative;display:flex;align-items:center;gap:5px;padding:3px 7px 5px 6px;border:1px solid var(--edge);border-radius:4px;background:rgba(160,185,230,.05);font:600 9.5px var(--f-ui);letter-spacing:.08em;text-transform:uppercase;color:var(--ink);cursor:pointer;white-space:nowrap}
+.chipb:hover{background:rgba(160,185,230,.12)}
+.chipb.lead{border-color:rgba(255,174,66,.55)}
+.chipb .mk{position:relative;flex:none;width:calc(var(--s) * .85);height:calc(var(--s) * .85);--c:var(--thrust)}
+.chipb .hpb{position:absolute;left:5px;right:5px;bottom:2px;height:1.5px;background:rgba(140,165,210,.16)}
+.chipb .hpb i{display:block;height:100%;background:var(--thrust)}
+.sp-lbl{font:600 9.5px var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-top:2px}
+.sp-side .seg{margin:0}
+.sp-side .seg button{padding:7px 0;font-size:10px;letter-spacing:.06em}
+.sp-row{display:flex;flex-wrap:wrap;gap:4px}
+.sp-row button{flex:1 1 auto;padding:6px 7px;font-size:10px;letter-spacing:.06em}
+.sp-row.fire button{display:flex;flex-direction:column;align-items:center;gap:3px}
+.sp-row.fire small{font:400 9.5px var(--f-num);letter-spacing:0;text-transform:none;color:var(--dim)}
+.sp-side select{width:100%;font:500 10.5px var(--f-ui);letter-spacing:.06em;color:var(--ink);background:rgba(160,185,230,.06);border:1px solid var(--edge);border-radius:5px;padding:6px 7px}
+.sp-side .go{background:var(--thrust);border-color:var(--thrust);color:#1d1204}
+.sp-side .stn-b{max-height:150px}
+.sp-side .stn-tow{margin-top:0}
+.sp-side .form-hint{margin:0}
+.sp-q{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:4px}
+.sp-q li{display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:center;font:500 11px var(--f-ui)}
+.sp-q li small{grid-column:1;font:400 10px var(--f-num);color:var(--dim)}
+.sp-q li button{grid-row:1/3;grid-column:2;padding:2px 6px}
+.sp-q .st-bar{grid-column:1/-1}
+.sp-q .st-bar i{background:var(--path)}
+.lbl.ship.mdl .dot{border-radius:50%}
+.lbl.ship.mdl .dot::before{display:none}
+.lbl.ship.mdl:hover .dot{box-shadow:0 0 0 1px rgba(255,174,66,.45)}
+.lbl.ship.mdl.sel .dot{box-shadow:0 0 0 1.5px rgba(255,174,66,.9),0 0 10px rgba(255,174,66,.35)}
+.lbl.ship.enemy.mdl:hover .dot{box-shadow:0 0 0 1px rgba(255,107,90,.5)}
+.lbl.ship.mdl.aim .dot{box-shadow:0 0 0 1.5px var(--warn)}
+.lbl.ship.mdl.tgt .dot{box-shadow:0 0 0 1.5px var(--enc)}
+.yard-card{width:min(1320px,100%)}
+.yard-card header{margin-bottom:10px}
+.yard-body{grid-template-columns:240px minmax(0,1fr) 300px}
+.yd-cat{display:flex;flex-direction:column;gap:8px;min-height:0;padding:10px;border:1px solid var(--edge);border-radius:6px;background:rgba(160,185,230,.03)}
+.yd-cat-hd{display:flex;align-items:center;justify-content:space-between}
+.yd-cat h3{margin:0}
+.yd-cat-hd button{padding:5px 9px;font-size:10px}
+.yd-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;max-height:56vh;overflow:auto}
+.yd-list li{position:relative;display:grid;grid-template-columns:16px 1fr auto;gap:2px 8px;align-items:center;padding:6px 7px;border:1px solid transparent;border-radius:5px;cursor:pointer}
+.yd-list li:hover{background:rgba(160,185,230,.07)}
+.yd-list li.sel{background:rgba(79,210,255,.1);border-color:rgba(79,210,255,.45)}
+.yd-list .ic{position:relative;display:block;grid-row:1/3;width:var(--s);height:var(--s);--c:var(--thrust)}
+.yd-list .ic::before{content:'';position:absolute;inset:0;background:var(--c);clip-path:var(--shape)}
+.yd-list b{font:600 11px var(--f-ui);letter-spacing:.06em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.yd-list small{grid-column:2;font:400 9.5px/1.35 var(--f-num);color:var(--dim)}
+.yd-list li.bad small{color:var(--warn)}
+.yd-list .ia{grid-row:1/3;grid-column:3;display:flex;gap:2px;opacity:0}
+.yd-list li:hover .ia,.yd-list li.sel .ia{opacity:1}
+.yd-list .ia button{padding:2px 6px;font-size:11px;letter-spacing:0}
+.yd-list li.draft{border-style:dashed;border-color:rgba(255,174,66,.5)}
+.yd-io{display:flex;gap:4px}
+.yd-io button{flex:1;padding:6px 0;font-size:10px}
+.yd-store{margin:0;font:400 10px/1.4 var(--f-num);color:var(--dim)}
+.yd-store.bad{color:var(--warn)}
+.yd-edit{display:flex;flex-direction:column;gap:10px;min-width:0}
+.yd-edit-hd{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.yd-edit-hd input{width:170px}
+.yd-sp{flex:1}
+.yd-dirty{font:600 10px var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--thrust)}
+.yd-tools{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.yd-tools .form-hint{flex:1;margin:0}
+.yd-right{display:flex;flex-direction:column;gap:10px;min-width:0}
+.yd-right .yd-view{min-height:200px}
+.yd-right #yd-canvas{min-height:200px;max-height:260px}
+.yd-build{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.yd-cost{flex:1;font:400 10.5px/1.4 var(--f-num);color:var(--dim)}
+@media (max-width:1000px){.yard-body{grid-template-columns:1fr}.yd-list{max-height:28vh}}
+@media (max-width:720px){.selp{grid-template-columns:1fr;max-height:50vh}.sp-side{border-left:0;border-top:1px solid var(--edge)}.sp-grid,.sp-arms{grid-template-columns:1fr}.cw .tb-l{display:none}.topbar .resbar{order:9;width:100%}}
 </style>
 
 <canvas id="view" tabindex="0" aria-label="3D view of the solar system and your fleet"></canvas>
 <div id="labels"></div>
 <div id="box" hidden></div>
 
-<div class="ui">
+<div class="ui" id="ui">
+  <div class="card topbar" id="topbar">
+    <span class="tb-date" id="h-date">—</span>
+    <div class="grp" role="group" aria-label="Time warp">
+      <button id="b-play" type="button" title="Pause or resume (P)">Pause</button>
+      <button id="b-slow" class="sq" type="button" aria-label="Slower time warp" title="Slower (,)">−</button>
+      <output id="o-warp" aria-live="polite">×1k</output>
+      <button id="b-fast" class="sq" type="button" aria-label="Faster time warp" title="Faster (.)">+</button>
+      <button id="b-auto" type="button" aria-pressed="true" title="Slow time down before burns and sphere-of-influence changes (T)">Auto</button>
+    </div>
+    <div class="grp cw" id="cw" role="group" aria-label="Combat speed" title="How fast time runs while a fight is on (×10 to ×10k)">
+      <span class="tb-l">Combat</span>
+      <button id="b-cslow" class="sq" type="button" aria-label="Slower combat">−</button>
+      <output id="o-cw">×100</output>
+      <button id="b-cfast" class="sq" type="button" aria-label="Faster combat">+</button>
+    </div>
+    <output id="o-rate" aria-live="off"></output>
+    <span class="resbar" id="resbar" aria-label="Your resources"></span>
+    <span class="tb-r">
+      <button id="b-sensors" type="button" aria-pressed="false" title="Whole-system view (Space)">System</button>
+      <button id="b-menu" type="button" aria-haspopup="true" aria-expanded="false" title="Menu">Menu ▾</button>
+    </span>
+    <div class="card menu" id="menu" role="menu" hidden>
+      <button type="button" data-m="help">How to play <span class="k">?</span></button>
+      <button type="button" data-m="vision">Vision rings <span class="k">V</span></button>
+      <button type="button" data-m="clean">Hide side panels <span class="k">H</span></button>
+      <button type="button" data-m="coop">Co-op</button>
+      <button type="button" data-m="new">New game</button>
+    </div>
+  </div>
   <div class="top">
     <div class="left">
-      <section class="card hud" aria-live="off">
-        <div class="hud-head"><span><span class="brand" id="h-name">—</span> <span class="cls" id="h-cls"></span></span><span class="date" id="h-date">—</span></div>
-        <dl>
-          <dt>Status</dt><dd id="h-ap-s">—</dd>
-          <dt>Where</dt><dd id="h-pos">—</dd>
-          <dt>Accel</dt><dd id="h-drive">—</dd>
-          <dt>Hull</dt><dd id="h-hull">—</dd>
-          <dt>Arms</dt><dd id="h-wpn">—</dd>
-        </dl>
-        <div class="enc" id="h-enc" hidden></div>
-      </section>
       <section class="card fleet" aria-label="Fleet">
         <header><span class="brand">Fleet</span><span class="hdr-btns"><button class="add" id="b-fleet" type="button" title="Make a fleet of the selected ships">+ Fleet</button></span></header>
         <ol id="fleet-list"></ol>
       </section>
       <section class="card fleet contacts" id="contacts" hidden aria-label="Contacts">
-        <header><span class="brand">Contacts</span><span class="form-sub">click: target · shift-click: mark</span></header>
+        <header><span class="brand">Contacts</span><span class="form-sub">right-click: attack · click: target</span></header>
         <ol id="contact-list"></ol>
       </section>
     </div>
     <div class="right">
     <section class="card stn" id="mp" hidden aria-label="Co-op"></section>
-    <section class="card stn" id="stn" hidden aria-label="Infrastructure"></section>
-    <section class="card stn" id="hv" hidden aria-label="Collectors"></section>
     <aside class="card help" id="help" aria-label="How to play">
       <header><span class="brand">How to play</span><button class="x" id="help-close" type="button" aria-label="Close" title="Close (?)">×</button></header>
       <div class="help-body">
       <details open><summary>Goal</summary><ul>
         <li>Destroy all enemy infrastructure to win; lose all of yours and you lose.</li>
-        <li>The enemy starts at Jupiter or Saturn, knows where your yard is, and expands toward you. <b>New game</b> lets you face a <b>cunning</b> one: it ambushes, feints, raids and builds against your designs.</li>
-        <li>Defend the six colonies (Mercury, Venus, the Moon, Mars, Ceres, Ganymede): they produce resources, and if all of them fall the war is lost.</li>
-        <li>Click a ship's name in the readout to change its callsign.</li></ul></details>
+        <li>The enemy starts at Jupiter or Saturn, knows where your yard is, and expands toward you. <b>New game</b> (Menu) lets you face a <b>cunning</b> one: it ambushes, feints, raids and builds against your designs.</li>
+        <li>Defend the six colonies (Mercury, Venus, the Moon, Mars, Ceres, Ganymede): they produce resources, and if all of them fall the war is lost.</li></ul></details>
       <details open><summary>Select &amp; fleets</summary><ul>
-        <li><b>Click</b> a ship or row · <span class="k">Shift</span>-click adds · <b>drag</b> a box · <span class="k">Ctrl</span><span class="k">A</span> all</li>
-        <li><span class="k">Shift</span>+<span class="k">1</span>–<span class="k">9</span> saves a group, <span class="k">1</span>–<span class="k">9</span> recalls it</li>
-        <li><b>+ Fleet</b> makes a fleet. Its header: click selects, <b>▾</b> folds it, <b>+</b> adds, <b>−</b> removes, <b>✕</b> disbands; double-click its name to rename it</li></ul></details>
-      <details><summary>Orders</summary><ul>
-        <li><b>Right-click</b> a planet or moon: orbit it · empty space or <span class="k">M</span>: move there (<span class="k">Shift</span> + mouse sets height)</li>
-        <li><b>Right-click</b> one of your ships: track it · <b>left-click</b> a planet: trip time</li>
-        <li>Ships ordered together fly as a formation: arrange it in the side panel, double-click a ship there to make it leader</li></ul></details>
-      <details><summary>Economy &amp; towing</summary><ul>
-        <li>Select a <b>shipyard</b> to build: base metals for structure, noble metals for weapons, sensors, reactors</li>
-        <li>Ships near your infrastructure refuel, rearm and repair from it</li>
-        <li><b>Collectors</b>: pick a resource in their panel, or <b>Pick source</b> (<span class="k">Alt</span> + right-click) a body or field. Deeper gravity wells give less</li>
-        <li><b>Towing</b>: select a station, right-click where it should go. The nearest free ship comes, hooks it and tows it. <b>Add tug</b> for more thrust, <b>Release</b> to let go (or select ships and the station, then give an order)</li></ul></details>
+        <li><b>Click</b> a ship or row · <span class="k">Shift</span>-click adds · <b>drag</b> a box · <span class="k">Ctrl</span><span class="k">A</span> all. The panel at the foot shows what is selected and its orders</li>
+        <li><b>+ Fleet</b> makes a fleet of the selection (and saves it as the next free group: <span class="k">1</span>–<span class="k">9</span> recalls it, <span class="k">Shift</span>+<span class="k">1</span>–<span class="k">9</span> saves one)</li>
+        <li>A fleet's header: click selects, <b>▾</b> folds, <b>+</b> adds, <b>−</b> removes, <b>✕</b> disbands; double-click its name to rename it</li></ul></details>
+      <details open><summary>Orders &amp; stances</summary><ul>
+        <li><b>Right-click</b> a planet or moon: orbit it · empty space or <span class="k">M</span>: move there (<span class="k">Shift</span> + mouse sets height) · one of your ships: escort it</li>
+        <li><b>Stances</b> (selection panel): <b>Aggressive</b> ships go after any enemy they see round the planet they are stationed at; <b>Defensive</b> ones only after enemies that come close, then come back; <b>Hold</b> never moves on its own</li>
+        <li>Ships keep station where you last sent them, focus their fire, take the next enemy as each falls, and go to rearm when their magazines run low</li>
+        <li><b>Rearm</b> (<span class="k">B</span>): fly to the nearest station of yours with stock, fill up, and come back. Ships near your stations refuel, rearm and repair by themselves</li></ul></details>
       <details><summary>Combat</summary><ul>
-        <li><b>Right-click</b> an enemy: target · <span class="k">Shift</span>: pursue · box several enemies, then right-click one: target the group</li>
-        <li><span class="k">G</span> auto / manual fire (<span class="k">Z</span> <span class="k">X</span> <span class="k">C</span>) · <span class="k">E</span> evasive · <span class="k">V</span> vision rings · <span class="k">Y</span> shipyard</li>
+        <li><b>Right-click</b> an enemy: attack it (close to weapons range and fight) · <span class="k">Shift</span>+right-click: shoot at it without moving · box enemies, then right-click one: attack the group</li>
+        <li><b>Combat</b> in the top bar sets how fast time runs while a fight is on (×10 to ×10k)</li>
+        <li><span class="k">G</span> auto / manual fire (<span class="k">Z</span> <span class="k">X</span> <span class="k">C</span>) · <span class="k">E</span> evasive · <span class="k">Q</span> silent · <span class="k">R</span> retreat when hurt · <span class="k">V</span> vision rings</li>
         <li>Armour only shields hits on its own side (nose, flanks, tail). Fields shrink your sensors</li>
-        <li>A ship burning its drive is seen at full sensor range; coasting at 60%, running <b>silent</b> (<span class="k">Q</span>) at 30%. Firing gives a ship away for five minutes</li>
-        <li>Silent ships hold their guns until an enemy comes close, they are hit or a friend nearby fires: lay ambushes</li>
-        <li><b>ECM suites</b> (shipyard) make shots at a ship miss more and torpedoes chase ghosts; the shooter's own sensors cut through jamming</li>
-        <li><span class="k">R</span> withdraw: ships break off for repairs below half hull</li>
-        <li>The aliens' lances reach 35,000 km, as far as your railguns, and they stand off at about 28,000. Lasers need 20,000: close in, or wear them down with railguns and spread torpedo salvos</li></ul></details>
+        <li>A ship burning its drive is seen at full sensor range; coasting at 60%, running <b>silent</b> at 30%. Firing gives a ship away for five minutes. Silent ships hold their guns until an enemy comes close: lay ambushes</li>
+        <li><b>ECM suites</b> make shots at a ship miss more and torpedoes chase ghosts</li>
+        <li>The aliens' lances reach 35,000 km, as far as your railguns, and they stand off at about 28,000. Lasers need 20,000</li></ul></details>
+      <details><summary>Economy &amp; the shipyard</summary><ul>
+        <li>Select a <b>shipyard</b>: build from your catalog of designs, or <b>Design ships</b> to add to it (<span class="k">Y</span>). <b>Save</b> keeps a design; <b>Export</b> / <b>Import</b> carry the catalog to another browser</li>
+        <li>Base metals for structure, noble metals for weapons, sensors, reactors. Ships near a yard can be refitted from the selection panel</li>
+        <li><b>Collectors</b>: pick a resource in the panel, or <b>Pick source</b> (<span class="k">Alt</span> + right-click) a body or field. Deeper gravity wells give less</li>
+        <li><b>Towing</b>: select a station, right-click where it should go. The nearest free ship comes, hooks it and tows it</li></ul></details>
       <details><summary>Camera &amp; keys</summary><ul>
-        <li>Right-drag rotate · scroll zoom · <span class="k">W</span><span class="k">A</span><span class="k">S</span><span class="k">D</span> pan · <span class="k">F</span> follow · double-click focus · <span class="k">Space</span> sensors</li>
-        <li><span class="k">P</span> pause · <span class="k">,</span> <span class="k">.</span> warp · <span class="k">T</span> auto-warp · <span class="k">H</span> hide controls · <span class="k">?</span> help · <span class="k">Esc</span> cancel</li>
+        <li>Right-drag rotate · scroll zoom · <span class="k">W</span><span class="k">A</span><span class="k">S</span><span class="k">D</span> pan · <span class="k">F</span> follow · double-click focus · <span class="k">Space</span> whole system. Close to a planet the view rides along with it</li>
+        <li><span class="k">P</span> pause · <span class="k">,</span> <span class="k">.</span> warp · <span class="k">T</span> auto-warp · <span class="k">H</span> hide side panels · <span class="k">?</span> help · <span class="k">Esc</span> cancel</li>
         <li>Arrows and <span class="k">PgUp</span> <span class="k">PgDn</span> hand-fly the selection</li></ul></details>
       </div>
     </aside>
     <section class="card form" id="form" hidden aria-label="Formation">
-      <header><span class="brand" id="form-brand">Formation</span><span class="form-sub" id="form-sub"></span></header>
+      <header><span class="brand" id="form-brand">Formation</span><span class="form-sub" id="form-sub"></span><button class="x" id="form-close" type="button" aria-label="Close" title="Close">×</button></header>
       <div class="seg tabs" id="form-tabs" hidden>
         <button type="button" data-t="track">On target</button>
         <button type="button" data-t="own">Own formation</button>
@@ -504,15 +641,6 @@ input[type=range]{width:130px;accent-color:var(--thrust);margin:0}
 
   <div class="mid">
     <div class="mid-r" id="mid-r">
-    <section class="card wpn" id="wpn" hidden aria-label="Weapons">
-      <header><span class="brand">Manual fire</span><span class="form-sub">target: <b id="wpn-tgt">—</b></span><button class="x" id="wpn-clear" type="button" title="Clear the target">×</button></header>
-      <div class="wpn-row">
-        <button type="button" data-fire="torpedo">Torpedoes <span class="k">Z</span><small></small></button>
-        <button type="button" data-fire="railgun">Railguns <span class="k">X</span><small></small></button>
-        <button type="button" data-fire="laser">Lasers <span class="k">C</span><small></small></button>
-      </div>
-      <p class="form-hint">PDCs defend against torpedoes on their own. Right-click an enemy to make it the target.</p>
-    </section>
     <section class="card nav" id="nav" hidden aria-label="Navigation computer">
       <header><span class="nav-title" id="nav-title">—</span><span class="nav-sub" id="nav-sub"></span><button class="x" id="nav-close" type="button" aria-label="Close">×</button></header>
 
@@ -529,30 +657,10 @@ input[type=range]{width:130px;accent-color:var(--thrust);margin:0}
     </div>
     <div class="card order" id="order" hidden></div>
     <div class="card toast" id="toast" role="status" hidden></div>
-    <div class="card resbar" id="resbar" aria-label="Your resources"></div>
-    <nav class="card bar" aria-label="Flight controls">
-      <button id="b-play" type="button">Pause</button>
-      <div class="grp">
-        <button id="b-slow" class="sq" type="button" aria-label="Slower time warp">−</button>
-        <output id="o-warp" aria-live="polite">×1k</output>
-        <button id="b-fast" class="sq" type="button" aria-label="Faster time warp">+</button>
-        <button id="b-auto" type="button" aria-pressed="true" title="Slow time down before burns and sphere-of-influence changes (T)">Auto</button>
-        <output id="o-rate" aria-live="off"></output>
-      </div>
-      <span class="sep"></span>
-      <button id="b-yard" type="button" title="Design ships (Y)">Shipyard</button>
-      <button id="b-wpn" type="button" aria-pressed="false" title="Ships fire on their own, or on your command (G)">Weapons: auto</button>
-      <button id="b-eva" type="button" aria-pressed="false" title="Selected ships jink in a fight to slip railgun slugs (E)">Evasive: off</button>
-      <button id="b-sil" type="button" aria-pressed="false" title="Selected ships run silent: drives cold, guns held until an enemy comes close, they are hit or a friend nearby opens fire (Q)">Silent: off</button>
-      <button id="b-wd" type="button" aria-pressed="false" title="Selected ships break off for repairs when their hull falls below half (R)">Withdraw: off</button>
-      <span class="sep"></span>
-      <button id="b-sensors" type="button" aria-pressed="false">Sensors</button>
-      <button id="b-mp" type="button" title="Play two-player co-op">Co-op</button>
-      <button id="b-help" type="button" aria-pressed="false" title="Show how to play (?)">Help</button>
-      <button id="b-reset" type="button" title="Start a new game">New game</button>
-      <button id="b-hide" type="button" title="Put the controls away (H)">Hide ▾</button>
-    </nav>
-    <button class="card showbar" id="b-showbar" type="button" hidden title="Show the controls (H)">Show controls ▴</button>
+    <section class="card selp" id="selp" hidden aria-label="Selection">
+      <div class="sp-main" id="sp-main"></div>
+      <div class="sp-side" id="sp-side"></div>
+    </section>
   </div>
 </div>
 
@@ -564,28 +672,40 @@ input[type=range]{width:130px;accent-color:var(--thrust);margin:0}
 <div class="yard" id="yard" hidden>
   <section class="card yard-card" role="dialog" aria-label="Shipyard">
     <header>
-      <span class="brand">Shipyard</span>
-      <input id="yd-name" type="text" maxlength="24" aria-label="Design name" spellcheck="false">
-      <select id="yd-hull" aria-label="Hull class"></select>
-      <select id="yd-sel" aria-label="Design"></select>
-      <span class="yd-valid" id="yd-valid">Valid design</span>
-      <button id="yd-new" type="button">New</button><button id="yd-copy" type="button">Copy</button><button id="yd-delete" type="button">Delete</button>
-      <button class="x" id="yd-close" type="button" aria-label="Close">×</button>
+      <span class="brand">Shipyard</span><span class="form-sub" id="yd-at"></span>
+      <button class="x" id="yd-close" type="button" aria-label="Close" title="Close (Esc)">×</button>
     </header>
     <div class="yard-body">
-      <aside class="yd-perf" id="yd-stats"></aside>
-      <div class="yd-schem" id="yd-schem"></div>
-      <div class="yd-view">
-        <canvas id="yd-canvas" aria-label="Preview of the ship"></canvas>
-        <div class="yd-cyc"><button id="yd-prev" type="button" aria-label="Previous design">‹</button><span id="yd-cls"></span><button id="yd-next" type="button" aria-label="Next design">›</button></div>
+      <aside class="yd-cat" aria-label="Your designs">
+        <div class="yd-cat-hd"><h3>Catalog</h3><button id="yd-new" type="button" title="Start a new design">+ New</button></div>
+        <ol class="yd-list" id="yd-list"></ol>
+        <div class="yd-io"><button id="yd-export" type="button" title="Save your catalog to a file">Export</button><button id="yd-import" type="button" title="Add designs from a file">Import</button><input id="yd-file" type="file" accept=".json,application/json" hidden></div>
+        <p class="yd-store" id="yd-store"></p>
+      </aside>
+      <div class="yd-edit">
+        <div class="yd-edit-hd">
+          <input id="yd-name" type="text" maxlength="24" aria-label="Design name" spellcheck="false">
+          <select id="yd-hull" aria-label="Hull class"></select>
+          <span class="yd-valid" id="yd-valid">Valid design</span>
+          <span class="yd-dirty" id="yd-dirty" hidden>Unsaved</span>
+          <span class="yd-sp"></span>
+          <button id="yd-revert" type="button" title="Throw away the changes">Revert</button>
+          <button id="yd-saveas" type="button" title="Keep it as a new design in the catalog">Save as new</button>
+          <button id="yd-save" class="go" type="button" title="Keep this design in the catalog">Save</button>
+        </div>
+        <div class="yd-schem" id="yd-schem"></div>
+        <div class="yd-tools"><span class="form-hint">Click a slot to fit it, right-click to empty it. Bigger hulls carry more.</span><button id="yd-clear" type="button">Clear</button><button id="yd-auto" type="button">Autodesign</button></div>
+      </div>
+      <div class="yd-right">
+        <div class="yd-view">
+          <canvas id="yd-canvas" aria-label="Preview of the ship"></canvas>
+          <div class="yd-cyc"><span id="yd-cls"></span></div>
+        </div>
+        <aside class="yd-perf" id="yd-stats"></aside>
+        <div class="yd-build" id="yd-buildrow"><span class="yd-cost" id="yd-cost"></span><button id="yd-build" class="go" type="button">Build</button><button id="yd-build3" type="button" title="Queue three">×3</button></div>
       </div>
     </div>
     <div class="card yd-pick" id="yd-pick" hidden></div>
-    <footer>
-      <span class="form-hint">Click a slot to fit it, right-click to empty it. Bigger hulls carry more.</span>
-      <button id="yd-clear" type="button">Clear designer</button><button id="yd-auto" type="button">Autodesign</button>
-      <button id="yd-refit" type="button">Refit selected</button><button id="yd-build" class="go" type="button">Queue at shipyard</button>
-    </footer>
   </section>
 </div>
 
@@ -1544,6 +1664,7 @@ function commandFleet(sel, kind, times, list = selectedShips(), quiet = false) {
   for (const sh of list) stopTrack(sh);
   const L = list[0];
   L.pending = null; L.autoOrder = quiet;
+  if (!quiet) for (const s of list) { s.anchor = sel; s.engaged = null; s.rearming = null; }
   if (list.length > 1) { ensureForm(L); list.slice(1).forEach(s => attach(s, L)); settle(L); }
   const n = list.length, far = followersOf(L).filter(s => s.joining).length, who = n > 1 ? `${n} ships in formation behind ${L.name}` : L.name;
   const what = sel.type === 'field' ? `Flying to ${FIELDS[sel.fi].name}` : sel.type === 'point' ? 'Move order' : sel.rp ? `Parking in orbit of ${BODY[sel.j].name}` : sel.j === L.prim ? 'Circularizing' : `${kind === 'orbit' ? 'Orbit' : 'Fly by'} ${BODY[sel.j].name}`;
@@ -1759,6 +1880,7 @@ function orderTrack(X, list = selectedShips(), opt = {}) {
   for (const sh of list) stopTrack(sh);
   const L = list[0];
   L.autoOrder = !!opt.quiet;
+  if (!opt.quiet) for (const s of list) { s.engaged = null; s.rearming = null; if (X.side === L.side) s.anchor = null; }
   bind(L); simT = worldT; cancelAutopilot(); unbind(); bindLead();
   L.pending = null;
   // going after an enemy, a formation closes in line abreast, so every ship comes into reach at once (a column
@@ -2439,14 +2561,239 @@ const WITHDRAW_AT = 0.5;
 function withdrawFrame() {
   for (const s of ships) {
     if (!alive(s) || s.station) continue;
-    if (s.withdrawing) { if (hullFrac(s) > 0.95) s.withdrawing = false; continue; }
+    if (s.withdrawing) { if (hullFrac(s) > 0.95) { s.withdrawing = false; if (s.side === 'us' && s.anchor && !s.leader) goBack(s, [s, ...followersOf(s)].filter(x => !x.station), 'repaired'); } continue; }
     if (!s.withdraw || hullFrac(s) >= s.withdraw || s.stats.accel <= 0 || s.fuel <= 0) continue;
     const H = nearestOwn(s); if (!H) continue;
     if (s.side === 'them' && !canGetHome([s], 1)) continue;           // no way home: it fights on hurt
-    s.withdrawing = true; s.target = null; s.targetGroup = null; s.silent = false;
+    s.withdrawing = true; s.target = null; s.targetGroup = null; s.silent = false; s.engaged = null; s.rearming = null;
     if (s.side === 'them') s.mission = 'return';
     commandFleet({ type: 'body', j: H.prim, rp: Math.hypot(H.S[0], H.S[1], H.S[2]) }, 'orbit', null, [s], true);
     if (s.side === 'us') showToast(`${s.name} is badly hurt (hull ${Math.round(hullFrac(s) * 100)}%): withdrawing to ${H.name}`, 6000);
+  }
+}
+// ---- Stances and the fleet's own judgement (after Sins of a Solar Empire). Each warship of yours keeps station where
+// you last sent it (its anchor). Aggressive: it goes after any enemy it sees round that planet (the planet's sphere
+// of influence, at least 500,000 km and at most 5 million; 2 million away from the planets). Defensive: only after
+// enemies that come within twice its reach. Hold: it never moves on its own and fires at whatever comes in reach.
+// In a fight a formation spreads its fire by priority (the nearly dead, the dangerous, those at your stations, the
+// one you ordered it to attack), takes the next enemy as each falls, leaves alone a force much stronger than itself
+// unless a station of yours is at stake, and once the area is clear goes back to its anchor. Ships low on
+// ammunition or propellant go to rearm at the nearest station of yours with stock, and then come back.
+const STANCES = ['aggressive', 'defensive', 'hold'];
+const STANCE_NAME = { aggressive: 'Aggressive', defensive: 'Defensive', hold: 'Hold' };
+const STANCE_TIP = {
+  aggressive: 'Goes after any enemy it sees round the planet it is stationed at, then comes back',
+  defensive: 'Engages only enemies that come close, then comes back',
+  hold: 'Never moves on its own: fires at whatever comes into reach',
+};
+const AE_EVERY = 120;                     // s of game time between looks round
+let aeTick = -Infinity;
+const nameList = list => list.length === 1 ? list[0].name : list.length + ' ships';
+const unitName = L => L.fleet && flagOf(L.fleet) === L ? L.fleet.name : followersOf(L).some(f => !f.station) ? `${L.name}'s formation` : L.name;
+// news of your ship goes to whoever commands it
+function tell(L, msg) { if (NET.role === 'solo' || L.owner === NET.me) showToast(msg); else if (isHost() && L.owner === 'p2') netToast(msg); }
+const offensive = s => !s.station && !s.hv && s.stats.wpn.torpedo + s.stats.wpn.railgun + s.stats.wpn.laser > 0;
+const canFight = s => offensive(s) && reachOf(s) > WPN.pdc.range;
+function setStance(st, list = selectedShips().filter(s => ownShip(s) && !s.station && !s.hv)) {
+  if (!list.length) { showToast('Select a warship first'); return; }
+  for (const s of list) { s.stance = st; for (const f of followersOf(s)) if (!f.station && !f.hv) f.stance = st; }
+  fleetDirty = true;
+  if (toHost({ k: 'stance', st, ids: ids(list) })) return;
+  aeTick = -Infinity;
+  showToast(`${nameList(list)} ${list.length === 1 ? 'is' : 'are'} ${STANCE_NAME[st].toLowerCase()}: ${STANCE_TIP[st].toLowerCase()}`);
+}
+// where a ship keeps station given no order of yours: the point or field it holds at, or the orbit it is in
+function anchorHere(L) {
+  if (L.ap.hold && L.ap.sel && (L.ap.sel.type === 'point' || L.ap.sel.type === 'field')) return L.ap.sel;
+  return { type: 'body', j: L.prim, rp: Math.hypot(L.S[0], L.S[1], L.S[2]) };
+}
+const anchorName = a => a.type === 'body' ? BODY[a.j].name : a.type === 'field' ? FIELDS[a.fi].name : 'its station';
+const ANP = [0, 0, 0];
+// the middle of the patch it watches: the planet or moon (round the Sun, where the ship itself is), or the point
+function anchorPos(a, L) {
+  if (a.type === 'field') { const p = FIELDS[a.fi].p; ANP[0] = p[0]; ANP[1] = p[1]; ANP[2] = p[2]; }
+  else if (a.type === 'point') { absPos(a.F, worldT, ANP); ANP[0] += a.X[0]; ANP[1] += a.X[1]; ANP[2] = a.X[2]; }
+  else if (a.j > 0) absPos(a.j, worldT, ANP);
+  else { const p = posNow(L); ANP[0] = p[0]; ANP[1] = p[1]; ANP[2] = p[2]; }
+  return ANP.slice();
+}
+function engageRadius(L, group) {
+  const st = L.stance || 'aggressive', a = L.anchor;
+  if (st === 'hold') return 0;
+  if (st === 'defensive') return Math.max(2e5, 2 * Math.max(...group.map(reachOf)));
+  if (a && a.type === 'body' && a.j > 0) return Math.max(5e5, Math.min(5e6, SOI[PARENT[a.j] > 0 ? PARENT[a.j] : a.j]));
+  return 2e6;
+}
+const foesNear = (p, R) => ships.filter(o => o.side !== 'us' && alive(o) && o.vis && o.cp && dist3(o.cp, p) < R);
+const powerOf = list => list.reduce((a, s) => a + combatPower(s), 0);
+// which enemy first: the nearly dead, the dangerous, those near a station of yours, the one you ordered attacked
+function foePriority(o, p, stations, focus) {
+  const atStation = stations.some(st => st.cp && dist3(st.cp, o.cp) < 3e5) ? 2 : 1;
+  return (o === focus ? 3 : 1) * atStation * (1.6 - hullFrac(o)) * (1 + combatPower(o) / 30) * (o.station ? 0.5 : 1) / (1 + dist3(o.cp, p) / 1e5);
+}
+// spread the fire: each ship on the first enemy by priority that it can reach (and that is not already drawing
+// enough guns to finish it), else the first; a ship you gave a target keeps it
+function focusOn(group, foes, p, focus) {
+  if (!foes.length) return null;
+  const st = stationsOf('us'), pri = new Map(foes.map(o => [o, foePriority(o, p, st, focus)]));
+  const order = foes.slice().sort((a, b) => pri.get(b) - pri.get(a)), guns = new Map();
+  for (const s of group) {
+    if (s.targetLock && s.target && alive(s.target)) continue;
+    const r = reachOf(s), sp = posNow(s).slice(), enough = o => (guns.get(o) || 0) >= Math.max(2, Math.ceil(o.stats.hp / 15));
+    const t = order.find(o => dist3(o.cp, sp) <= r && !enough(o)) || order.find(o => dist3(o.cp, sp) <= r) || order[0];
+    s.target = t; s.targetGroup = order; s.targetLock = false;
+    guns.set(t, (guns.get(t) || 0) + 1);
+  }
+  return order[0];
+}
+// a group (its first ship leads) goes after an enemy, closing to its weapons' reach in line abreast
+function attackWith(group, T, foes, manual) {
+  if (!foes.includes(T)) foes.push(T);
+  focusOn(group, foes, posNow(group[0]).slice(), manual ? T : null);
+  for (const s of group) { if (!s.targetLock) s.target = s.target || T; s.rearming = null; }
+  orderTrack(T, group, { range: standoff(group) / 1.2, preset: 'envelop', pursuit: true, quiet: !manual });
+  const L = group[0];
+  if (!L.track) return false;
+  L.engaged = { auto: !manual, focus: T, t: worldT };
+  if (!manual) tell(L, `${unitName(L)} (${STANCE_NAME[L.stance || 'aggressive'].toLowerCase()}) engaging ${T.name}${foes.length > 1 ? ` and ${foes.length - 1} more` : ''}`);
+  fleetDirty = true;
+  return true;
+}
+// back to its anchor (nothing to do if it is already there)
+function goBack(L, group, why) {
+  L.engaged = null;
+  const a = L.anchor; if (!a) { L.anchor = anchorHere(L); return; }
+  if (a.type === 'body' && a.j === L.prim && Math.abs(Math.hypot(L.S[0], L.S[1], L.S[2]) - (a.rp || 0)) < 2e4 && !L.ap.goal) return;
+  commandFleet(a, a.type === 'body' ? 'orbit' : 'stop', null, group, true);
+  tell(L, `${unitName(L)}: ${why}, back to ${anchorName(a)}`);
+}
+// low on what it fights with (torpedoes or slugs under 40%) or on propellant (under 30%): worth topping up
+const lowOn = s => (s.full.fuel > 0 && s.fuel < 0.3 * s.full.fuel) || ['torps', 'slugs'].some(a => s.full[a] > 0 && s.ammo[a] < 0.4 * s.full[a]);
+const supplyLevel = s => { let n = 1, t = hullFrac(s); for (const k of ['fuel', 'torps', 'slugs', 'rounds']) { const f = k === 'fuel' ? s.full.fuel : s.stats[k]; if (f > 0) { n++; t += Math.min(1, (k === 'fuel' ? s.fuel : s.ammo[k]) / f); } } return t / n; };
+const nearSupply = (s, p) => stationsOf(s.side).some(st => st !== s && dist3(posNow(st), p) < SUPPLY_R);
+// the nearest station of yours with stock to give
+function supplyFor(s) {
+  const p = posNow(s).slice(); let best = null, bd = Infinity;
+  for (const st of stationsOf(s.side)) {
+    if (st.leader || st === s || (st.stock.noble < 5 && st.stock.fuel < 5)) continue;
+    const d = dist3(posNow(st), p); if (d < bd) { bd = d; best = st; }
+  }
+  return best;
+}
+// Rearm: to that station (keeping station by it until topped up), then back to where it was posted
+function rearm(list = selectedShips().filter(s => ownShip(s) && !s.station && !s.hv), auto = false) {
+  list = list.filter(s => alive(s) && !s.station);
+  if (!list.length) { if (!auto) showToast('Select a ship first'); return; }
+  if (!auto && toHost({ k: 'rearm', ids: ids(list) })) { showToast(`${nameList(list)}: rearming`); return; }
+  const H = supplyFor(list[0]);
+  if (!H) { if (!auto) showToast('No station of yours with stock to rearm at'); return; }
+  const L0 = fleetLeader(list[0]), back = L0.anchor || (auto ? null : anchorHere(L0));
+  if (dist3(posNow(H).slice(), posNow(list[0])) > 0.5 * SUPPLY_R) orderTrack(H, list, { range: 3000, preset: 'trail', quiet: true });
+  else standDown(list);
+  for (const s of list) { s.rearming = { st: H, back, since: worldT, got: supplyLevel(s) }; s.engaged = null; s.target = null; s.targetGroup = null; s.targetLock = false; }
+  tell(L0, `${nameList(list)} ${auto ? 'running low: going' : 'going'} to ${H.name} to rearm${back ? ', then back' : ''}`);
+  fleetDirty = navDirty = true;
+}
+function rearmFrame() {
+  for (const s of ships) {
+    const R = s.rearming; if (!R) continue;
+    if (!alive(s)) { s.rearming = null; continue; }
+    if (!alive(R.st)) { s.rearming = null; if (s.side === 'us' && !s.leader) rearm([s, ...followersOf(s)], true); continue; }
+    if (dist3(posNow(R.st).slice(), posNow(s)) > SUPPLY_R) continue;           // still on its way
+    const lv = supplyLevel(s);
+    if (lv > 0.995) doneRearm(s, R, 'rearmed');
+    else if (lv > R.got + 1e-3) { R.got = lv; R.since = worldT; }
+    else if (worldT - R.since > DAY) doneRearm(s, R, `${R.st.name} has run short`);
+  }
+}
+// one ship topped up; once all of its formation are, the formation goes back
+function doneRearm(s, R, why) {
+  s.rearming = null;
+  const L = fleetLeader(s), group = [L, ...followersOf(L)].filter(x => !x.station);
+  if (group.some(x => x.rearming)) return;
+  if (L.track && L.track.tgt === R.st) stopTrack(L);
+  L.anchor = R.back || anchorHere(L);
+  if (R.back) commandFleet(R.back, R.back.type === 'body' ? 'orbit' : 'stop', null, group, true);
+  tell(L, `${unitName(L)} ${why}${R.back ? `: back to ${anchorName(R.back)}` : ''}`);
+  fleetDirty = true;
+}
+// Stop: orders off, keeping station where they are
+function stopOrders(list = selectedShips().filter(s => ownShip(s) && !s.station)) {
+  if (!list.length) return;
+  for (const s of list) { s.engaged = null; s.rearming = null; s.anchor = null; s.targetLock = false; }
+  fleetDirty = navDirty = true;
+  if (toHost({ k: 'stop', ids: ids(list) })) { showToast(`${nameList(list)}: orders cancelled`); return; }
+  standDown(list);
+  showToast(`${nameList(list)}: orders cancelled, keeping station here`);
+}
+// a fight under way: keep the fire spread, send the ships that can no longer fight to rearm, let a runaway go,
+// and when the target is gone take the next enemy round the anchor, or go back to it
+function engagedThink(L, group, p) {
+  const E = L.engaged, reach = Math.max(...group.map(reachOf));
+  const R = E.auto ? engageRadius(L, group) : Math.max(5e5, 3 * reach), home = E.auto && L.anchor ? anchorPos(L.anchor, L) : p;
+  const tr = L.track;
+  if (tr && E.auto && tr.tgt.cp && dist3(tr.tgt.cp, home) > 1.6 * R) { stopTrack(L); goBack(L, group, `${tr.tgt.name} got away`); return; }
+  const close = foesNear(p, Math.max(1.5 * reach, 2e5));
+  if (tr && tr.pursuit) focusOn(group, close, p, alive(E.focus) ? E.focus : null);
+  // outgunned in a fight of its own choosing (and no station of yours at stake): back to its post
+  if (E.auto && close.length && powerOf(close) > 2.5 * powerOf(group) && !stationsOf('us').some(s => s.cp && dist3(s.cp, p) < 5e5)) {
+    if (tr) stopTrack(L);
+    goBack(L, group, `outgunned by ${close.length} enem${close.length === 1 ? 'y' : 'ies'}, falling back`);
+    return;
+  }
+  const dry = group.filter(s => offensive(s) && !canFight(s));
+  if (dry.length && dry.length * 2 >= group.length) { stopTrack(L); L.engaged = null; rearm(group, true); return; }
+  if (dry.length) rearm(dry.filter(s => s !== L), true);
+  if (tr || (L.ap.goal && !L.ap.hold) || L.pending) return;
+  const foes = foesNear(home, R);
+  if (foes.length && group.some(canFight)) {
+    const st = stationsOf('us'), T = foes.slice().sort((a, b) => foePriority(b, p, st) - foePriority(a, p, st))[0];
+    attackWith(group, T, foes, !E.auto);
+    return;
+  }
+  L.engaged = null;
+  if (group.some(lowOn) && !nearSupply(L, p)) { rearm(group, true); return; }
+  if (E.auto) goBack(L, group, 'the area is clear');
+  else { L.anchor = anchorHere(L); tell(L, `${unitName(L)}: no enemy left in sight, keeping station here`); }
+}
+// every couple of game minutes: each formation (or lone warship) of yours looks round its anchor
+function autoEngage() {
+  if (worldT - aeTick < Math.min(AE_EVERY, Math.max(5, effRate))) return;
+  aeTick = worldT;
+  const stations = stationsOf('us');
+  for (const L of ships) {
+    if (L.side !== 'us' || !alive(L) || L.leader || L.station || L.hv || L.withdrawing || L.rearming) continue;
+    if (followersOf(L).some(s => s.station) || (L.track && L.track.tow) || (L.sel && manualKeys())) continue;   // towing, or hand flown
+    const group = [L, ...followersOf(L)].filter(s => !s.station);
+    if (!group.some(offensive)) continue;
+    const p = posNow(L).slice();
+    if (L.engaged) { engagedThink(L, group, p); continue; }
+    // an order of yours under way comes first (its own errands, going back or rearming, do not)
+    if (!L.autoOrder && ((L.ap.goal && !L.ap.hold) || L.pending || L.track || L.joining)) continue;
+    const idle = !(L.ap.goal && !L.ap.hold) && !L.pending && !L.track;
+    if (idle && !L.anchor) L.anchor = anchorHere(L);
+    const st = L.stance || 'aggressive';
+    if (idle && st !== 'hold' && group.some(lowOn) && !nearSupply(L, p) && supplyFor(L)) {
+      const low = group.filter(lowOn);
+      rearm(low.length * 2 >= group.length ? group : low.filter(s => s !== L), true);
+      if (L.rearming) continue;
+    }
+    if (st === 'hold' || !L.anchor || !group.some(canFight) || (wmode[L.owner] || weaponsMode) === 'manual') continue;
+    const R = engageRadius(L, group), foes = foesNear(anchorPos(L.anchor, L), R);
+    if (!foes.length) continue;
+    const T = foes.slice().sort((a, b) => foePriority(b, p, stations) - foePriority(a, p, stations))[0];
+    // idle warships posted close by (loose ones, or of the same fleet) go in with it, as one formation
+    const crew = group.concat(...ships.filter(M => M !== L && M.side === 'us' && alive(M) && !M.leader && !M.station && !M.hv && M.owner === L.owner
+      && (M.fleet || null) === (L.fleet || null) && !M.engaged && !M.rearming && !M.withdrawing && (M.stance || 'aggressive') !== 'hold'
+      && !M.track && !M.pending && !(M.ap.goal && !M.ap.hold) && !followersOf(M).some(f => f.station) && dist3(posNow(M), p) < 1.5e5)
+      .map(M => [M, ...followersOf(M)]));
+    // a force much stronger than this one is left alone, unless a station of yours is at stake
+    const atStake = stations.some(s => s.cp && dist3(s.cp, T.cp) < 5e5);
+    if (!atStake && powerOf(foesNear(T.cp, 2e5)) > 2.5 * powerOf(crew)) {
+      if (!(worldT - (L.warnedT ?? -Infinity) < DAY)) { L.warnedT = worldT; tell(L, `${unitName(L)} holds back: the enemy at ${T.name} is much stronger`); }
+      continue;
+    }
+    attackWith(crew, T, foes, false);
   }
 }
 const WEAPON_ORDER = ['torpedo', 'railgun', 'laser', 'lance'];
@@ -2546,40 +2893,41 @@ function standoff(list) {
 const marked = new Set();
 function engageClick(X, shift) {
   const group = marked.has(X) && marked.size > 1 ? [...marked].filter(alive) : null;
-  if (!group) (shift ? pursue : designate)(X);
-  else if (shift) pursueGroup(group); else designateGroup(group);
+  if (!group) (shift ? designate : pursue)(X);
+  else if (shift) designateGroup(group); else pursueGroup(group);
 }
 // spread the fire: each ship opens on one of the group, and turns to the nearest of the rest as they fall
 function designateGroup(group) {
   const list = selectedShips();
   if (!list.length) { showToast('Select your ships first, then right-click the marked group'); return false; }
   if (toHost({ k: 'dgroup', g: ids(group), ids: ids(list) })) { showToast(`${list.length} ship${list.length === 1 ? '' : 's'} targeting ${group.length} enemies`); marked.clear(); return true; }
-  list.forEach((s, i) => { s.target = group[i % group.length]; s.targetGroup = group; });
+  list.forEach((s, i) => { s.target = group[i % group.length]; s.targetGroup = group; s.targetLock = true; });
   showToast(`${list.length} ship${list.length === 1 ? '' : 's'} targeting ${group.length} enemies: ${group.map(g => g.name).join(', ')}`);
   marked.clear(); fleetDirty = true; needDraw = true;
   return true;
 }
 const nearestOf = (L, group) => { let best = null, bd = Infinity; for (const g of group) { const d = Math.hypot(g.cp[0] - L.cp[0], g.cp[1] - L.cp[1], g.cp[2] - L.cp[2]); if (d < bd) { bd = d; best = g; } } return best; };
 function pursueGroup(group) {
-  if (isGuest()) { const list = selectedShips(); if (list.length) toHost({ k: 'pgroup', g: ids(group), ids: ids(list) }); marked.clear(); return; }
-  if (!designateGroup(group)) return;
-  const list = selectedShips();
-  orderTrack(nearestOf(list[0], group), list, { range: standoff(list) / 1.2, preset: 'envelop', pursuit: true });
+  const list = selectedShips().filter(s => !s.station);
+  if (!list.length) { showToast('Select your ships first, then right-click the marked group'); return; }
+  if (toHost({ k: 'pgroup', g: ids(group), ids: ids(list) })) { marked.clear(); showToast(`${nameList(list)} attacking ${group.length} enemies`); return; }
+  attackWith(list, nearestOf(list[0], group), group.slice(), true);
+  marked.clear(); fleetDirty = needDraw = true;
 }
+// shoot at it, without moving (the ships keep this target until it is gone or you clear it)
 function designate(X) {
   const list = selectedShips();
   if (!list.length) { showToast('Select a ship first'); return; }
   if (toHost({ k: 'designate', x: X.id, ids: ids(list) })) { showToast(`Target: ${X.name}`); return; }
-  for (const s of list) { s.target = X; s.targetGroup = null; }
-  showToast(`Target: ${X.name}${list.length > 1 ? ` for ${list.length} ships` : ''}${weaponsMode === 'manual' ? ' · fire with Z, X, C' : ''}`);
+  for (const s of list) { s.target = X; s.targetGroup = null; s.targetLock = true; }
+  showToast(`Target: ${X.name}${list.length > 1 ? ` for ${list.length} ships` : ''} · they fire as it comes in reach${weaponsMode === 'manual' ? ' (Z, X, C)' : ''}`);
   fleetDirty = true; needDraw = true;
 }
-// close on an enemy and stand off at weapons range, firing as it comes into reach
+// attack: close on an enemy to weapons range and fight it, its escorts after it
 function pursue(X) {
-  const list = selectedShips(); if (!list.length) return;
+  const list = selectedShips().filter(s => !s.station); if (!list.length) { showToast('Select a ship first'); return; }
   if (toHost({ k: 'pursue', x: X.id, ids: ids(list) })) return;
-  for (const s of list) { s.target = X; s.targetGroup = null; }
-  orderTrack(X, list, { range: standoff(list) / 1.2, preset: 'envelop' });
+  attackWith(list, X, foesNear(posNow(X).slice(), 3e5), true);
 }
 // ================================================================
 //  Economy. Three resources, in tonnes: propellant (fusion fuel: deuterium, tritium, helium-3, protium,
@@ -3504,7 +3852,7 @@ let hvTick = -Infinity, aiTick = -Infinity;
 function economyFrame(dt) {
   towFrame();
   if (dt > 0) { mineFrame(dt); buildFrame(dt); resupply(dt); colonyFrame(dt); }
-  withdrawFrame();
+  withdrawFrame(); rearmFrame(); autoEngage();
   if (worldT - hvTick > 900) { hvTick = worldT; for (const s of ships) if (s.hv) harvestThink(s); }
   for (const [fleet, next] of retrack.splice(0)) { const list = fleet.filter(alive); if (list.length && alive(next)) orderTrack(next, list, { range: standoff(list) / 1.2, preset: 'envelop', quiet: true, pursuit: true }); }
   if (worldT - aiTick > 1800) { aiTick = worldT; aiThink(); }
@@ -3514,7 +3862,7 @@ function economyFrame(dt) {
 function newGame(coop = false) {
   AI.coop = coop; AI.mode = foeMode; AI.intel = newIntel(); AI.traps = []; AI.raid = null; AI.feint = null;
   game.t0 = worldT; game.over = false; $('endgame').hidden = true;
-  AI.home = Math.random() < 0.5 ? 6 : 7; AI.known.clear(); AI.wave = 0; AI.strike = null; aiTick = hvTick = -Infinity; buildSeq = 0;
+  AI.home = Math.random() < 0.5 ? 6 : 7; AI.known.clear(); AI.wave = 0; AI.strike = null; aiTick = hvTick = aeTick = -Infinity; buildSeq = 0;
   const Y = makeStation('us', 'shipyard'), D = makeStation('us', 'depot');
   placeInOrbit(Y, 3, 42000, 0.3); placeBeside(D, Y, 1500);
   D.stock = { fuel: 2500, base: 5000, noble: 2000 }; Y.stock = { fuel: 500, base: 1000, noble: 500 };
@@ -3559,82 +3907,22 @@ function newGame(coop = false) {
 }
 const PROSPECTOR = { name: 'Prospector', hull: 'frigate', eng: 3, reac: 1, rad: 0, tank: 4, armor: [1, 2, 0], util: ['harvester', 'cargo', 'cargo'], hard: [] };
 
-// ---- panels: the selected station (stock, what it is building, what it can build) and collectors
-const stnEl = document.getElementById('stn'), hvEl = document.getElementById('hv');
-function stockRows(sh) {
-  const cap = storeCap(sh);
-  return RES.map(k => `<div class="st-row"><span>${RES_SHORT[k]}</span><span class="st-bar"><i class="r-${k}" style="width:${Math.min(100, sh.stock[k] / cap * 100).toFixed(1)}%"></i></span><b>${fmtT(sh.stock[k])}<small>/${fmtT(cap)} t</small></b></div>`).join('');
-}
-function renderStation(Y) {
-  const yard = isYard(Y), net = yard ? networkOf(Y) : [], ns = yard ? networkStock(Y) : null;
-  let h = `<header><span class="brand">${Y.name}</span><span class="form-sub">${Y.design} · hull ${Math.round(hullFrac(Y) * 100)}%${Y.leader ? ' · in tow' : ''}</span></header>${stockRows(Y)}`;
-  if (yard) {
-    h += `<p class="stn-net">Builds from ${net.length > 1 ? `itself and ${net.length - 1} depot${net.length > 2 ? 's' : ''} in reach` : 'its own store (no depot in reach)'}: ${RES.map(k => `${fmtT(ns[k])} ${RES_SHORT[k].toLowerCase()}`).join(' · ')}</p>`;
-    h += '<h4>Building</h4>' + (Y.queue.length ? '<ol class="stn-q">' + Y.queue.map((j, i) => {
-      const done = 1 - j.left / j.cost.mass, left = j.left / (BUILD_RATE * Y.stats.dock * (j.cost.infra ? INFRA_SPEED : 1));
-      return `<li><span>${j.d.name}</span><small>${i ? 'queued' : j.wait ? 'waiting for ' + j.wait : `${Math.round(done * 100)}% · ${fmtDur(left)} left`}</small><button type="button" data-cancel="${i}" title="Cancel (refunds what was paid)">✕</button>${i ? '' : `<span class="st-bar q"><i style="width:${(done * 100).toFixed(1)}%"></i></span>`}</li>`;
-    }).join('') + '</ol>' : '<p class="stn-net">Idle</p>');
-    const opts = [...designs.map((d, i) => ({ d, key: 'd' + i })), { d: STATION_DESIGNS.depot, key: 'depot' }, { d: STATION_DESIGNS.shipyard, key: 'shipyard' }];
-    h += '<h4>Build</h4><div class="stn-b">' + opts.map(({ d, key }) => {
-      const c = designCost(d), bad = !HULLS[d.hull].station && designBad(designStats(d));
-      return `<button type="button" data-build="${key}"${bad ? ' disabled title="Invalid design"' : ''}><span class="ic" data-cls="${d.hull}"></span><span class="bn">${d.name.replace(/[<&]/g, '')}</span><small>${fmtT(c.base)} B · ${fmtT(c.noble)} N · ${fmtDur(buildSecs(c, Y.stats.dock))}</small></button>`;
-    }).join('') + '</div>';
-  }
-  if (isColony(Y)) {
-    h += `<h4>Colony</h4><p class="stn-net">${Y.yield ? 'Produces ' + Object.entries(Y.yield).map(([k, v]) => `${v} t ${RES_NAME[k].toLowerCase()}`).join(', ') + ' a day (less as its habitats are hit). ' : ''}Fixed in place: defend it. If every colony falls, the war is lost.</p>`;
-    return h;
-  }
-  const T = Y.side === 'us' ? towerOf(Y) : null, helpers = T ? followersOf(T).filter(x => !x.station).length : 0;
-  h += `<h4>Towing</h4><p class="stn-net">${Y.leader ? `In tow behind <b>${T.name}</b>${helpers ? ` and ${helpers} more` : ''} · ${fleetAccel(T).toFixed(2)} m/s²` : T ? `<b>${T.name}</b> is closing in to take it in tow` : 'Not in tow (no engines of its own)'}</p>
-    <div class="stn-tow"><button type="button" data-tow="call"${T ? ' disabled' : ''}>Call tug</button><button type="button" data-tow="add"${T ? '' : ' disabled'}>Add tug</button><button type="button" data-tow="release"${Y.leader ? '' : ' disabled'}>Release</button></div>
-    <p class="form-hint">Right-click where it should go: the nearest free ship comes for it and tows it there.</p>`;
-  return h;
-}
-function renderHarvest(list) {
-  const H = list[0].hv, want = list.every(s => s.hv.want === H.want) ? H.want : '';
-  const cap = list.reduce((a, s) => a + s.stats.cargo, 0), load = list.reduce((a, s) => a + cargoLoad(s), 0);
-  const what = RES.filter(k => list.some(s => s.cargo[k] > 0.5)).map(k => `${fmtT(list.reduce((a, s) => a + s.cargo[k], 0))} ${RES_SHORT[k].toLowerCase()}`).join(' · ');
-  const st = { mine: H.at ? `mining at ${SRC_NAME(H.at)} (×${srcFactor(H.at).toFixed(2)})` : 'mining', go: 'flying to the source', drop: `bringing it to ${H.drop ? H.drop.name : 'a depot'}`, full: 'full: no depot with room', none: 'no source of that in reach', idle: 'idle', refuel: 'refuelling' }[H.state] || H.state;
-  return `<header><span class="brand">Collector${list.length > 1 ? 's' : ''}</span><span class="form-sub">${list.length === 1 ? list[0].name : list.length + ' selected'} · ${fmtT(list[0].stats.harvest * list.length)} t/h at the source</span></header>
-    <div class="seg" role="group" aria-label="Harvest">${['off', ...RES].map(k => `<button type="button" data-hv="${k}" aria-pressed="${want === k}">${k === 'off' ? 'Off' : RES_SHORT[k]}</button>`).join('')}</div>
-    <p class="stn-net">Source: <b>${H.src ? SRC_NAME(H.src) : 'nearest'}</b> ${H.src ? '<button type="button" data-src="auto">Nearest</button>' : ''}<button type="button" data-src="pick" aria-pressed="${pickSrc}">${pickSrc ? 'Right-click a body or field…' : 'Pick source'}</button></p>
-    <div class="st-row"><span>Cargo</span><span class="st-bar"><i class="r-base" style="width:${(load / Math.max(1, cap) * 100).toFixed(1)}%"></i></span><b>${fmtT(load)}<small>/${fmtT(cap)} t</small></b></div>
-    <p class="stn-net">${what ? what + ' · ' : ''}${list.length === 1 ? st : ''}</p>`;
-}
+// ---- the resource bar (in the top bar): what your infrastructure holds. Stations and collectors show in the
+// selection panel (see renderSel).
 function updateEconPanels() {
-  const sel = selectedShips(), L = lead && alive(lead) && lead.sel ? lead : null;
-  const stn = L && L.station && ownShip(L) ? L : null, hvList = sel.filter(s => s.stats.harvest > 0 && ownShip(s));
-  show(stnEl, !!stn); show(hvEl, hvList.length > 0);
-  if (stn) { const h = renderStation(stn); if (stnEl._h !== h) { stnEl._h = h; stnEl.innerHTML = h; } }
-  if (hvList.length) { const h = renderHarvest(hvList); if (hvEl._h !== h) { hvEl._h = h; hvEl.innerHTML = h; } }
-  // the resource bar: what your infrastructure holds
   const own = stationsOf('us').filter(ownShip), t = noStock(); for (const s of own) for (const k of RES) t[k] += s.stock[k];
   const allyN = stationsOf('us').length - own.length;
   const rb = RES.map(k => `<span class="rb"><i class="r-${k}"></i>${RES_SHORT[k]} <b>${fmtT(t[k])}</b> t</span>`).join('') + `<span class="rb dim">Infrastructure <b>${own.length}</b>${NET.role !== 'solo' ? ` · ally <b>${allyN}</b>` : ''}${(isGuest() ? NET.foe : AI.mode) === 'cunning' ? ' · foe <b>cunning</b>' : ''}</span>`;
-  const resEl = $('resbar'); if (resEl._h !== rb) { resEl._h = rb; resEl.innerHTML = rb; }
+  const resEl = document.getElementById('resbar'); if (resEl._h !== rb) { resEl._h = rb; resEl.innerHTML = rb; }
 }
-stnEl.addEventListener('click', e => {
-  const Y = lead; if (!Y || !Y.station) return;
-  const b = e.target.closest('button'); if (!b) return;
-  if (b.dataset.cancel !== undefined) {
-    const i = +b.dataset.cancel, j = Y.queue[i];
-    if (toHost({ k: 'cancel', y: Y.id, i })) { /* the host cancels it */ }
-    else if (j) { if (j.paid) refundTo(Y, j.cost); Y.queue.splice(i, 1); showToast(`${j.d.name} cancelled${j.paid ? ': its materials are back in store' : ''}`); }
-  } else if (b.dataset.tow) {
-    if (b.dataset.tow === 'call') towStation(Y, null); else if (b.dataset.tow === 'add') addTug(Y); else releaseTow(Y);
-  } else if (b.dataset.build) {
-    const k = b.dataset.build, d = k === 'depot' || k === 'shipyard' ? STATION_DESIGNS[k] : designs[+k.slice(1)];
-    queueBuild(Y, d);
-  }
-  stnEl._h = ''; updateEconPanels();
-});
-hvEl.addEventListener('click', e => {
-  const b = e.target.closest('button'); if (!b) return;
-  if (b.dataset.hv) setHarvest(b.dataset.hv);
-  else if (b.dataset.src === 'auto') setSource(null);
-  else if (b.dataset.src === 'pick') { pickSrc = !pickSrc; if (pickSrc) showToast('Right-click a planet, moon, asteroid field, debris field or gas cloud'); }
-  hvEl._h = ''; updateEconPanels();
-});
+// cancel a job in a yard's queue (what was paid goes back into its store)
+function cancelJob(Y, i) {
+  const j = Y && Y.queue && Y.queue[i]; if (!j) return;
+  if (toHost({ k: 'cancel', y: Y.id, i })) return;
+  if (j.paid) refundTo(Y, j.cost);
+  Y.queue.splice(i, 1); econDirty = fleetDirty = true;
+  showToast(`${j.d.name} cancelled${j.paid ? ': its materials are back in store' : ''}`);
+}
 // the fleet list's note on what a station or collector is doing
 function econTag(sh) {
   if (sh.station && isYard(sh) && sh.queue.length) { const j = sh.queue[0]; return j.wait ? ` · waiting for ${j.wait}` : ` · building ${j.d.name} ${Math.round(100 * (1 - j.left / j.cost.mass))}%`; }
@@ -3651,11 +3939,11 @@ function pickSource(cx, cy) {
   if (pickSrc) { pickSrc = false; econDirty = true; showToast('No source there: pick cancelled'); return true; }
   return false;
 }
-// tidier screen: the controls bar can be put away (H), and the help card is shown on request (?)
+// tidier screen: the side panels can be put away (H), and the help card is shown on request (?)
 let barOn = true, helpOpen = (() => { try { return !localStorage.getItem('orrery-help-seen'); } catch (_) { return true; } })();
-function setBar(on) { barOn = on; document.querySelector('.bar').hidden = !on; $('b-showbar').hidden = on; }
-function setHelp(on) { helpOpen = on; try { localStorage.setItem('orrery-help-seen', '1'); } catch (_) { /* not kept */ } $('b-help').setAttribute('aria-pressed', on); syncHelp(); }
-function syncHelp() { show($('help'), helpOpen && formEl.hidden && stnEl.hidden && hvEl.hidden); }
+function setBar(on) { barOn = on; document.getElementById('ui').classList.toggle('clean', !on); }
+function setHelp(on) { helpOpen = on; try { localStorage.setItem('orrery-help-seen', '1'); } catch (_) { /* not kept */ } syncHelp(); }
+function syncHelp() { show(document.getElementById('help'), helpOpen); }
 
 // ================================================================
 //  Co-op over the network (Firebase Realtime Database). One player hosts: their browser runs the whole game
@@ -3706,7 +3994,7 @@ function encShip(sh) {
     dv: sh.dv, f: sh.fuel, ht: r3(sh.heat), am: [sh.ammo.torps, sh.ammo.slugs, sh.ammo.rounds].map(r3), hp: sh.mods.map(m => Math.round(m.hp * 100) / 100),
     L: sh.leader ? sh.leader.id : -1, sl: sh.slot, j: sh.joining ? 1 : 0, ev: sh.evasive ? 1 : 0, v: sh.vis ? 1 : 0, vt: sh.visThem ? 1 : 0,
     th: sh.thrusting ? 1 : 0, td: sh.thrustDir || null, tg: sh.target ? sh.target.id : -1, tgg: sh.targetGroup ? ids(sh.targetGroup) : null,
-    ap: { g: encGoal(sh.ap.goal), h: sh.ap.hold ? 1 : 0, s: encSel(sh.ap.sel) }, si: sh.silent ? 1 : 0, wd: sh.withdraw || 0, wg: sh.withdrawing ? 1 : 0, ft: sh.firedT };
+    ap: { g: encGoal(sh.ap.goal), h: sh.ap.hold ? 1 : 0, s: encSel(sh.ap.sel) }, si: sh.silent ? 1 : 0, wd: sh.withdraw || 0, wg: sh.withdrawing ? 1 : 0, ft: sh.firedT, stc: sh.stance || null, rm: sh.rearming ? 1 : 0, eg: sh.engaged ? 1 : 0 };
   if (sh.form) e.fm = { p: sh.form.preset, sp: sh.form.spacing, c: [...sh.form.cells] };
   if (sh.track) { const T = sh.track; e.tr = { g: T.tgt.id, r: T.range, pr: T.preset, c: [...T.cells], lk: T.locked ? 1 : 0, tw: T.tow ? 1 : 0, pu: T.pursuit ? 1 : 0 }; }
   if (sh.pending) e.pe = { sel: encSel(sh.pending.sel), kind: sh.pending.kind, what: sh.pending.what, until: sh.pending.until };
@@ -3746,7 +4034,7 @@ function applyState(js) {
   NET.rate = st.rate; NET.want = st.want || NET.want; NET.known = st.known; NET.foe = st.foe;
   if (st.paused !== paused) setPaused(st.paused);
   Object.assign(wmode, st.wm || {});
-  weaponsMode = wmode[NET.me] || 'auto'; bWpn.textContent = weaponsMode === 'auto' ? 'Weapons: auto' : 'Weapons: manual';
+  weaponsMode = wmode[NET.me] || 'auto';
   // keep this clock near the host's: never behind it, and not more than a moment ahead
   if (worldT < st.t || worldT > st.t + Math.max(60, 1.5 * st.rate)) worldT = st.t;
   const seen = new Set();
@@ -3762,6 +4050,7 @@ function applyState(js) {
     if (e.hp.length === sh.mods.length) { e.hp.forEach((h, k) => { sh.mods[k].hp = h; }); sh.stats = statsOf(sh.mods, m => m.hp > 0, sh.hullMass, sh.drive); }
     sh.slot = e.sl; sh.evasive = !!e.ev; sh.thrusting = !!e.th; if (e.td) sh.thrustDir = e.td;
     sh.silent = !!e.si; sh.withdraw = e.wd || 0; sh.withdrawing = !!e.wg; if (e.ft != null) sh.firedT = e.ft;
+    sh.stance = e.stc || undefined; sh.rearming = e.rm ? sh.rearming || {} : null; sh.engaged = e.eg ? sh.engaged || {} : null;
     if (sh.side === 'them') sh.vis = !!e.v; else sh.visThem = !!e.vt;
     if (e.sp) sh.seenP = e.sp;
     sh.ap.goal = decGoal(e.ap.g, sh.ap.goal); sh.ap.hold = !!e.ap.h; sh._apSel = e.ap.s;
@@ -3814,10 +4103,13 @@ function applyCmd(c) {
     switch (c.k) {
       case 'cmd': if (L.length) commandFleet(c.sel, c.kind, null, L, false); break;
       case 'track': { const X = byId(c.x); if (X && L.length) orderTrack(X, L, c.opt || {}); break; }
-      case 'designate': { const X = byId(c.x); if (X) { for (const s of L) { s.target = X; s.targetGroup = null; } } break; }
-      case 'dgroup': { const G = shipsOf(c.g); if (G.length) L.forEach((s, i) => { s.target = G[i % G.length]; s.targetGroup = G; }); break; }
-      case 'pursue': { const X = byId(c.x); if (X && L.length) { for (const s of L) { s.target = X; s.targetGroup = null; } orderTrack(X, L, { range: standoff(L) / 1.2, preset: 'envelop' }); } break; }
-      case 'pgroup': { const G = shipsOf(c.g); if (G.length && L.length) { L.forEach((s, i) => { s.target = G[i % G.length]; s.targetGroup = G; }); orderTrack(nearestOf(L[0], G), L, { range: standoff(L) / 1.2, preset: 'envelop', pursuit: true }); } break; }
+      case 'designate': { const X = byId(c.x); for (const s of L) { s.target = X; s.targetGroup = null; s.targetLock = !!X; } break; }
+      case 'dgroup': { const G = shipsOf(c.g); if (G.length) L.forEach((s, i) => { s.target = G[i % G.length]; s.targetGroup = G; s.targetLock = true; }); break; }
+      case 'pursue': { const X = byId(c.x); if (X && alive(X) && L.length) attackWith(L, X, foesNear(posNow(X).slice(), 3e5), true); break; }
+      case 'pgroup': { const G = shipsOf(c.g).filter(alive); if (G.length && L.length) attackWith(L, nearestOf(L[0], G), G, true); break; }
+      case 'stance': if (STANCES.includes(c.st)) for (const s of L) s.stance = c.st; break;
+      case 'rearm': if (L.length) rearm(L); break;
+      case 'stop': if (L.length) stopOrders(L); break;
       case 'formUp': if (L.length > 1) formUpList(L); break;
       case 'breakUp': { const X = shipsOf([c.l], 'p2')[0]; if (X) breakUp(X); break; }
       case 'lead': { const X = shipsOf([c.n], 'p2')[0]; if (X) makeLeader(X); break; }
@@ -4157,8 +4449,10 @@ function newFleet() {
   for (const s of list) s.fleet = F;
   fleets.push(F);
   if (list.length > 1) formUp();
+  const g = [1, 2, 3, 4, 5, 6, 7, 8, 9].find(k => !ships.some(s => s.group === k && alive(s) && !list.includes(s)));
+  if (g) for (const s of list) s.group = g;
   fleetDirty = formDirty = true;
-  showToast(`${F.name}: ${list.length} ship${list.length === 1 ? '' : 's'}, flagship ${list[0].name}`);
+  showToast(`${F.name}: ${list.length} ship${list.length === 1 ? '' : 's'}, flagship ${list[0].name}${g ? ` · press ${g} to select it` : ''}`);
 }
 // the selected ships join a fleet, flying to their places in its formation
 function addToFleet(F) {
@@ -4313,9 +4607,10 @@ function followShip(primAbs) {
   if (f > 0.999 && Math.sqrt(d2) < 2 * cam.dist) for (let j = 0; j < 3; j++) follow.off[j] = S[j];
   for (let j = 0; j < 3; j++) origin[j] = primAbs[j] + follow.off[j];
 }
-// Free camera co-moving with a nearby body: when the view is no wider than about a million km (more for
-// the giants) and a body is in it, the focus point moves with that body without being re-centred on it,
-// and keeps doing so while the camera stays within 32 of the body's radii.
+// Free camera co-moving with a body: the view rides along with the innermost planet or moon whose sphere of
+// influence holds the point it looks at, however close you zoom (it lets go zoomed out past forty of those spheres,
+// or half an AU); between the planets, with the nearest body in view while the view is no wider than about a
+// million km (more for the giants).
 const track = { j: -1, last: [0, 0, 0] }, TP = [0, 0, 0];
 const trackLimit = j => Math.max(1e6, 16 * RAD[j]);
 function trackFree() {
@@ -4324,22 +4619,22 @@ function trackFree() {
     for (let k = 0; k < 3; k++) { freePt[k] += TP[k] - track.last[k]; track.last[k] = TP[k]; }
   }
   const W = 2 * cam.dist * Math.tan(camera.fov * D2R / 2) * Math.max(camera.aspect, 1);
-  let pk = -1, pkSoi = false, pkD = Infinity, keep = false;
-  const ce = Math.cos(cam.el);
-  const cx = freePt[0] + cam.dist * ce * Math.cos(cam.az), cy = freePt[1] + cam.dist * ce * Math.sin(cam.az), cz = freePt[2] + cam.dist * Math.sin(cam.el);
+  let pk = -1;
   for (let j = 1; j < NB; j++) {
     absPos(j, simT, TP);
     const d = Math.hypot(TP[0] - freePt[0], TP[1] - freePt[1], TP[2] - freePt[2]);
-    const close = j === track.j && Math.hypot(TP[0] - cx, TP[1] - cy, TP[2] - cz) <= 32 * RAD[j];
-    if (!close) {
-      if (W > trackLimit(j) * (j === track.j ? 1.3 : 1)) continue;
-      if (d > W * (j === track.j ? 0.75 : 0.6)) continue;
-    }
-    const inSoi = d < SOI[j];
-    if ((inSoi && !pkSoi) || (inSoi === pkSoi && (inSoi ? SOI[j] < SOI[pk] : d < pkD))) { pk = j; pkSoi = inSoi; pkD = d; }
-    if (j === track.j) keep = true;
+    // (the one already followed holds on a little past the edge of its sphere)
+    if (d < SOI[j] * (j === track.j ? 1.15 : 1) && W < Math.min(40 * SOI[j], 0.5 * AU) && (pk < 0 || SOI[j] < SOI[pk])) pk = j;
   }
-  if (keep && pk !== track.j && !(PARENT[pk] === track.j && pkSoi && W < 2 * SOI[pk])) pk = track.j;
+  if (pk < 0) {
+    let pkD = Infinity;
+    for (let j = 1; j < NB; j++) {
+      if (W > trackLimit(j) * (j === track.j ? 1.3 : 1)) continue;
+      absPos(j, simT, TP);
+      const d = Math.hypot(TP[0] - freePt[0], TP[1] - freePt[1], TP[2] - freePt[2]);
+      if (d < W * (j === track.j ? 0.75 : 0.6) && d < pkD) { pk = j; pkD = d; }
+    }
+  }
   if (pk >= 0 && pk !== track.j) { absPos(pk, simT, TP); track.last[0] = TP[0]; track.last[1] = TP[1]; track.last[2] = TP[2]; }
   track.j = pk;
 }
@@ -4378,11 +4673,11 @@ function shipPos(sh, out) {
   return out;
 }
 function shipUnder(cx, cy) {
-  let best = null, bd = 12;
+  let best = null, bd = Infinity;
   for (const sh of ships) {
     if (!alive(sh) || (sh.side === 'them' && !sh.vis) || !project(shipPos(sh, tmpW), sp)) continue;
     const d = Math.hypot(sp.x - cx, sp.y - cy);
-    if (d < bd) { bd = d; best = sh; }
+    if (d < Math.max(12, 0.42 * (sh.mpx || 0)) && d < bd) { bd = d; best = sh; }
   }
   return best;
 }
@@ -4585,6 +4880,16 @@ function userPause(v) { if (!toHost({ k: 'pause', v })) setPaused(v); }
 bPlay.onclick = () => userPause(!paused);
 $('b-slow').onclick = () => setWarp(wi - 1);
 $('b-fast').onclick = () => setWarp(wi + 1);
+// combat speed: while a fight is on, time runs no faster than this (×10 to ×10k; kept in this browser)
+const CWARPS = [10, 100, 1e3, 1e4];
+let cwi = (() => { try { const v = localStorage.getItem('orrery-cw'); return v !== null && CWARPS[+v] ? +v : 1; } catch (_) { return 1; } })();
+function setCombatWarp(i) {
+  cwi = Math.max(0, Math.min(CWARPS.length - 1, i)); $('o-cw').textContent = fmtRate(CWARPS[cwi]);
+  try { localStorage.setItem('orrery-cw', cwi); } catch (_) { /* not kept */ }
+}
+$('b-cslow').onclick = () => setCombatWarp(cwi - 1);
+$('b-cfast').onclick = () => setCombatWarp(cwi + 1);
+setCombatWarp(cwi);
 // New game: pick the opponent first
 const ngEl = $('newgame');
 function askNewGame() {
@@ -4600,7 +4905,6 @@ ngEl.addEventListener('click', e => {
   resetFleet(NET.ally);
   showToast(foeMode === 'cunning' ? 'A cunning foe: expect traps round its outlying stations, feints, raids on lone ships, and ships built against yours' : 'A new game against the standard foe', 7000);
 });
-$('b-reset').onclick = askNewGame;
 $('b-sensors').onclick = toggleSensors;
 $('b-auto').onclick = () => setAutoWarp(!autoWarp);
 $('b-fleet').onclick = newFleet;
@@ -4625,7 +4929,7 @@ window.addEventListener('keydown', e => {
       keys[k] = 1;
       // a wingman flown without its leader leaves the formation; a selected leader takes its formation along
       for (const sh of selectedShips()) if (sh.leader && !sh.leader.sel) detach(sh);
-      let n = 0; forSelected(sh => { if (sh.track) { stopTrack(sh); n++; } if (cancelAutopilot()) n++; predDirty = true; });
+      let n = 0; forSelected(sh => { if (sh.track) { stopTrack(sh); n++; } if (cancelAutopilot()) n++; predDirty = true; sh.anchor = null; sh.engaged = null; sh.rearming = null; });
       if (n) showToast('Hand flying: autopilot off');
     }
     return;
@@ -4656,20 +4960,21 @@ window.addEventListener('keydown', e => {
   else if (e.code === 'KeyM') { if (move.on) endMove(); else startMove(mouse.x < 0 ? innerWidth / 2 : mouse.x, mouse.y < 0 ? innerHeight / 2 : mouse.y); }
   else if (e.code === 'KeyF') setFocus(-1);
   else if (e.code === 'KeyY') openYard();
+  else if (e.code === 'KeyB') rearm();
   else if (e.code === 'KeyG') setWeaponsMode(weaponsMode === 'auto' ? 'manual' : 'auto');
   else if (e.code === 'KeyE') setEvasive();
   else if (e.code === 'KeyQ') setSilent();
   else if (e.code === 'KeyR') setWithdraw();
   else if (e.code === 'KeyH') setBar(!barOn);
   else if (e.code === 'Slash' || e.code === 'F1') { e.preventDefault(); setHelp(!helpOpen); }
-  else if (e.code === 'KeyV') { showVision = !showVision; showToast(showVision ? 'Vision rings shown' : 'Vision rings hidden'); }
+  else if (e.code === 'KeyV') toggleVision();
   else if (e.code === 'KeyZ') fireNow('torpedo');
   else if (e.code === 'KeyX') fireNow('railgun');
   else if (e.code === 'KeyC') fireNow('laser');
   else if (e.code === 'KeyT') { setAutoWarp(!autoWarp); showToast(autoWarp ? 'Auto-warp on: time slows for burns and boundary crossings' : 'Auto-warp off'); }
   else if (e.key === 'Escape') {
-    if (move.on) endMove(); else if (marked.size) { marked.clear(); fleetDirty = needDraw = true; } else if (nav.open) { nav.open = false; navDirty = true; updateNav(); }
-    else { const n = standDown(); if (n) showToast('Autopilot off'); }
+    if (!menuEl.hidden) setMenu(false); else if (formOpen && !formEl.hidden) { formOpen = false; formDirty = true; } else if (move.on) endMove(); else if (marked.size) { marked.clear(); fleetDirty = needDraw = true; } else if (nav.open) { nav.open = false; navDirty = true; updateNav(); }
+    else if (selectedShips().length) stopOrders();
   }
   else if (e.key === 'Enter' && nav.open && !$('nav-go').disabled) $('nav-go').click();
   else if (e.key === ',' || e.key === '<') setWarp(wi - 1);
@@ -4700,9 +5005,8 @@ const fmtDur = s => {
 };
 const fmtDv = kms => kms < 1 ? (kms * 1000).toFixed(0) + ' m/s' : kms < 100 ? kms.toFixed(2) + ' km/s' : nf0.format(kms) + ' km/s';
 const fmtDate = t => new Date(J2000_MS + t * 1000).toISOString().slice(0, 10);
-const H = {}; for (const k of ['name', 'cls', 'date', 'ap-s', 'pos', 'hull', 'drive', 'wpn', 'enc']) H[k] = $('h-' + k);
-H.rate = $('o-rate');
-// callsigns: click the name in the readout to rename your ship (Enter keeps it, Esc cancels)
+const H = { date: $('h-date'), rate: $('o-rate') };
+// callsigns: click the name in the selection panel to rename your ship (Enter keeps it, Esc cancels)
 const cleanName = raw => String(raw || '').replace(/[<>&"]/g, '').trim().slice(0, 20);
 function setShipName(sh, name) {
   sh.name = name; sh.label.lastChild.textContent = name;
@@ -4715,42 +5019,216 @@ function renameShip(sh, raw) {
   toHost({ k: 'rename', id: sh.id, name });
   setShipName(sh, name); showToast(`Callsign: ${name}`);
 }
-H.name.title = 'Click to rename this ship';
-H.name.addEventListener('click', () => {
+// ---- The selection panel, at the foot of the screen (after Sins of a Solar Empire). One ship: what it is doing, its
+// hull, propellant and every weapon with its ammunition; several: their totals, and a chip for each (click one to
+// pick it out, Shift-click to drop it); a station: its stock, what it is building, its defences. Beside it, the
+// orders for what is selected: stance, evasive / silent / retreat, rearm, formation, fleet, refit; a yard's builds.
+const selEl = $('selp'), spMain = $('sp-main'), spSide = $('sp-side');
+let formOpen = false, renaming = false;
+const setHTML = (el, h) => { if (el._h !== h) { el._h = h; el.innerHTML = h; } };
+const clamp01 = f => Math.max(0, Math.min(1, f || 0));
+const pct = f => Math.round(clamp01(f) * 100) + '%';
+const esc = t => String(t).replace(/[<&"]/g, c => c === '<' ? '&lt;' : c === '&' ? '&amp;' : '&quot;');
+const level = f => f < 0.02 ? 'out' : f < 1 / 3 ? 'lo' : '';
+const barH = (f, col) => `<span class="st-bar"><i style="width:${(clamp01(f) * 100).toFixed(1)}%${col ? ';background:' + col : ''}"></i></span>`;
+const meter = (lbl, f, txt, cls = '', col = '') => `<div class="mb${cls ? ' ' + cls : ''}"><span>${lbl}</span>${barH(f, col)}<b>${txt}</b></div>`;
+const sumOf = (list, f) => list.reduce((a, s) => a + f(s), 0);
+const AMMO_OF = { torpedo: 'torps', railgun: 'slugs', pdc: 'rounds' }, WPN_NAME = { torpedo: 'Torpedo', railgun: 'Railgun', laser: 'Laser', pdc: 'PDC', lance: 'Lance' };
+const RES_COL = { fuel: '#c98bff', base: '#b8c4d8', noble: '#f3c95a' };
+// every kind of weapon the ships carry: how many (and how many still work), reach, how many are ready, and the
+// ammunition left (lasers: how hot they run)
+function armsHTML(list) {
+  let h = '';
+  for (const k of ['torpedo', 'railgun', 'laser', 'pdc', 'lance']) {
+    let n = 0, up = 0, rdy = 0;
+    for (const s of list) for (const m of s.mods) if (m.t === k) { n++; if (m.hp > 0) { up++; if (m.cd <= 0) rdy++; } }
+    if (!n) continue;
+    const a = AMMO_OF[k], have = a ? sumOf(list, s => s.ammo[a]) : 0, full = a ? sumOf(list, s => s.full[a]) : 0;
+    const heat = a ? 0 : Math.max(...list.map(s => s.heat)) / HEAT_CAP, f = a ? (full ? have / full : 0) : heat;
+    const cls = a ? level(f) : heat > 0.8 ? 'out' : heat > 0.5 ? 'lo' : '';
+    h += `<div class="sp-w ${cls}" title="${MOD[k].name} · ${MOD[k].note}"><span class="wi">${ICON[k] ? icon(k) : ''}</span><span class="wn">${up < n ? `${up}/${n}` : n}× ${WPN_NAME[k]}<small>${fmtShort(WPN[k].range)} · ${!up ? 'wrecked' : rdy ? `${rdy} ready` : 'loading'}</small></span>${barH(f)}<b>${a ? `${fmtK(have)}/${fmtK(full)}` : `heat ${pct(heat)}`}</b></div>`;
+  }
+  return h ? `<div class="sp-arms">${h}</div>` : '<p class="sp-x">Unarmed</p>';
+}
+function whereOf(sh) {
+  const el = elemsS(sh.S, GM[sh.prim]);
+  return `${BODY[sh.prim].name} · ${fmtShort(el.r - (sh.prim === 0 ? 0 : RAD[sh.prim]))} · ${el.v.toFixed(el.v < 10 ? 2 : 1)} km/s` + (sh.inField ? ` · in ${sh.inField.kind === 'gas' ? 'gas' : sh.inField.kind}` : '');
+}
+function shipsMain(list) {
+  const L = list.includes(lead) ? lead : list[0], one = list.length === 1, mine = ownShip(L);
+  const F = L.fleet && list.every(s => s.fleet === L.fleet) ? L.fleet : null;
+  let h = '<div class="sp-hd">';
+  if (one) h += `<i class="mk" data-cls="${L.designObj.hull}"></i><b class="sp-nm"${mine ? ' data-act="rename" title="Click to rename"' : ''}>${esc(L.name)}</b><span class="sp-sub">${L.design === HULLS[L.designObj.hull].name ? '' : esc(L.design) + ' · '}${HULLS[L.designObj.hull].name}-class${mine ? '' : ' · your ally\'s'}</span>`;
+  else { const by = new Map(); for (const s of list) by.set(s.design, (by.get(s.design) || 0) + 1); h += `<b class="sp-nm">${list.length} ships</b><span class="sp-sub">${[...by].map(([d, n]) => `${n} ${esc(d)}`).join(' · ')}</span>`; }
+  if (F) h += `<span class="sp-fl">${esc(F.name)}${one && flagOf(F) === L ? ' · flagship' : ''}</span>`;
+  h += '</div>';
+  let st = esc(L._st || '—');
+  if (one) st += ` <span class="dim">· ${whereOf(L)}</span>`;
+  if (L === SH) {
+    if (pred.impact >= 0) st += `<br><span class="bad">Course impacts ${BODY[pred.impact].name} in ${fmtDur(pred.impT)}</span>`;
+    else if (pred.enc.length) { const e = pred.enc[0]; st += `<br><span class="enc">${BODY[e.body].name} in ${fmtDur(e.t - simT)} · closest ${fmtDist(e.pe - RAD[e.body])} altitude</span>`; }
+  }
+  h += `<div class="sp-st">${st}</div>`;
+  const hp = sumOf(list, s => s.mods.reduce((a, m) => a + m.hp, 0)) / Math.max(1, sumOf(list, s => s.full.hp));
+  const low = list.reduce((a, s) => s.fuel / s.stats.mass < a.fuel / a.stats.mass ? s : a), dvF = low.full.fuel ? low.fuel / low.full.fuel : 1;
+  const acc = Math.min(...list.map(s => s.stats.accel)), fa = fleetAccel(fleetLeader(L));
+  h += '<div class="sp-grid">' + meter('Hull', hp, pct(hp), hp < 0.34 ? 'out' : hp < 0.67 ? 'lo' : '')
+    + meter(one ? 'Δv' : 'Δv min', dvF, `${fmtK(low.fuel / low.stats.mass)} km/s`, dvF < 0.02 ? 'out' : dvF < 0.25 ? 'lo' : 'fuel');
+  if (list.some(s => s.cargo)) { const cap = sumOf(list, s => s.stats.cargo), load = sumOf(list, cargoLoad); h += meter('Hold', load / Math.max(1, cap), `${fmtT(load)}/${fmtT(cap)} t`, 'fuel', RES_COL.base); }
+  h += `<div class="mb"><span>Accel</span><span class="sp-sub">${fa < acc - 0.005 ? `formation ${fa.toFixed(2)}` : ''}</span><b>${acc.toFixed(2)} m/s²</b></div></div>`;
+  h += `<h4 class="sp-h4">Armament</h4>${armsHTML(list)}`;
+  const vis = Math.max(...list.map(s => s.stats.vision)), ecm = sumOf(list, s => s.stats.ecm);
+  h += `<p class="sp-x">Sensors <b>${vis ? fmtShort(vis) : 'none'}</b> · ECM <b>${ecm || 'none'}</b>`;
+  const cols = list.filter(s => s.hv);
+  if (cols.length) {
+    const V = cols[0].hv, what = { mine: V.at ? `mining at ${SRC_NAME(V.at)} (×${srcFactor(V.at).toFixed(2)})` : 'mining', go: 'flying to the source', drop: `bringing it to ${V.drop ? V.drop.name : 'a depot'}`, full: 'full: no depot with room', none: 'no source of that in reach', idle: 'idle', refuel: 'refuelling' }[V.state] || V.state;
+    h += ` · harvest <b>${V.want === 'off' ? 'off' : RES_NAME[V.want].toLowerCase()}</b> at <b>${V.src ? SRC_NAME(V.src) : 'the nearest source'}</b>${cols.length === 1 ? ` · ${what}` : ''}`;
+  }
+  h += '</p>';
+  const tg = mine && L.target && alive(L.target) ? L.target : null;
+  if (tg) h += `<p class="sp-tgt">Target <b>${esc(tg.name)}</b> ${esc(tg.design)}${tg.vis && tg.cp && L.cp ? ' · ' + fmtDist(dist3(tg.cp, L.cp)) : ' · out of sight'} · hull ${pct(hullFrac(tg))}<button type="button" class="x" data-act="untarget" title="Clear the target: they pick their own">×</button></p>`;
+  if (!one) h += '<div class="sp-chips">' + list.map(s => `<span class="chipb${s === lead ? ' lead' : ''}" data-id="${s.id}" data-cls="${s.designObj.hull}" title="${esc(s.name)} · ${esc(s.design)} · hull ${pct(hullFrac(s))} (Shift-click: drop from the selection)"><i class="mk"></i>${esc(s.name)}<span class="hpb"><i style="width:${pct(hullFrac(s))}"></i></span></span>`).join('') + '</div>';
+  return h;
+}
+function shipsSide(list) {
+  const own = list.filter(ownShip);
+  if (!own.length) return '<p class="sp-x">Your ally\'s: you can look, not command.</p>';
+  const war = own.filter(s => !s.hv), col = own.filter(s => s.hv);
+  let h = '';
+  if (war.length) {
+    const s0 = war[0].stance || 'aggressive', st = war.every(s => (s.stance || 'aggressive') === s0) ? s0 : '';
+    h += `<div class="sp-lbl">Stance</div><div class="seg" role="group" aria-label="Stance">${STANCES.map(k => `<button type="button" data-stance="${k}" aria-pressed="${st === k}" title="${STANCE_TIP[k]}">${STANCE_NAME[k]}</button>`).join('')}</div>`;
+    const tog = (act, name, on, tip) => { const n = war.filter(on).length; return `<button type="button" data-act="${act}" aria-pressed="${n === war.length}" title="${tip}">${name}${n && n < war.length ? ' ·' : ''}</button>`; };
+    h += `<div class="sp-row">${tog('evasive', 'Evasive', s => s.evasive, 'Jink in a fight to slip railgun slugs; costs propellant (E)')}${tog('silent', 'Silent', s => s.silent, 'Drives cold and guns held until an enemy comes close, they are hit or a friend nearby fires (Q)')}${tog('withdraw', 'Retreat', s => s.withdraw > 0, 'Break off for repairs when the hull falls below half (R)')}</div>`;
+    h += `<div class="sp-row"><button type="button" data-act="wmode" aria-pressed="${weaponsMode === 'manual'}" title="Ships fire on their own, or on your command (G)">Fire: ${weaponsMode}</button><button type="button" data-act="rearm" title="Fly to the nearest station of yours with stock, rearm, refuel and repair, then come back (B)">Rearm</button></div>`;
+    if (weaponsMode === 'manual') h += `<div class="sp-row fire">${['torpedo', 'railgun', 'laser'].map((k, i) => `<button type="button" data-fire="${k}"${war.some(s => s.stats.wpn[k]) ? '' : ' disabled'}>${WPN_NAME[k]} <span class="k">${'ZXC'[i]}</span></button>`).join('')}</div>`;
+  }
+  if (col.length) {
+    const V = col[0].hv, want = col.every(s => s.hv.want === V.want) ? V.want : '';
+    h += `<div class="sp-lbl">Harvest</div><div class="seg" role="group" aria-label="Harvest">${['off', ...RES].map(k => `<button type="button" data-hv="${k}" aria-pressed="${want === k}">${k === 'off' ? 'Off' : RES_SHORT[k]}</button>`).join('')}</div>`;
+    h += `<div class="sp-row">${V.src ? '<button type="button" data-src="auto">Nearest source</button>' : ''}<button type="button" data-src="pick" aria-pressed="${pickSrc}">${pickSrc ? 'Right-click a body or field…' : 'Pick source'}</button></div>`;
+  }
+  const F = own[0].fleet && own.every(s => s.fleet === own[0].fleet) ? own[0].fleet : null, L = fleetLeader(own[0]);
+  h += `<div class="sp-row"><button type="button" data-act="stop" title="Cancel orders and keep station here (Esc)">Stop</button>`
+    + (own.length > 1 || L.track || followersOf(L).length ? `<button type="button" data-act="form" aria-pressed="${formOpen}" title="Arrange the formation">Formation</button>` : '')
+    + (F ? `<button type="button" data-act="unfleet" title="Take them out of ${esc(F.name)}">Leave fleet</button>` : '<button type="button" data-act="fleet" title="Make a fleet of the selection">+ Fleet</button>') + '</div>';
+  // a refit, for ships within reach of a yard of yours
+  if (war.length) {
+    const p = posNow(war[0]).slice(), Y = stationsOf('us').find(y => isYard(y) && ownShip(y) && dist3(posNow(y), p) < SUPPLY_R);
+    if (Y) h += `<select data-act="refit" aria-label="Refit"><option value="">Refit at ${esc(Y.name)} as…</option>${designs.map((d, i) => `<option value="${i}">${esc(d.name)}</option>`).join('')}</select>`;
+  }
+  return h;
+}
+function stationMain(Y) {
+  const yard = isYard(Y), hp = hullFrac(Y), cap = storeCap(Y);
+  let h = `<div class="sp-hd"><i class="mk" data-cls="${Y.designObj.hull}"></i><b class="sp-nm">${esc(Y.name)}</b><span class="sp-sub">${esc(Y.design)}${Y.leader ? ' · in tow' : ''}${ownShip(Y) ? '' : ' · your ally\'s'}</span></div>`;
+  h += `<div class="sp-st"><span class="dim">${whereOf(Y)}</span></div>`;
+  h += '<div class="sp-grid">' + meter('Hull', hp, pct(hp), hp < 0.34 ? 'out' : hp < 0.67 ? 'lo' : '') + RES.map(k => meter(RES_SHORT[k], Y.stock[k] / cap, `${fmtT(Y.stock[k])}/${fmtT(cap)} t`, '', RES_COL[k])).join('') + '</div>';
+  if (yard) {
+    const net = networkOf(Y), ns = networkStock(Y);
+    h += `<p class="sp-x">Builds from ${net.length > 1 ? `itself and ${net.length - 1} station${net.length > 2 ? 's' : ''} in reach` : 'its own store (nothing in reach)'}: ${RES.map(k => `<b>${fmtT(ns[k])}</b> ${RES_SHORT[k].toLowerCase()}`).join(' · ')}</p>`;
+    h += '<h4 class="sp-h4">Building</h4>' + (Y.queue.length ? '<ol class="sp-q">' + Y.queue.map((j, i) => {
+      const done = 1 - j.left / j.cost.mass, left = j.left / (BUILD_RATE * Y.stats.dock * (j.cost.infra ? INFRA_SPEED : 1));
+      return `<li><span>${esc(j.d.name)}</span><small>${i ? 'queued' : j.wait ? 'waiting for ' + j.wait : `${Math.round(done * 100)}% · ${fmtDur(left)} left`}</small><button type="button" data-cancel="${i}" title="Cancel (refunds what was paid)">✕</button>${i ? '' : barH(done)}</li>`;
+    }).join('') + '</ol>' : '<p class="sp-x">Idle: pick something to build</p>');
+  }
+  if (isColony(Y)) h += `<p class="sp-x">${Y.yield ? 'Produces ' + Object.entries(Y.yield).map(([k, v]) => `${v} t ${RES_NAME[k].toLowerCase()}`).join(', ') + ' a day (less as its habitats are hit). ' : ''}Fixed in place: defend it. If every colony falls, the war is lost.</p>`;
+  else { const T = Y.side === 'us' ? towerOf(Y) : null, more = T ? followersOf(T).filter(x => !x.station).length : 0; h += `<p class="sp-x">${Y.leader ? `In tow behind <b>${esc(T.name)}</b>${more ? ` and ${more} more` : ''} · ${fleetAccel(T).toFixed(2)} m/s²` : T ? `<b>${esc(T.name)}</b> is closing in to take it in tow` : 'Not in tow (no engines of its own)'}</p>`; }
+  h += `<h4 class="sp-h4">Defences</h4>${armsHTML([Y])}`;
+  return h;
+}
+function stationSide(Y) {
+  if (!ownShip(Y)) return '<p class="sp-x">Your ally\'s station: you can look, not command.</p>';
+  let h = '';
+  if (isYard(Y)) {
+    h += '<button type="button" class="go" data-act="yard" title="Your catalog of designs, and the designer (Y)">Design ships…</button><div class="sp-lbl">Build here <span class="sp-sub">· Shift: ×5</span></div>';
+    const opts = [...designs.map((d, i) => ({ d, key: 'd' + i })), { d: STATION_DESIGNS.depot, key: 'depot' }, { d: STATION_DESIGNS.shipyard, key: 'shipyard' }];
+    h += '<div class="stn-b">' + opts.map(({ d, key }) => {
+      const c = designCost(d), bad = !HULLS[d.hull].station && designBad(designStats(d));
+      return `<button type="button" data-build="${key}"${bad ? ' disabled title="Invalid design: fix it in the shipyard"' : ` title="${esc(d.name)}: ${fmtT(c.base)} t base, ${fmtT(c.noble)} t noble"`}><span class="ic" data-cls="${d.hull}"></span><span class="bn">${esc(d.name)}</span><small>${fmtT(c.base)} B · ${fmtT(c.noble)} N · ${fmtDur(buildSecs(c, Y.stats.dock))}</small></button>`;
+    }).join('') + '</div>';
+  }
+  if (isColony(Y)) return h || '<p class="sp-x">A colony cannot be moved: defend it.</p>';
+  const T = towerOf(Y);
+  h += `<div class="sp-lbl">Towing</div><div class="stn-tow"><button type="button" data-tow="call"${T ? ' disabled' : ''}>Call tug</button><button type="button" data-tow="add"${T ? '' : ' disabled'}>Add tug</button><button type="button" data-tow="release"${Y.leader ? '' : ' disabled'}>Release</button></div><p class="form-hint">Right-click where it should go: the nearest free ship tows it there.</p>`;
+  return h;
+}
+function renderSel() {
+  const sel = selectedShips(), L = lead && alive(lead) ? lead : null, list = sel.filter(s => !s.station);
+  const look = L && !L.sel && !ownShip(L) ? L : null;          // an ally's, clicked to look at
+  const stn = look ? (look.station ? look : null) : L && L.sel && L.station ? L : null;
+  let main = '', side = '';
+  if (stn) { main = stationMain(stn); side = stationSide(stn); }
+  else if (look) { main = shipsMain([look]); side = shipsSide([look]); }
+  else if (list.length) { main = shipsMain(list); side = shipsSide(list); }
+  show(selEl, !!main);
+  if (!main) return;
+  if (!renaming) setHTML(spMain, main);
+  setHTML(spSide, side);
+}
+function startRename(el) {
   const sh = lead; if (!sh || !alive(sh) || !ownShip(sh)) return;
+  renaming = true;
   const inp = document.createElement('input'); inp.className = 'rename'; inp.value = sh.name; inp.maxLength = 20; inp.spellcheck = false; inp.setAttribute('aria-label', 'Callsign');
-  H.name.hidden = true; H.name.after(inp); inp.focus(); inp.select();
-  const done = ok => { if (!inp.isConnected) return; if (ok) renameShip(sh, inp.value); inp.remove(); H.name.hidden = false; };
+  el.hidden = true; el.after(inp); setTimeout(() => { inp.focus(); inp.select(); }, 0);
+  const done = ok => { if (!inp.isConnected) return; if (ok) renameShip(sh, inp.value); inp.remove(); el.hidden = false; renaming = false; spMain._h = ''; renderSel(); };
   inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') done(true); else if (e.key === 'Escape') done(false); });
+  inp.addEventListener('pointerdown', e => e.stopPropagation());
   inp.addEventListener('blur', () => done(true));
+}
+// the panel's figures change all the time, so its buttons act on the press
+spMain.addEventListener('pointerdown', e => {
+  if (e.button !== 0) return;
+  const t = e.target.closest('[data-act],[data-id],[data-cancel]'); if (!t) return;
+  e.preventDefault();
+  if (t.dataset.id !== undefined) {
+    const s = byId(+t.dataset.id); if (!s) return;
+    if (e.shiftKey) { s.sel = false; if (lead === s) { const o = selectedShips()[0]; if (o) setLead(o); } fleetDirty = navDirty = true; } else selectOnly([s]);
+  } else if (t.dataset.cancel !== undefined) cancelJob(lead, +t.dataset.cancel);
+  else if (t.dataset.act === 'untarget') { const list = selectedShips().filter(ownShip); for (const s of list) { s.target = null; s.targetGroup = null; s.targetLock = false; } toHost({ k: 'designate', x: -1, ids: ids(list) }); showToast('Target cleared: they pick their own'); }
+  else if (t.dataset.act === 'rename') { startRename(t); return; }
+  fleetDirty = true; spMain._h = ''; renderSel();
+});
+spMain.addEventListener('dblclick', e => { if (e.target.closest('[data-id]')) setFocus(-1); });
+spSide.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b || b.disabled) return;
+  const d = b.dataset, Y = lead && lead.station ? lead : null, own = selectedShips().filter(s => !s.station && ownShip(s));
+  if (d.stance) setStance(d.stance);
+  else if (d.act === 'evasive') setEvasive(undefined, own);
+  else if (d.act === 'silent') setSilent(undefined, own);
+  else if (d.act === 'withdraw') setWithdraw(undefined, own);
+  else if (d.act === 'wmode') setWeaponsMode(weaponsMode === 'auto' ? 'manual' : 'auto');
+  else if (d.act === 'rearm') rearm(own);
+  else if (d.act === 'stop') stopOrders(own);
+  else if (d.act === 'form') { formOpen = !formOpen; formDirty = true; }
+  else if (d.act === 'fleet') newFleet();
+  else if (d.act === 'unfleet') { if (own[0] && own[0].fleet) leaveFleet(own[0].fleet); }
+  else if (d.act === 'yard') openYard();
+  else if (d.fire) fireNow(d.fire);
+  else if (d.hv) setHarvest(d.hv);
+  else if (d.src === 'auto') setSource(null);
+  else if (d.src === 'pick') { pickSrc = !pickSrc; if (pickSrc) showToast('Right-click a planet, moon, asteroid field, debris field or gas cloud'); }
+  else if (d.tow && Y) { if (d.tow === 'call') towStation(Y, null); else if (d.tow === 'add') addTug(Y); else releaseTow(Y); }
+  else if (d.build && Y && isYard(Y)) {
+    const k = d.build, des = k === 'depot' || k === 'shipyard' ? STATION_DESIGNS[k] : designs[+k.slice(1)], n = e.shiftKey ? 5 : 1;
+    for (let i = 0; i < n; i++) queueBuild(Y, des);
+    if (n > 1) showToast(`${n} × ${des.name} queued at ${Y.name}`);
+  }
+  fleetDirty = true; spSide._h = ''; renderSel();
+});
+spSide.addEventListener('change', e => {
+  const t = e.target; if (t.dataset.act !== 'refit' || t.value === '') return;
+  refitList(designs[+t.value], selectedShips().filter(s => !s.station && ownShip(s)));
+  spSide._h = ''; renderSel();
 });
 function updateHUD() {
   H.date.textContent = new Date(J2000_MS + worldT * 1000).toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
-  const nSel = selectedShips().length;
-  H.name.textContent = lead ? lead.name + (nSel > 1 ? ` +${nSel - 1}` : '') : '—';
-  H.cls.textContent = lead ? lead.design : '';
-  const st0 = apText();
-  H['ap-s'].textContent = st0 === '—' && alive(SH) ? `Orbiting ${BODY[prim].name}` : st0;
-  H['ap-s'].className = alive(SH) && SH.thrusting ? 'on' : '';
-  if (!alive(SH)) { for (const k of ['pos', 'hull', 'drive', 'wpn']) H[k].textContent = '—'; H.enc.hidden = true; }
-  else {
-    const el = elemsS(S, GM[prim]), st = SH.stats;
-    H.pos.textContent = `${BODY[prim].name} · ${fmtShort(el.r - (prim === 0 ? 0 : RAD[prim]))} · ${el.v.toFixed(el.v < 10 ? 2 : 1)} km/s` + (SH.inField ? ` · in ${SH.inField.kind === 'gas' ? 'gas' : SH.inField.kind}` : '');
-    H.hull.textContent = `${Math.round(hullFrac(SH) * 100)}%` + (st.wpn.laser ? ` · heat ${Math.round(SH.heat / HEAT_CAP * 100)}%` : '') + (SH.fuel <= 0 && !SH.station ? ' · dry' : '');
-    H.hull.className = hullFrac(SH) < 0.5 ? 'bad' : '';
-    // its top acceleration (and the formation's, when that is slower), and the Δv left
-    const fa = followersOf(SH).length ? fleetAccel(SH) : st.accel;
-    H.drive.textContent = SH.station ? (SH.leader ? `in tow · ${SH.leader.name}` : 'none · tow it') : `${st.accel.toFixed(2)} m/s² max${fa < st.accel - 0.005 ? ` (fleet ${fa.toFixed(2)})` : ''} · Δv ${fmtK(SH.fuel / st.mass)} km/s`;
-    const am = [SH.full.torps && `T${Math.floor(SH.ammo.torps)}`, SH.full.slugs && `R${Math.floor(SH.ammo.slugs)}`, SH.full.rounds && `P${fmtK(SH.ammo.rounds)}`].filter(Boolean).join(' ');
-    H.wpn.textContent = SH.station ? RES.map(k => `${RES_SHORT[k][0]}${fmtT(SH.stock[k])}`).join(' ') + ' t' : (am || 'unarmed') + (SH.cargo ? ` · hold ${fmtT(cargoLoad(SH))} t` : '') + (SH.target && alive(SH.target) ? ` → ${SH.target.name}` : '');
-    if (pred.impact >= 0) { H.enc.hidden = false; H.enc.className = 'enc impact'; H.enc.textContent = `Course impacts ${BODY[pred.impact].name} in ${fmtDur(pred.impT)}`; }
-    else if (pred.enc.length) { const e = pred.enc[0]; H.enc.hidden = false; H.enc.className = 'enc'; H.enc.textContent = `${BODY[e.body].name} in ${fmtDur(e.t - simT)} · closest ${fmtDist(e.pe - RAD[e.body])} altitude`; }
-    else H.enc.hidden = true;
-  }
   H.rate.textContent = paused ? 'paused' : manualKeys() && WARPS[wi] > MANUAL_WARP ? fmtRate(effRate) + ' hand flying'
     : autoWhy ? `${fmtRate(autoW)} ${autoWhy}` : effRate < WARPS[wi] * 0.9 ? fmtRate(effRate) + ' CPU-capped' : '';
   H.rate.title = H.rate.textContent;
   H.rate.className = autoWhy && !paused ? 'auto' : '';
+  $('cw').classList.toggle('hot', combatHot);
+  renderSel();
   if (nav.open) renderNavCost();
 }
 const fmtK = n => n >= 1000 ? (n / 1000).toFixed(n % 1000 ? 1 : 0) + 'k' : String(Math.floor(n));
@@ -4774,7 +5252,7 @@ function updateFleet() {
     sh.row.classList.toggle('sel', sh.sel);
     sh.row.classList.toggle('lost', !alive(sh));
     if (sh.row.dataset.cls !== sh.designObj.hull) sh.row.dataset.cls = sh.designObj.hull;
-    const stEl = sh.row.querySelector('.st'), text = (!alive(sh) ? st : st === '—' ? `Orbiting ${BODY[sh.prim].name}` : st) + (alive(sh) && sh.evasive ? sh.jinking ? ' · jinking' : ' · evasive' : '') + (alive(sh) && sh.silent ? ' · silent' : '') + (alive(sh) && sh.withdrawing ? ' · withdrawing' : '') + (alive(sh) ? econTag(sh) : '');
+    const stEl = sh.row.querySelector('.st'), text = (!alive(sh) ? st : st === '—' ? `Orbiting ${BODY[sh.prim].name}` : st) + (alive(sh) && sh.evasive ? sh.jinking ? ' · jinking' : ' · evasive' : '') + (alive(sh) && sh.silent ? ' · silent' : '') + (alive(sh) && sh.withdrawing ? ' · withdrawing' : '') + (alive(sh) && sh.rearming ? ' · rearming' : '') + (alive(sh) && !sh.leader && sh.engaged ? ' · engaging' : '') + (alive(sh) ? econTag(sh) : '');
     if (stEl.textContent !== text) stEl.textContent = text;
     const hb = sh.row.querySelector('.hpb i'), hw = `${Math.round(hullFrac(sh) * 100)}%`;
     if (hb.style.width !== hw) hb.style.width = hw;
@@ -4851,7 +5329,7 @@ function trackBoard(T) {
 function renderForm() {
   formDirty = false;
   const T = formTarget();
-  show(formEl, !!T); syncHelp();
+  show(formEl, !!T && formOpen);
   if (!T) { picked = null; formEl._orbShip = null; return; }
   const on = T.onTarget, tr = T.track;
   show($('form-tabs'), !!tr && T.members.length > 0);
@@ -5011,25 +5489,50 @@ function updateNav() {
   } else renderNavCost();
 }
 
-// ---- Shipyard: pick a hull class, then fill it. Drive, power plant, radiators and propellant are counts; utility
-// slots take sensors and magazines; hardpoints take weapons; armour goes on nose, flanks and tail. The schematic
-// reads stern to bow, the preview turns the ship as built. Your designs are kept in this browser.
-const yardEl = $('yard'), ydSel = $('yd-sel'), ydName = $('yd-name'), ydHull = $('yd-hull'), ydSchem = $('yd-schem'), ydPick = $('yd-pick');
+// ---- Shipyard: your catalog of designs, and the designer. Pick a design in the catalog to see it, change it in the
+// designer (a hull class, then drive, power plant, radiators and propellant as counts; utility slots take sensors and
+// magazines; hardpoints take weapons; armour goes on nose, flanks and tail) and Save it (or Save as new), then build
+// it at the shipyard the dialog was opened from. The schematic reads stern to bow, the preview turns the ship as
+// built. The catalog is kept in this browser, with a spare copy; Export and Import carry it to a file and back.
+const yardEl = $('yard'), ydName = $('yd-name'), ydHull = $('yd-hull'), ydSchem = $('yd-schem'), ydPick = $('yd-pick'), ydList = $('yd-list');
 const validDesign = d => d && typeof d.name === 'string' && HULLS[d.hull] && Array.isArray(d.util) && Array.isArray(d.hard) && Array.isArray(d.armor) && d.armor.length === 3
-  && [...d.util, ...d.hard].every(t => MOD[t]) && ['eng', 'reac', 'rad', 'tank'].every(k => Number.isFinite(d[k]));
+  && [...d.util, ...d.hard].every(t => MOD[t]) && ['eng', 'reac', 'rad', 'tank'].every(k => Number.isFinite(d[k])) && d.armor.every(Number.isFinite);
+const playerHull = d => !HULLS[d.hull].station && !HULLS[d.hull].alien;
+const DESIGN_KEY = 'orrery-designs-2', DESIGN_BAK = 'orrery-designs-bak', DRAFT_KEY = 'orrery-draft';
+let storeOK = (() => { try { localStorage.setItem('orrery-t', '1'); const ok = localStorage.getItem('orrery-t') === '1'; localStorage.removeItem('orrery-t'); return ok; } catch (_) { return false; } })();
 function loadDesigns() {
-  try {
-    const j = JSON.parse(localStorage.getItem('orrery-designs-2') || 'null');
-    if (Array.isArray(j) && j.length && j.every(validDesign)) {
+  for (const key of [DESIGN_KEY, DESIGN_BAK]) {
+    try {
+      // a damaged entry costs only itself, not the whole catalog
+      const j = JSON.parse(localStorage.getItem(key) || 'null'), ok = Array.isArray(j) ? j.filter(d => validDesign(d) && playerHull(d)) : [];
+      if (!ok.length) continue;
       // a collector design for players whose saved designs predate them
-      if (!j.some(d => d.util.includes('harvester'))) j.push(defaultDesigns().find(d => d.name === 'Prospector'));
-      return j;
-    }
-  } catch (_) { /* no storage here: start from the defaults */ }
+      if (!ok.some(d => d.util.includes('harvester'))) ok.push(defaultDesigns().find(d => d.name === 'Prospector'));
+      return ok;
+    } catch (_) { /* unreadable: try the spare */ }
+  }
   return defaultDesigns();
 }
-function saveDesigns() { try { localStorage.setItem('orrery-designs-2', JSON.stringify(designs)); } catch (_) { /* not kept */ } }
-let designs = loadDesigns(), yardIdx = 0;
+function saveDesigns() {
+  try { const js = JSON.stringify(designs); localStorage.setItem(DESIGN_KEY, js); localStorage.setItem(DESIGN_BAK, js); storeOK = localStorage.getItem(DESIGN_KEY) === js; }
+  catch (_) { storeOK = false; }
+}
+let designs = loadDesigns();
+const copyOf = d => JSON.parse(JSON.stringify(d));
+// what the designer holds: a working copy of catalog design `from` (or a new one, from -1), and whether it differs
+const draft = (() => {
+  try {
+    const j = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
+    if (j && validDesign(j.d) && playerHull(j.d)) {
+      const from = Number.isInteger(j.from) && j.from < designs.length ? j.from : -1;
+      if (j.dirty) return { d: j.d, from, dirty: true };
+      if (from >= 0) return { d: copyOf(designs[from]), from, dirty: false };
+    }
+  } catch (_) { /* none kept */ }
+  return { d: copyOf(designs[0]), from: 0, dirty: false };
+})();
+function saveDraft() { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(draft)); } catch (_) { /* not kept */ } }
+let yardIdx = Math.max(0, draft.from), yardAt = null, delArm = -1, delT = 0;
 const designByName = n => designs.find(d => d.name === n) || designs[0];
 ydHull.innerHTML = HULL_KEYS.map(k => `<option value="${k}">${HULLS[k].name}-class</option>`).join('');
 const UTIL_TYPES = ['sensorS', 'sensorL', 'ecm', 'torpMag', 'railMag', 'pdcMag', 'harvester', 'cargo'], HARD_TYPES = ['torpedo', 'railgun', 'laser', 'pdc'];
@@ -5101,14 +5604,21 @@ function statLine(s) {
 }
 const designBad = s => !s.thrust || !s.power || (s.wpn.torpedo && !s.torps) || (s.wpn.railgun && !s.slugs) || (s.wpn.pdc && !s.rounds);
 function renderYard() {
-  const d = designs[yardIdx], H = HULLS[d.hull];
-  ydSel.innerHTML = designs.map((x, i) => `<option value="${i}">${x.name.replace(/[<&]/g, '')}</option>`).join('');
-  ydSel.value = yardIdx; ydHull.value = d.hull;
+  const d = draft.d, H = HULLS[d.hull];
+  const items = designs.map((x, i) => {
+    const s = designStats(x), bad = designBad(s), c = designCost(x);
+    return `<li data-i="${i}" data-cls="${x.hull}" class="${i === draft.from ? 'sel' : ''}${bad ? ' bad' : ''}" title="${esc(x.name)}"><span class="ic"></span><b>${esc(x.name)}</b><span class="ia"><button type="button" data-a="copy" title="Duplicate">⧉</button><button type="button" data-a="del" title="Delete from the catalog"${designs.length < 2 ? ' disabled' : ''}>${delArm === i ? 'Delete?' : '✕'}</button></span><small>${HULLS[x.hull].name} · ${s.accel.toFixed(2)} m/s² · Δv ${fmtK(s.dvMax)} km/s<br>${bad ? 'needs fixing before it can be built' : statLine(s).wp} · ${fmtT(c.base)} B · ${fmtT(c.noble)} N</small></li>`;
+  });
+  if (draft.from < 0) items.unshift(`<li data-i="-1" data-cls="${d.hull}" class="sel draft"><span class="ic"></span><b>${esc(d.name)}</b><small>new · not in the catalog until you save it</small></li>`);
+  ydList.innerHTML = items.join('');
+  ydHull.value = d.hull;
   if (document.activeElement !== ydName) ydName.value = d.name;
   renderSchematic(d);
-  const s = designStats(d), l = statLine(s), notes = designNotes(s), bad = designBad(s);
+  const s = designStats(d), l = statLine(s), notes = designNotes(s), bad = designBad(s), c = designCost(d);
   $('yd-valid').textContent = bad ? 'Invalid design' : 'Valid design';
   $('yd-valid').classList.toggle('bad', !!bad);
+  $('yd-dirty').hidden = !draft.dirty; $('yd-dirty').textContent = draft.from < 0 ? 'Not saved yet' : 'Unsaved changes';
+  $('yd-save').disabled = !draft.dirty; $('yd-revert').disabled = !draft.dirty || draft.from < 0;
   $('yd-stats').innerHTML = `<h3>Ship performance data</h3><dl>
     <dt>Hull</dt><dd>${H.name} · ${Math.round(H.len * 10)} m · drive ×${H.drive}</dd>
     <dt>Wet mass</dt><dd>${nf0.format(s.mass)} t</dd>
@@ -5119,30 +5629,77 @@ function renderYard() {
     <dt>Vision</dt><dd>${s.vision ? fmtDist(s.vision) : 'none'}</dd>
     <dt>Electronic war</dt><dd>${s.ecm ? `jams: hostile fire ${Math.round((1 - 2 / (2 + 0.5 * s.ecm)) * 100)}% worse` : 'no jammer'} · <small>sees through ${s.sensPts} pt${s.sensPts === 1 ? '' : 's'}</small></dd>
     <dt>Hit points</dt><dd>${s.hp}</dd>${s.harvest ? `<dt>Harvest</dt><dd>${s.harvest} t/h · hold ${nf0.format(s.cargo)} t</dd>` : ''}
-    <dt>Cost</dt><dd>${(c => `${nf0.format(c.base)} t base · ${nf0.format(c.noble)} t noble · ${fmtDur(buildSecs(c, 2))}`)(designCost(d))}</dd>
     <dt>Weapons</dt><dd>${l.wp}</dd>
     <dt>Magazines</dt><dd>${l.ammo}</dd></dl>` + (notes.length ? `<ul class="warn">${notes.map(n => `<li>${n}</li>`).join('')}</ul>` : '<p class="ok">Ready to build.</p>');
   $('yd-cls').textContent = `${H.name}-class ${d.name}`;
-  const n = selectedShips().length;
-  $('yd-refit').textContent = n ? `Refit ${n} selected` : 'Refit selected';
-  $('yd-refit').disabled = !n || bad; $('yd-build').disabled = bad;
-  $('yd-delete').disabled = designs.length < 2;
+  const Y = yardAt && alive(yardAt) ? yardAt : null;
+  $('yd-at').textContent = Y ? `at ${Y.name}` : '';
+  $('yd-cost').innerHTML = `${fmtT(c.base)} t base · ${fmtT(c.noble)} t noble<br>${fmtDur(buildSecs(c, Y ? Y.stats.dock : 2))} at ${Y ? Y.name : 'a yard'}${draft.dirty ? ' · saved first' : ''}`;
+  $('yd-build').textContent = Y ? `Build at ${Y.name}` : 'Build';
+  $('yd-build').disabled = $('yd-build3').disabled = !!bad || !Y;
+  renderStore();
   previewBuild(d);
 }
-function changed() { saveDesigns(); renderYard(); }
+// the line under the catalog: how it is kept, or a passing message
+let ydMsgT = 0;
+function renderStore() {
+  if (ydMsgT) return;
+  const el = $('yd-store');
+  el.textContent = storeOK ? `${designs.length} designs · kept in this browser` : 'This browser is not keeping your designs: Export them to a file';
+  el.classList.toggle('bad', !storeOK);
+}
+function flash(msg, bad = false) {
+  const el = $('yd-store'); el.textContent = msg; el.classList.toggle('bad', bad);
+  clearTimeout(ydMsgT); ydMsgT = setTimeout(() => { ydMsgT = 0; renderStore(); }, 4500);
+}
+// a change in the designer
+function touched() { draft.dirty = true; saveDraft(); renderYard(); }
+// unsaved changes hold up leaving the design
+function unsaved() {
+  if (!draft.dirty) return false;
+  flash(`${draft.d.name} has unsaved changes: Save or Revert first`, true);
+  $('yd-save').animate([{ boxShadow: '0 0 0 0 rgba(255,174,66,.9)' }, { boxShadow: '0 0 0 8px rgba(255,174,66,0)' }], { duration: 700, iterations: 2 });
+  return true;
+}
+function pickDesign(i) {
+  if (i === draft.from || unsaved()) return;
+  yardIdx = i; draft.d = copyOf(designs[i]); draft.from = i; draft.dirty = false; saveDraft(); renderYard();
+}
+const uniqueName = (base, skip = -1) => { let n = base, k = 2; while (designs.some((d, i) => i !== skip && d.name === n)) n = `${base} ${k++}`; return n; };
+const blankDesign = (name, hull) => ({ name, hull, eng: 1, reac: 1, rad: 0, tank: 1, armor: [0, 0, 0], util: [], hard: [] });
+// keep what is in the designer: over the design it came from, or as a new one
+function saveDesign(asNew) {
+  const d = copyOf(draft.d);
+  d.name = cleanName(d.name).slice(0, 24) || 'Design';
+  if (asNew || draft.from < 0) { d.name = uniqueName(d.name); designs.push(d); draft.from = designs.length - 1; }
+  else { d.name = uniqueName(d.name, draft.from); designs[draft.from] = d; }
+  draft.d = copyOf(d); draft.dirty = false; yardIdx = draft.from;
+  saveDesigns(); saveDraft();
+  flash(storeOK ? `Saved ${d.name} to the catalog` : `Saved ${d.name}, but this browser is not keeping it: Export`, !storeOK);
+  renderYard(); fleetDirty = true;
+}
+function yardBuild(n) {
+  const Y = yardAt && alive(yardAt) && isYard(yardAt) ? yardAt : null;
+  if (!Y) { flash('Select a shipyard of yours to build at', true); return; }
+  if (draft.dirty) saveDesign(false);                // what is built is what is in the catalog
+  const d = designs[draft.from];
+  for (let i = 0; i < n; i++) queueBuild(Y, d);
+  flash(`${n > 1 ? n + ' × ' : ''}${d.name} queued at ${Y.name}`);
+  fleetDirty = true; renderYard();
+}
 ydSchem.addEventListener('click', e => {
-  const d = designs[yardIdx], cb = e.target.closest('.cnt button');
-  if (cb) { const k = cb.parentElement.dataset.k, dv = +cb.dataset.d; if (k[0] === 'a') d.armor[+k[1]] += dv; else d[k] += dv; fitHull(d); changed(); return; }
+  const d = draft.d, cb = e.target.closest('.cnt button');
+  if (cb) { const k = cb.parentElement.dataset.k, dv = +cb.dataset.d; if (k[0] === 'a') d.armor[+k[1]] += dv; else d[k] += dv; fitHull(d); touched(); return; }
   const tile = e.target.closest('[data-slot]');
   if (tile) openPicker(tile, tile.dataset.slot, +tile.dataset.i);
 });
 ydSchem.addEventListener('contextmenu', e => {
   const tile = e.target.closest('[data-slot]'); if (!tile) return;
   e.preventDefault();
-  const i = +tile.dataset.i; if (i >= 0) { designs[yardIdx][tile.dataset.slot].splice(i, 1); ydPick.hidden = true; changed(); }
+  const i = +tile.dataset.i; if (i >= 0) { draft.d[tile.dataset.slot].splice(i, 1); ydPick.hidden = true; touched(); }
 });
 function openPicker(tile, slot, i) {
-  const d = designs[yardIdx], H = HULLS[d.hull], cur = i >= 0 ? d[slot][i] : null, free = H.util - slotsUsed(d) + (cur ? (MOD[cur].slots || 1) : 0);
+  const d = draft.d, H = HULLS[d.hull], cur = i >= 0 ? d[slot][i] : null, free = H.util - slotsUsed(d) + (cur ? (MOD[cur].slots || 1) : 0);
   ydPick.innerHTML = `<h4>${slot === 'util' ? 'Utility module' : 'Weapon'}</h4>` + (slot === 'util' ? UTIL_TYPES : HARD_TYPES).map(t => {
     const M = MOD[t], no = slot === 'util' && (M.slots || 1) > free;
     return `<button type="button" data-t="${t}"${no ? ' disabled' : ''}${t === cur ? ' aria-pressed="true"' : ''}><span class="chip" style="--m:${slot === 'hard' ? '#f3b43a' : M.col}">${icon(t)}</span><span class="pn">${M.name}<small>${M.mass} t · ${M.note}</small></span></button>`;
@@ -5154,32 +5711,79 @@ function openPicker(tile, slot, i) {
 }
 ydPick.addEventListener('click', e => {
   const b = e.target.closest('[data-t]'); if (!b || b.disabled) return;
-  const d = designs[yardIdx], slot = ydPick.dataset.slot, i = +ydPick.dataset.i, t = b.dataset.t;
+  const d = draft.d, slot = ydPick.dataset.slot, i = +ydPick.dataset.i, t = b.dataset.t;
   if (!t) d[slot].splice(i, 1); else if (i >= 0) d[slot][i] = t; else d[slot].push(t);
-  fitHull(d); ydPick.hidden = true; changed();
+  fitHull(d); ydPick.hidden = true; touched();
 });
 yardEl.addEventListener('pointerdown', e => {
   if (e.target === yardEl) { closeYard(); return; }
   if (!ydPick.hidden && !ydPick.contains(e.target) && !e.target.closest('[data-slot]')) ydPick.hidden = true;
 });
-function openYard() { endMove(); yardEl.hidden = false; ydPick.hidden = true; renderYard(); needDraw = true; }
+// the shipyard opens from a selected yard of yours (its panel's Design ships, or Y)
+function openYard(Y) {
+  Y = Y || (lead && lead.sel && alive(lead) && isYard(lead) && ownShip(lead) ? lead : null);
+  if (!Y) { showToast('Select a shipyard of yours to design and build ships'); return; }
+  yardAt = Y; endMove(); delArm = -1;
+  yardEl.hidden = false; ydPick.hidden = true; renderYard(); needDraw = true;
+}
 function closeYard() { yardEl.hidden = true; ydPick.hidden = true; }
-$('b-yard').onclick = openYard;
 $('yd-close').onclick = closeYard;
-ydSel.onchange = () => { yardIdx = +ydSel.value; renderYard(); };
-ydHull.onchange = () => { const d = designs[yardIdx]; d.hull = ydHull.value; fitHull(d); changed(); };
-ydName.addEventListener('input', () => { const v = ydName.value.trim().slice(0, 24); if (v) { designs[yardIdx].name = v; saveDesigns(); ydSel.options[yardIdx].textContent = v; $('yd-cls').textContent = `${HULLS[designs[yardIdx].hull].name}-class ${v}`; } });
-const uniqueName = base => { let n = base, k = 2; while (designs.some(d => d.name === n)) n = `${base} ${k++}`; return n; };
-const blankDesign = (name, hull) => ({ name, hull, eng: 1, reac: 1, rad: 0, tank: 1, armor: [0, 0, 0], util: [], hard: [] });
-$('yd-new').onclick = () => { designs.push(blankDesign(uniqueName('New design'), designs[yardIdx].hull)); yardIdx = designs.length - 1; changed(); };
-$('yd-copy').onclick = () => { const c = JSON.parse(JSON.stringify(designs[yardIdx])); c.name = uniqueName(c.name + ' copy'); designs.push(c); yardIdx = designs.length - 1; changed(); };
-$('yd-delete').onclick = () => { if (designs.length < 2) return; designs.splice(yardIdx, 1); yardIdx = Math.max(0, yardIdx - 1); changed(); };
-$('yd-clear').onclick = () => { const d = designs[yardIdx]; designs[yardIdx] = blankDesign(d.name, d.hull); changed(); };
-$('yd-auto').onclick = () => { const d = designs[yardIdx]; designs[yardIdx] = autoDesign(d.name, d.hull); changed(); };
-$('yd-prev').onclick = () => { yardIdx = (yardIdx + designs.length - 1) % designs.length; renderYard(); };
-$('yd-next').onclick = () => { yardIdx = (yardIdx + 1) % designs.length; renderYard(); };
+ydHull.onchange = () => { draft.d.hull = ydHull.value; fitHull(draft.d); touched(); };
+ydName.addEventListener('input', () => {
+  const v = ydName.value.trim().slice(0, 24); if (!v) return;
+  draft.d.name = v; draft.dirty = true; saveDraft();
+  $('yd-cls').textContent = `${HULLS[draft.d.hull].name}-class ${v}`; $('yd-dirty').hidden = false; $('yd-save').disabled = false; $('yd-revert').disabled = draft.from < 0;
+});
+ydName.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); saveDesign(false); } });
+ydList.addEventListener('click', e => {
+  const li = e.target.closest('li'); if (!li) return;
+  const i = +li.dataset.i, a = e.target.closest('button[data-a]');
+  if (a && a.dataset.a === 'copy') {
+    const c = copyOf(designs[i]); c.name = uniqueName(designs[i].name + ' copy');
+    designs.splice(i + 1, 0, c); saveDesigns();
+    if (draft.from > i) draft.from++;
+    flash(`${c.name} added to the catalog`);
+    if (draft.dirty) renderYard(); else pickDesign(i + 1);
+  } else if (a && a.dataset.a === 'del') {
+    // twice to delete: the first click asks
+    if (delArm !== i || performance.now() - delT > 4000) { delArm = i; delT = performance.now(); renderYard(); return; }
+    const gone = designs.splice(i, 1)[0]; delArm = -1; saveDesigns();
+    if (draft.from === i) { draft.from = -1; draft.dirty = true; } else if (draft.from > i) draft.from--;
+    yardIdx = Math.max(0, Math.min(draft.from, designs.length - 1)); saveDraft();
+    flash(`${gone.name} deleted${draft.from < 0 ? ': still in the designer, Save to keep it' : ''}`);
+    renderYard(); fleetDirty = true;
+  } else if (i >= 0) pickDesign(i);
+});
+$('yd-new').onclick = () => { if (unsaved()) return; draft.d = blankDesign(uniqueName('New design'), draft.d.hull); draft.from = -1; draft.dirty = true; saveDraft(); renderYard(); ydName.focus(); ydName.select(); };
+$('yd-save').onclick = () => saveDesign(false);
+$('yd-saveas').onclick = () => saveDesign(true);
+$('yd-revert').onclick = () => { if (draft.from < 0) return; draft.d = copyOf(designs[draft.from]); draft.dirty = false; saveDraft(); renderYard(); };
+$('yd-clear').onclick = () => { draft.d = blankDesign(draft.d.name, draft.d.hull); touched(); };
+$('yd-auto').onclick = () => { draft.d = autoDesign(draft.d.name, draft.d.hull); touched(); };
+$('yd-build').onclick = () => yardBuild(1);
+$('yd-build3').onclick = () => yardBuild(3);
+// the catalog to a file, and designs from one (a design already in the catalog is not added twice)
+$('yd-export').onclick = () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify({ game: 'orrery-flight', designs }, null, 1)], { type: 'application/json' }));
+  a.download = 'orrery-designs.json'; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  flash(`Exported ${designs.length} designs to orrery-designs.json`);
+};
+$('yd-import').onclick = () => $('yd-file').click();
+$('yd-file').onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  try {
+    const j = JSON.parse(await f.text()), list = (Array.isArray(j) ? j : j.designs || []).filter(d => validDesign(d) && playerHull(d));
+    const same = d => designs.some(x => JSON.stringify({ ...x, name: '' }) === JSON.stringify({ ...d, name: '' }) && x.name === d.name);
+    let n = 0;
+    for (const d of list) { const c = copyOf(d); c.name = cleanName(c.name).slice(0, 24) || 'Design'; fitHull(c); if (same(c)) continue; c.name = uniqueName(c.name); designs.push(c); n++; }
+    if (n) saveDesigns();
+    flash(n ? `Imported ${n} design${n === 1 ? '' : 's'}` : list.length ? 'Those designs are already in the catalog' : 'No designs in that file', !n && !list.length);
+    renderYard(); fleetDirty = true;
+  } catch (_) { flash('That file is not a design catalog', true); }
+};
 // a refit is done at a shipyard (within supply reach of one), and costs what the new fit adds
-$('yd-refit').onclick = () => { refitList(designs[yardIdx], selectedShips().filter(s => !s.station)); renderYard(); };
 function refitList(d, list) {
   if (toHost({ k: 'refit', d, ids: ids(list) })) { showToast(`Refit ordered for ${list.length} ship${list.length === 1 ? '' : 's'}`); return; }
   const yards = stationsOf('us').filter(isYard);
@@ -5197,11 +5801,6 @@ function refitList(d, list) {
   }
   showToast(done ? `${done} ship${done === 1 ? '' : 's'} refitted as ${d.name}: ${designStats(d).accel.toFixed(2)} m/s²` : far ? 'Refits are done at a shipyard: bring the ships within 100,000 km of one' : short ? `Not enough in the yard's reach: ${short}` : 'Select ships to refit');
 }
-$('yd-build').onclick = () => {
-  const Y = lead && lead.side === 'us' && alive(lead) && isYard(lead) ? lead : stationsOf('us').find(isYard);
-  if (!Y) { showToast('You have no shipyard left'); return; }
-  queueBuild(Y, designs[yardIdx]); renderYard();
-};
 // the turning preview (its own small renderer, lit like a studio shot)
 let prv = null;
 function previewBuild(d) {
@@ -5233,46 +5832,15 @@ function previewDraw(rdt) {
   prv.r.render(prv.sc, prv.cm);
 }
 
-// ---- Weapons: auto (fire on their own) or manual (salvos on command); targets; contacts in sight
-const wpnEl = $('wpn'), bWpn = $('b-wpn'), contactsEl = $('contacts'), contactList = $('contact-list');
+// ---- Weapons: auto (fire on their own) or manual (salvos on command); contacts in sight
+const contactsEl = $('contacts'), contactList = $('contact-list');
 function setWeaponsMode(m) {
   weaponsMode = m; wmode[NET.me] = m; toHost({ k: 'wmode', m });
-  bWpn.textContent = m === 'auto' ? 'Weapons: auto' : 'Weapons: manual';
-  bWpn.setAttribute('aria-pressed', m === 'manual');
   showToast(m === 'auto' ? 'Weapons free: ships fire on their own at targets in range' : 'Manual fire: Z torpedoes · X railguns · C lasers (PDCs still defend)');
   fleetDirty = true;
 }
-bWpn.onclick = () => setWeaponsMode(weaponsMode === 'auto' ? 'manual' : 'auto');
-$('b-eva').onclick = () => setEvasive();
-$('b-sil').onclick = () => setSilent();
-$('b-wd').onclick = () => setWithdraw();
-for (const b of wpnEl.querySelectorAll('[data-fire]')) b.onclick = () => fireNow(b.dataset.fire);
-$('wpn-clear').onclick = () => { for (const s of selectedShips()) s.target = null; fleetDirty = true; showToast('Target cleared: ships pick the nearest enemy in sight'); };
 function updateCombatPanels() {
   const sel = selectedShips(), L = lead && alive(lead) ? lead : null;
-  const ne = sel.filter(s => s.evasive).length, et = !sel.length ? 'Evasive' : ne === sel.length ? 'Evasive: on' : ne ? 'Evasive: some' : 'Evasive: off';
-  const be = $('b-eva');
-  if (be.textContent !== et) be.textContent = et;
-  be.setAttribute('aria-pressed', sel.length > 0 && ne === sel.length);
-  const toggle = (id, name, on) => {
-    const n = sel.filter(on).length, t = !sel.length ? name : n === sel.length ? `${name}: on` : n ? `${name}: some` : `${name}: off`, b = $(id);
-    if (b.textContent !== t) b.textContent = t;
-    b.setAttribute('aria-pressed', sel.length > 0 && n === sel.length);
-  };
-  toggle('b-sil', 'Silent', s => s.silent); toggle('b-wd', 'Withdraw', s => s.withdraw > 0);
-  // the weapons card: in manual fire, for the selection
-  show(wpnEl, weaponsMode === 'manual' && sel.length > 0);
-  if (!wpnEl.hidden) {
-    const tg = L && L.target && alive(L.target) ? L.target : null;
-    $('wpn-tgt').textContent = tg ? `${tg.name}${tg.vis ? ' · ' + fmtDist(Math.hypot(tg.cp[0] - L.cp[0], tg.cp[1] - L.cp[1], tg.cp[2] - L.cp[2])) : ' · out of sight'}` : 'nearest in sight';
-    for (const b of wpnEl.querySelectorAll('[data-fire]')) {
-      const k = b.dataset.fire;
-      let ready = 0, all = 0;
-      for (const s of sel) for (const m of s.mods) if (m.t === k && m.hp > 0) { all++; if (m.cd <= 0) ready++; }
-      b.disabled = !all;
-      b.querySelector('small').textContent = all ? `${ready}/${all} ready` : 'none';
-    }
-  }
   // contacts: enemies your side can see
   const seen = ships.filter(s => s.side === 'them' && alive(s) && s.vis);
   show(contactsEl, seen.length > 0);
@@ -5291,12 +5859,21 @@ contactList.addEventListener('click', e => {
 });
 contactList.addEventListener('contextmenu', e => { e.preventDefault(); const li = e.target.closest('li'); if (!li) return; const s = ships.find(x => x.id === +li.dataset.id); if (s) engageClick(s, e.shiftKey); });
 $('eg-new').onclick = () => { $('endgame').hidden = true; askNewGame(); };
-$('b-help').onclick = () => setHelp(!helpOpen);
 $('help-close').onclick = () => setHelp(false);
-$('b-mp').onclick = () => { mpEl.hidden = !mpEl.hidden; renderMP(); };
-$('b-hide').onclick = () => setBar(false);
-$('b-showbar').onclick = () => setBar(true);
-$('b-help').setAttribute('aria-pressed', helpOpen);
+$('form-close').onclick = () => { formOpen = false; formDirty = true; };
+function toggleVision() { showVision = !showVision; showToast(showVision ? 'Vision rings shown' : 'Vision rings hidden'); }
+// the menu: how to play, vision rings, side panels, co-op, a new game
+const menuEl = $('menu'), bMenu = $('b-menu');
+function setMenu(on) { menuEl.hidden = !on; bMenu.setAttribute('aria-expanded', on); }
+bMenu.onclick = () => setMenu(menuEl.hidden);
+menuEl.addEventListener('click', e => {
+  const b = e.target.closest('[data-m]'); if (!b) return;
+  setMenu(false);
+  const m = b.dataset.m;
+  if (m === 'help') setHelp(!helpOpen); else if (m === 'vision') toggleVision(); else if (m === 'clean') setBar(!barOn);
+  else if (m === 'coop') { mpEl.hidden = !mpEl.hidden; renderMP(); } else if (m === 'new') askNewGame();
+});
+window.addEventListener('pointerdown', e => { if (!menuEl.hidden && !menuEl.contains(e.target) && e.target !== bMenu) setMenu(false); }, true);
 
 // ---- Ship models, built from each ship's design. A faceted hull is lofted through tapered octagonal sections:
 // a broad engine block aft, full midships and a wedge bow, with a dorsal superstructure and bridge, a ventral keel
@@ -5305,9 +5882,10 @@ $('b-help').setAttribute('aria-pressed', helpOpen);
 // number and lit ports. Weapons ride turrets on the dorsal and ventral decks (the first railgun runs down the keel
 // as a spinal mount, torpedoes sit in launch cells), radiators spread as wings, sensors stand as masts or a
 // radome, and the engines form a cluster of bells with blue (yours) or orange (theirs) exhaust. A hull unit is
-// 10 m. Models appear only when the view is no wider than five radii of the nearby planet, and are then never
-// drawn smaller than about 48 px for a frigate (bigger hulls larger).
-const CELL_KM = 0.01, MODEL_PX = 48, MODEL_REF_LEN = 9.5, VIEW_RADII = 5;
+// 10 m. Models are drawn (after Sins of a Solar Empire, far beyond true scale) whenever the view is no wider than
+// two million km: about 48 px long for a frigate up close, shrinking to 60% of that at the widest (other hulls by
+// the square root of their length: a station or a Ravager twice a frigate). Further out, ships show as icons.
+const CELL_KM = 0.01, MODEL_PX = 48, MODEL_REF_LEN = 9.5, MODEL_VIEW = 2e6, MODEL_NEAR = 1e5;
 function rng(seed) { let s = (seed >>> 0) || 1; return () => { s ^= s << 13; s ^= s >>> 17; s ^= s << 5; return (s >>> 0) / 4294967296; }; }
 const hashStr = str => { let h = 2166136261; for (const c of str) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; };
 const matCache = {};
@@ -5830,6 +6408,27 @@ function buildModel(spec, into = scene) {
   into.add(root);
   return md;
 }
+const LOD_PX = 3, LV = new THREE.Vector3();
+function measureParts(md) {
+  const skip = new Set([...md.lights, ...md.plumes.flatMap(p => [p.mesh, p.core, p.spr, p.disc])]);
+  md.root.updateMatrixWorld(true);
+  md.lod = [];
+  md.root.traverse(o => {
+    if (!o.isMesh || skip.has(o)) return;
+    if (!o.geometry.boundingSphere) o.geometry.computeBoundingSphere();
+    o.getWorldScale(LV);
+    md.lod.push({ o, r: o.geometry.boundingSphere.radius * Math.max(LV.x, LV.y, LV.z) / md.root.scale.x, on: true });
+  });
+}
+// hide what is too small to see at this many pixels to the hull unit (only when that changes)
+function setDetail(md, ppu) {
+  const q = Math.round(Math.log2(Math.max(1e-3, ppu)) * 4);
+  if (md.lodQ === q) return;
+  if (!md.lod) measureParts(md);
+  md.lodQ = q;
+  for (const p of md.lod) { const on = p.r * ppu >= LOD_PX; if (p.on !== on) { p.on = on; p.o.visible = on; } }
+  md.small = ppu * (md.len || 10) < 70;
+}
 function dropModel(md) { md.root.parent && md.root.parent.remove(md.root); md.rad.dispose(); md.hullMat.dispose(); for (const pl of md.plumes) pl.spr.material.dispose(); }
 const modelSpec = sh => ({ d: sh.designObj, mods: sh.mods, side: sh.side, label: `${sh.name.slice(0, 3).toUpperCase()} ${String(sh.id + 1).padStart(2, '0')}`, seed: hashStr(sh.design + sh.side) });
 const MQ = new THREE.Quaternion(), MM = new THREE.Matrix4(), VF = new THREE.Vector3(), VL = new THREE.Vector3(), VU = new THREE.Vector3(), VT = new THREE.Vector3(), VA = new THREE.Vector3();
@@ -5848,7 +6447,7 @@ function animateModel(md, sh, rdt, now) {
   const h = Math.min(1, sh.heat / HEAT_CAP); md.rad.emissive.setRGB(0.9 * h, 0.28 * h, 0.05 * h);
   md.hullMat.color.setScalar(0.62 * (0.55 + 0.45 * hullFrac(sh)));
   const blink = (now % 1600) < 120;
-  md.lights[2].visible = blink; md.lights[0].visible = md.lights[1].visible = (now % 2400) > 300;
+  md.lights[2].visible = blink && !md.small; md.lights[0].visible = md.lights[1].visible = (now % 2400) > 300 && !md.small;
   // turrets swing toward the target (or rest facing forward)
   const tg = sh.aimTgt && alive(sh.aimTgt) && (sh.side === 'them' || sh.aimTgt.side === 'us' || sh.aimTgt.vis) ? sh.aimTgt : null;
   if (tg) shipPos(tg, VA);
@@ -5862,14 +6461,16 @@ function animateModel(md, sh, rdt, now) {
 }
 function updateModels(rdt) {
   const now = performance.now(), Wv = 2 * cam.dist * Math.tan(camera.fov * D2R / 2) * Math.max(camera.aspect, 1);
+  const zf = 1 - 0.4 * clamp01(Math.log(Wv / MODEL_NEAR) / Math.log(MODEL_VIEW / MODEL_NEAR));
   for (const sh of ships) {
     let md = sh.model;
-    const ref = RAD[sh.prim > 0 ? sh.prim : 3];
-    if (Wv > VIEW_RADII * ref || !alive(sh) || (sh.side === 'them' && !sh.vis)) { if (md) md.root.visible = false; continue; }
+    if (Wv > MODEL_VIEW || !alive(sh) || (sh.side === 'them' && !sh.vis)) { if (md) md.root.visible = false; sh.mpx = 0; continue; }
     if (!md || md.built !== sh.mods) { if (md) dropModel(md); md = sh.model = buildModel(modelSpec(sh)); }
     md.root.visible = true;
     shipPos(sh, md.root.position);
-    md.root.scale.setScalar(Math.max(CELL_KM, MODEL_PX * pxScale(md.root.position) / MODEL_REF_LEN));
+    const kpp = pxScale(md.root.position), len = HULLS[sh.designObj.hull].len, sc = Math.max(CELL_KM, MODEL_PX * zf * Math.sqrt(len / MODEL_REF_LEN) * kpp / len);
+    md.root.scale.setScalar(sc); sh.mpx = sc * len / kpp;          // its length on screen, px
+    setDetail(md, sc / kpp);
     // heading: the way the ship faces (see faceDir)
     if (faceDir(sh, FACE)) VF.set(FACE[0], FACE[1], FACE[2]); else VF.set(0, 0, 0);
     if (VF.lengthSq() > 1e-12) {
@@ -6375,6 +6976,8 @@ function updateScene(rdt) {
     el.classList.toggle('aim', aimed.has(sh)); el.classList.toggle('mark', marked.has(sh)); el.classList.toggle('hit', performance.now() - sh.hitT < 400);
     el.classList.toggle('occl', occluded(tmpW, -1));
     el.classList.toggle('burn', sh.thrusting && !paused);
+    const sv = sh.mpx > 0 && sh.model && sh.model.root.visible ? Math.round(Math.max(16, Math.min(150, 0.85 * sh.mpx)) / 2) * 2 + 'px' : '';
+    if (el._sv !== sv) { el._sv = sv; el.classList.toggle('mdl', !!sv); if (sv) el.style.setProperty('--s', sv); else el.style.removeProperty('--s'); }
   }
   // ship names give way: all of them from far out, and where two would overlap the more important keeps its
   // name (the lead, the selection, targets, enemies, then the rest). Hovering a label shows its name.
@@ -6426,6 +7029,8 @@ function updateScene(rdt) {
 let autoWarp = true, autoW = 1e3, autoWhy = '', autoCapped = false;
 const LEAD_IN = 1, FLIGHT_SHOW = 5, SOI_FLOOR = 2000, BURN_FLOOR = 10;
 function warpCap() {
+  // in a fight, time runs at the combat speed you set, whatever else is going on
+  if (combatHot) return { cap: CWARPS[cwi], why: 'combat' };
   let cap = Infinity, why = '';
   const consider = (c, w) => { if (c < cap) { cap = c; why = w; } };
   for (const sh of ships) {
@@ -6444,10 +7049,8 @@ function warpCap() {
       break;
     }
   }
-  if (combatHot) consider(COMBAT_WARP, 'combat');
   return { cap, why };
 }
-const COMBAT_WARP = 100, COMBAT_MAX = 1000;
 function setAutoWarp(on) { autoWarp = on; $('b-auto').setAttribute('aria-pressed', on); }
 
 // Redraw only when something can have changed: time is running, or the viewer did something.
@@ -6478,8 +7081,8 @@ function frame(now) {
       autoWhy = autoCapped ? (cap < user ? why : 'speeding back up') : '';
       rate = autoW;
     } else { autoW = user; autoCapped = false; autoWhy = ''; }
-    // a fight is never run faster than this, auto-warp or not (it is stepped a couple of seconds at a time)
-    if (combatHot && rate > COMBAT_MAX) { rate = COMBAT_MAX; autoW = rate; autoWhy = 'combat'; }
+    // a fight is never run faster than the combat speed, auto-warp or not (it is stepped a couple of seconds at a time)
+    if (combatHot && rate > CWARPS[cwi]) { rate = CWARPS[cwi]; autoW = rate; autoWhy = 'combat'; }
     // ships run to the same world time; one that ran ahead while another lagged (CPU-capped at a high warp) is
     // not left waiting at a lower one: the rest catch up to it first (in a fight, two minutes at a time, so combat
     // is never asked to leap)
